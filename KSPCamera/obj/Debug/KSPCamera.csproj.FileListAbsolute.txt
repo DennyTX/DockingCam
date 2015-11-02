@@ -1,0 +1,16 @@
+C:\Users\Andrew\Documents\GitHub\KSP\Addons\KSPCamera\KSPCamera\obj\Debug\KSPCamera.csprojResolveAssemblyReference.cache
+C:\games\Kerbal Space Program\GameData\L0dom\KspCamera\KSPCamera.dll
+C:\games\Kerbal Space Program\GameData\L0dom\KspCamera\KSPCamera.pdb
+C:\Users\Andrew\Documents\GitHub\KSP\Addons\KSPCamera\KSPCamera\obj\Debug\KSPCamera.dll
+C:\Users\Andrew\Documents\GitHub\KSP\Addons\KSPCamera\KSPCamera\obj\Debug\KSPCamera.pdb
+C:\KSP_104\GameData\OLDD\DockingCam\KSPCamera.dll
+C:\KSP_104\GameData\OLDD\DockingCam\KSPCamera.pdb
+E:\DennyTX\Documents\Visual Studio 2013\Projects\KSPCamera\KSPCamera\obj\Debug\KSPCamera.dll
+E:\DennyTX\Documents\Visual Studio 2013\Projects\KSPCamera\KSPCamera\obj\Debug\KSPCamera.pdb
+C:\games\Kerbal Space Program\GameData\OLDD\DockingCam\KSPCamera.dll
+C:\games\Kerbal Space Program\GameData\OLDD\DockingCam\KSPCamera.pdb
+C:\Users\Andrew\Documents\Projects\KSPCamera\KSPCamera\obj\Debug\KSPCamera.csprojResolveAssemblyReference.cache
+C:\Users\Andrew\Documents\Projects\KSPCamera\KSPCamera\obj\Debug\KSPCamera.dll
+C:\Users\Andrew\Documents\Projects\KSPCamera\KSPCamera\obj\Debug\KSPCamera.pdb
+E:\games\Kerbal Space Program\GameData\OLDD\DockingCam\KSPCamera.dll
+E:\games\Kerbal Space Program\GameData\OLDD\DockingCam\KSPCamera.pdb

@@ -1,0 +1,10 @@
+C:\Users\Andrew\Documents\GitHub\KSP\Addons\KSPCamera\KSPCamera\bin\Release\KSPCamera.dll
+C:\Users\Andrew\Documents\GitHub\KSP\Addons\KSPCamera\KSPCamera\bin\Release\KSPCamera.pdb
+C:\Users\Andrew\Documents\GitHub\KSP\Addons\KSPCamera\KSPCamera\obj\Release\KSPCamera.dll
+C:\Users\Andrew\Documents\GitHub\KSP\Addons\KSPCamera\KSPCamera\obj\Release\KSPCamera.pdb
+C:\Users\Andrew\Documents\GitHub\KSP\Addons\KSPCamera\KSPCamera\obj\Release\KSPCamera.csprojResolveAssemblyReference.cache
+C:\Users\Andrew\Documents\Projects\KSPCamera\KSPCamera\bin\Release\KSPCamera.dll
+C:\Users\Andrew\Documents\Projects\KSPCamera\KSPCamera\bin\Release\KSPCamera.pdb
+C:\Users\Andrew\Documents\Projects\KSPCamera\KSPCamera\obj\Release\KSPCamera.csprojResolveAssemblyReference.cache
+C:\Users\Andrew\Documents\Projects\KSPCamera\KSPCamera\obj\Release\KSPCamera.dll
+C:\Users\Andrew\Documents\Projects\KSPCamera\KSPCamera\obj\Release\KSPCamera.pdb
