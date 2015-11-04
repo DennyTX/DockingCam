@@ -27,7 +27,7 @@ namespace KSPCamera
         public float AngleZ;
         public float Destination;
         public bool isMoveToTarget;
-        public float SecondsToConnection;
+        public float SecondsToDock;
         private List<bool> moveToTargetSteps = new List<bool>(100);
 
         /// <param name="from">Object of comparison</param>
@@ -77,9 +77,10 @@ namespace KSPCamera
             AngleZ = AngleAroundVector(targetTransform.up, -self.transform.forward, -self.transform.up);
 
             var checkedDevByZero = false;
+
             try
             {
-                SecondsToConnection = Destination / velocity.magnitude;
+                SecondsToDock = Destination / velocity.magnitude;
                 checkedDevByZero = true;
             }
             catch (DivideByZeroException)
@@ -89,31 +90,31 @@ namespace KSPCamera
 
             if (checkedDevByZero)
             {
-                //var timeX = (Mathf.Abs(DX) < .5f && DX * SpeedX < 0) ? SecondsToConnection : -DX / SpeedX;
-                //var timeY = (Mathf.Abs(DY) < .5f && DY * SpeedY < 0) ? SecondsToConnection : -DY / SpeedY;
-                //var timeZ = (Mathf.Abs(DZ) < .5f && DZ * SpeedZ < 0) ? SecondsToConnection : -DZ / SpeedZ;
+                //var timeX = (Mathf.Abs(DX) < .5f && DX * SpeedX < 0) ? SecondsToDock : -DX / SpeedX;
+                //var timeY = (Mathf.Abs(DY) < .5f && DY * SpeedY < 0) ? SecondsToDock : -DY / SpeedY;
+                //var timeZ = (Mathf.Abs(DZ) < .5f && DZ * SpeedZ < 0) ? SecondsToDock : -DZ / SpeedZ;
                 float timeX;
                 float timeY;
                 if (SpeedX == 0 && Mathf.Abs(DX) < .5f)
                 {
-                    timeX = SecondsToConnection;
+                    timeX = SecondsToDock;
                 }
                 else
                 {
-                    timeX = (Mathf.Abs(DX) < .5f) ? SecondsToConnection : -DX / SpeedX;
+                    timeX = (Mathf.Abs(DX) < .5f) ? SecondsToDock : -DX / SpeedX;
                 }
 
                 if (SpeedY == 0 && Mathf.Abs(DY) < .5f)
-                    timeY = SecondsToConnection;
+                    timeY = SecondsToDock;
                 else
-                    timeY = (Mathf.Abs(DY) < .5f) ? SecondsToConnection : -DY / SpeedX;
+                    timeY = (Mathf.Abs(DY) < .5f) ? SecondsToDock : -DY / SpeedY;
 
-                //var timeZ = (Mathf.Abs(DZ) < .5f && DZ * SpeedZ < 0) ? SecondsToConnection : -DZ / SpeedZ;
+                //var timeZ = (Mathf.Abs(DZ) < .5f && DZ * SpeedZ < 0) ? SecondsToDock : -DZ / SpeedZ;
 
-                isMoveToTarget = Mathf.Abs(SecondsToConnection - timeX) < 1 &&
-                                 Mathf.Abs(SecondsToConnection - timeY) < 1 &&
+                isMoveToTarget = Mathf.Abs(SecondsToDock - timeX) < 1 &&
+                                 Mathf.Abs(SecondsToDock - timeY) < 1 &&
                                  DZ * SpeedZ < 0;
-                //Mathf.Abs(SecondsToConnection - timeZ) < 1;
+                //Mathf.Abs(SecondsToDock - timeZ) < 1;
                 
             }
 

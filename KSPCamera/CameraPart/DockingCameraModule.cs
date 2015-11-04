@@ -16,13 +16,15 @@ namespace KSPCamera
         [UI_Toggle(controlEnabled = true, enabledText = "On", disabledText = "Off", scene = UI_Scene.All)]
         public bool IsEnabled;
 
-        [KSPField] public int allowedDistance;
+        [KSPField]
+        public int allowedDistance;
         
         [KSPField]
         public bool noise = false;
 
         [KSPField] 
         public string nightVisionArgs = "0.5,0.7,0.5,0.5";
+
         private DockingCamera camera;
 
         public override void OnStart(PartModule.StartState state = StartState.Flying)
@@ -46,7 +48,7 @@ namespace KSPCamera
             if (IsEnabled)
                 Activate();
             else
-                Deavtivate();
+                Deactivate();
         }
 
         private IEnumerator WhiteNoiseUpdate() //whitenoise
@@ -71,7 +73,7 @@ namespace KSPCamera
                 IsEnabled = false;
             }
         }
-        public void Deavtivate()
+        public void Deactivate()
         {
             if (!camera.IsActivate) return;
             camera.Deactivate();

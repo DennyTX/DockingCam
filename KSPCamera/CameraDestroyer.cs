@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace KSPCamera
 {
@@ -40,7 +36,7 @@ namespace KSPCamera
             {
                 var kspCamera = module as ICamPart;
                 if (kspCamera != null)
-                    kspCamera.Deavtivate();
+                    kspCamera.Deactivate();
             }
         }
     }

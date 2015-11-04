@@ -13,81 +13,69 @@ namespace KSPCamera
         private int ID;
         private GameObject rotatorZ;
         private GameObject rotatorY;
-        private GameObject zoomer;
+        private GameObject zoommer;
         private GameObject personalCamera;
         private float stepper;
         private float rotateZBuffer;
         private float rotateYBuffer;
         private float lastZoom;
-        public PartCamera(Part part, string rotatorZ, string rotatorY, string zoomer, float stepper,string cap, string cameraName, string windowLabel = "Camera")
+        public PartCamera(Part part, string rotatorZ, string rotatorY, string zoommer, float stepper, string cap, string cameraName, string windowLabel = "Camera")
             : base(part, windowLabel)
         {
             lastZoom = 2*currentZoom;
             this.stepper = stepper;
             this.rotatorZ = partGameObject.gameObject.GetChild(rotatorZ);
             this.rotatorY = partGameObject.gameObject.GetChild(rotatorY);
-            this.zoomer = partGameObject.gameObject.GetChild(zoomer);
+            this.zoommer = partGameObject.gameObject.GetChild(zoommer);
             personalCamera = partGameObject.gameObject.GetChild(cameraName);
         }
         protected override void ExtendedDrawWindowL3()
         {
-            if (GUI.RepeatButton(new Rect(5, 20, 25, 25), " "))
+            if (GUI.Button(new Rect(5, 20, 22, 22), "↻"))
             {
-                rotateX += 1;
+                personalCamera.transform.Rotate(new Vector3(0, 0, 180f)); 
+                //rotateX += 1;
             }
-            if (GUI.RepeatButton(new Rect(55, 20, 25, 25), " "))
-            {
-                rotateX -= 1;
-            }
-            if (GUI.RepeatButton(new Rect(30, 20, 25, 25), "↑"))
+            if (GUI.RepeatButton(new Rect(28, 20, 22, 22), "↑"))
             {
                 if (rotateYBuffer < 180)
                     rotateY += 1;
-            }
-            if (GUI.RepeatButton(new Rect(30, 70, 25, 25), "↓"))
+            } 
+            if (GUI.RepeatButton(new Rect(51, 20, 22, 22), " "))
             {
-                if (rotateYBuffer > 0)
-                    rotateY -= 1;
+                rotateX -= 1;
             }
-            if (GUI.RepeatButton(new Rect(5, 45, 25, 25), "←"))
+            if (GUI.RepeatButton(new Rect(5, 43, 22, 22), "←"))
             {
                 rotateZ -= 1;
-                //if (rotateY < -30)
-                //    rotateY += 1; 
             }
-            if (GUI.RepeatButton(new Rect(55, 45, 25, 25), "→"))
+            if (GUI.RepeatButton(new Rect(28, 43, 22, 22), "o"))
+            {
+                rotatorZ.transform.Rotate(new Vector3(0, 0, 1f), -rotateZBuffer);
+                rotatorY.transform.Rotate(new Vector3(0, 1f, 0), -rotateYBuffer);
+                rotateZBuffer = rotateYBuffer = 0;
+                currentZoom = 40f;
+            } 
+            if (GUI.RepeatButton(new Rect(51, 43, 22, 22), "→"))
             {
                 rotateZ += 1;
-                //if (rotateY > 30)
-                //    rotateY -= 1; ;
-
             }
-            if (GUI.RepeatButton(new Rect(5, 70, 25, 25), "+"))
+            if (GUI.RepeatButton(new Rect(5, 66, 22, 22), "+"))
             {
                 currentZoom -= 0.5f;
                 if (currentZoom < minZoom)
                     currentZoom = minZoom;
             }
-            if (GUI.RepeatButton(new Rect(55, 70, 25, 25), "-"))
+            if (GUI.RepeatButton(new Rect(28, 66, 22, 22), "↓"))
+            {
+                if (rotateYBuffer > 0)
+                    rotateY -= 1;
+            } 
+            if (GUI.RepeatButton(new Rect(51, 66, 22, 22), "-"))
             {
                 currentZoom += 0.5f;
                 if (currentZoom > maxZoom)
                     currentZoom = maxZoom;
-            }
-            if (GUI.RepeatButton(new Rect(30, 45, 25, 25) , "0"))
-            {
-
-                rotatorZ.transform.Rotate(new Vector3(0, 0, 1f), -rotateZBuffer);
-                rotatorY.transform.Rotate(new Vector3(0, 1f, 0), -rotateYBuffer);
-                rotateZBuffer = rotateYBuffer = 0;
-                currentZoom = 40f;
-                
-                //lastZoom = currentZoom;
-                //rotateX = 0;
-                //rotateY = 0;
-                //rotateZ = 0;
-                //rotatorZ.transform.rotation = rotatorZQuat;
-                //rotatorY.transform.rotation = rotatorYQuat;
             }
 
             base.ExtendedDrawWindowL3();
@@ -97,17 +85,14 @@ namespace KSPCamera
         {
             allCamerasGameObject.Last().transform.position = personalCamera.gameObject.transform.position;
             allCamerasGameObject.Last().transform.rotation = personalCamera.gameObject.transform.rotation;
-            //allCamerasGameObject.Last().transform.Rotate(new Vector3(-1f, 0, 0), 90);
 
-            var step = (lastZoom - currentZoom) / stepper;
+            var step = -(lastZoom - currentZoom) / stepper;
             lastZoom = currentZoom;
-            zoomer.transform.Translate(new Vector3(0, 0, step));
-            rotatorZ.transform.Rotate(new Vector3(0, 0, 1f), rotateZ);
-            rotatorY.transform.Rotate(new Vector3(0, 1f, 0), rotateY);
+            zoommer.transform.Translate(new Vector3(step, 0, 0));
+            rotatorZ.transform.Rotate(new Vector3(0, 0, 0.5f), rotateZ);
+            rotatorY.transform.Rotate(new Vector3(0, 0.5f, 0), rotateY);
             rotateZBuffer += rotateZ;
             rotateYBuffer += rotateY;
-            //TODO fix unknown rotation
-            //allCamerasGameObject.Last().transform.Rotate(new Vector3(1f, 0, 0), rotateX);
 
             allCamerasGameObject[0].transform.rotation = allCamerasGameObject.Last().transform.rotation;
             allCamerasGameObject[1].transform.rotation = allCamerasGameObject.Last().transform.rotation;
@@ -130,7 +115,6 @@ namespace KSPCamera
             if (!IsActivate) return;
             usedId.Remove(ID);
             base.Deactivate();
-            
         }
 
 

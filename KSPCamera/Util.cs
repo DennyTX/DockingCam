@@ -73,7 +73,7 @@ namespace KSPCamera
         }
 
         //whitenoise
-        private static float alpha = .22f;  
+        private static float alpha = .16f;  
         private static Color black = new Color(0, 0, 0, alpha);
         private static Color white = new Color(1, 1, 1, alpha);
         public static Texture2D WhiteNoiseTexture(int width, int height)
@@ -89,13 +89,13 @@ namespace KSPCamera
             texture.SetPixels(colors);
             texture.Apply();
             ///////////////////
-            object o = new object();
-            using (Stream s = new MemoryStream())
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(s, o);
-                Debug.Log(new String('-', 10) + s.Length);
-            }
+            //object o = new object();
+            //using (Stream s = new MemoryStream())
+            //{
+            //    BinaryFormatter formatter = new BinaryFormatter();
+            //    formatter.Serialize(s, o);
+            //    Debug.Log(new String('-', 10) + s.Length);
+            //}
             /// /////////////////
             return texture;
         }

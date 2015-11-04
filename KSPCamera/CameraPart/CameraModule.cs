@@ -28,15 +28,14 @@ namespace KSPCamera
         [KSPField]
         public string cap;
 
-        private GameObject capObject;
-
         [KSPField]
         public string zoommer;
 
         [KSPField]
         public float stepper;
 
-
+        private GameObject capObject;
+        //private GameObject lenzObject;
 
         PartCamera camera;
         
@@ -51,6 +50,7 @@ namespace KSPCamera
             if (camera == null)
                 camera = new PartCamera(this.part, rotatorZ, rotatorY, zoommer, stepper, cap, cameraName);
             capObject = part.gameObject.GetChild(cap);
+            //lenzObject = part.gameObject.GetChild(zoommer);
         }
         public override void OnUpdate()
         {
@@ -61,7 +61,7 @@ namespace KSPCamera
             if (IsEnabled)
                 Activate();
             else
-                Deavtivate();
+                Deactivate();
         }
 
         public void Activate()
@@ -70,18 +70,19 @@ namespace KSPCamera
             camera.Activate();
             StartCoroutine("CapRotator");
         }
-        public void Deavtivate()
+        public void Deactivate()
         {
             if (!camera.IsActivate) return;
             camera.Deactivate();
             StartCoroutine("CapRotator");
-            
         }
         private IEnumerator CapRotator()
         {
             int step = camera.IsActivate ? 5 : -5;
+            //float zzz = camera.IsActivate ? 0.0001f : -0.0001f;
             for (int i = 0; i < 54; i++)
             {
+                //lenzObject.transform.Translate(new Vector3(zzz, 0, 0));
                 capObject.transform.Rotate(new Vector3(0, 1f, 0), step);
                 yield return new WaitForSeconds(1f / 270);
             }
@@ -97,7 +98,7 @@ namespace KSPCamera
         /// <summary>
         /// Deactivate camera
         /// </summary>
-        void Deavtivate();
+        void Deactivate();
         /// <summary>
         /// Adding a camera
         /// </summary>
