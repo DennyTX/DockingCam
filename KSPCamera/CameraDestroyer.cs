@@ -8,7 +8,7 @@ namespace KSPCamera
     [KSPAddon(KSPAddon.Startup.Flight, true)]
     class CameraDestroyer: MonoBehaviour
     {
-        bool isInit = false;
+        //bool isInit = false;
         /// <summary>
         /// Subscription events
         /// </summary>

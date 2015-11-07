@@ -14,10 +14,16 @@ namespace KSPCamera
         /// </summary>
         [KSPField(guiActive = true, guiActiveEditor = true, guiName = "Camera", isPersistant = true)]
         [UI_Toggle(controlEnabled = true, enabledText = "On", disabledText = "Off", scene = UI_Scene.All)]
+        
         public bool IsEnabled;
+
+        //public bool IsTargeted;
 
         [KSPField]
         public int allowedDistance;
+
+        [KSPField]
+        public float maxSpeed = 3;
         
         [KSPField]
         public bool noise = false;
@@ -25,7 +31,10 @@ namespace KSPCamera
         [KSPField] 
         public string nightVisionArgs = "0.5,0.7,0.5,0.5";
 
-        private DockingCamera camera;
+        [KSPField]
+        public string targetCrossColor = "0.0,0.9,0.0,1.0";
+
+        private new DockingCamera camera;
 
         public override void OnStart(PartModule.StartState state = StartState.Flying)
         {
@@ -38,6 +47,11 @@ namespace KSPCamera
             CameraShaders.NightVisionArgs = nightVisionArgs;
             if (camera == null)
                 camera = new DockingCamera(this.part, noise);
+
+            camera.MaxSpeed = maxSpeed;
+            var splColor = targetCrossColor.Split(',').Select(float.Parse).ToList(); // parsing color to RGBA
+            camera.TargetCrossColor = new Color(splColor[0], splColor[1], splColor[2], splColor[3]);
+
         }
         public override void OnUpdate()
         {
@@ -49,6 +63,8 @@ namespace KSPCamera
                 Activate();
             else
                 Deactivate();
+            if (camera.IsAuxiliaryWindowButtonPres)
+                StartCoroutine(camera.ResizeWindow());
         }
 
         private IEnumerator WhiteNoiseUpdate() //whitenoise
@@ -65,6 +81,7 @@ namespace KSPCamera
             if (TargetHelper.IsTargetSelect && new TargetHelper(part).Destination <= allowedDistance)
             {
                 camera.Activate();
+                //StartCoroutine(camera.ActivateOldTv(camera));
                 StartCoroutine("WhiteNoiseUpdate"); //whitenoise
             }
             else
@@ -77,6 +94,8 @@ namespace KSPCamera
         {
             if (!camera.IsActivate) return;
             camera.Deactivate();
+            //StartCoroutine(camera.DeactivateOldTv(camera));
         }
+
     }
 }

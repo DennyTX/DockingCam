@@ -28,15 +28,16 @@ namespace KSPCamera
         public float Destination;
         public bool isMoveToTarget;
         public float SecondsToDock;
-        private List<bool> moveToTargetSteps = new List<bool>(100);
+        public bool isDockPort = false;
+        //private List<bool> moveToTargetSteps = new List<bool>(100);
 
         /// <param name="from">Object of comparison</param>
         public TargetHelper(Part from)
         {
             selfPart = from;
             self = selfPart.gameObject;
-            for (int i = 0; i < 100; i++)
-                moveToTargetSteps.Add(false);
+            //for (int i = 0; i < 100; i++)
+            //    moveToTargetSteps.Add(false);
         }
         public static ITargetable Target
         {
@@ -54,9 +55,14 @@ namespace KSPCamera
         }
         public static bool IsTargetSelect
         {
+            //get
+            //{
+            //    return Target != null;
+            //}
             get
             {
-                return Target != null;
+                return Target != null &&
+                    (Target as ModuleDockingNode != null || Target as Vessel != null);
             }
         }
         public void Update()
@@ -64,6 +70,13 @@ namespace KSPCamera
             DX = targetTransform.position.x - self.transform.position.x;
             DY = targetTransform.position.y - self.transform.position.y;
             DZ = targetTransform.position.z - self.transform.position.z;
+
+            if (Target as ModuleDockingNode != null)
+                isDockPort = true;
+            else
+            {
+                isDockPort = false;
+            }
 
             var velocity = Target.GetObtVelocity() - selfPart.vessel.GetObtVelocity();
             SpeedX = (float)velocity.x;
@@ -76,6 +89,7 @@ namespace KSPCamera
             AngleY = AngleAroundVector(-targetTransform.forward, self.transform.up, self.transform.right);
             AngleZ = AngleAroundVector(targetTransform.up, -self.transform.forward, -self.transform.up);
 
+            // dockingLamp- 
             var checkedDevByZero = false;
 
             try

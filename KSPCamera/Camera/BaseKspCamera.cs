@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,27 +12,36 @@ namespace KSPCamera
         protected static int windowCount = 0;
         protected RenderTexture renderTexture;
         protected Rect windowPosition;
-        protected Rect texturePosition;
+        public Rect texturePosition;
         protected int windowId;
         protected GameObject partGameObject;
         protected Part part;
         protected string windowLabel;
         protected string subWindowLabel;
         protected Texture bg;
+        protected Texture separator;
         ShaderType shaderType;
 
-        protected int rotateX = 0;
-        protected int rotateY = 0;
-        protected int rotateZ = 0;
+        protected float rotateX = 0;
+        protected float rotateY = 0;
+        protected float rotateZ = 0;
 
-        protected float minZoom = 2;
-        protected float maxZoom = 80;
+        protected float minZoom = 1f;
+        protected float maxZoom = 40;
         protected float currentZoom = 40;
+        //protected int userCurrentZoom
+        //{
+        //    get { return (int)(Mathf.Pow(maxZoom, 2)/Mathf.Pow(currentZoom, 2)); }
+        //    set { currentZoom = Mathf.Sqrt(Mathf.Pow(maxZoom, 2)/value); }
+        //}
 
         protected float windowSize = 128f;
         protected int windowSizeCoef = 2;
 
         public bool IsActivate = false;
+        public bool IsAuxiliaryWindowOpen = false;
+        public bool IsAuxiliaryWindowButtonPres = false;
+        //protected bool IsOldTv = false;
 
         protected List<Camera> allCameras = new List<Camera>();
         protected List<GameObject> allCamerasGameObject = new List<GameObject>();
@@ -47,6 +57,8 @@ namespace KSPCamera
             InitTextures();
             windowCount++;
         }
+
+        
         /// <summary>
         /// Initializes window
         /// </summary>
@@ -64,12 +76,12 @@ namespace KSPCamera
         /// </summary>
         protected virtual void InitTextures()
         {
-
-            texturePosition = new Rect(7f, 18f, windowPosition.width - 14f, windowPosition.height - 24f); // position texture for cameras
-            renderTexture = new RenderTexture(512, 512, 24, RenderTextureFormat.RGB565);
+            texturePosition = new Rect(7f, 18f, windowPosition.width - 14f, windowPosition.height - 24f);
+            renderTexture = new RenderTexture(512, 512, 24, RenderTextureFormat.RGB565);  
             RenderTexture.active = renderTexture;
             renderTexture.Create();
             bg = Util.MonoColorRectTexture(new Color(0.45f, 0.45f, 0.45f, 1));
+            separator = Util.MonoColorVerticalLineTexture(Color.white, (int) texturePosition.height);
         }
         /// <summary>
         /// Initializes camera
@@ -127,41 +139,52 @@ namespace KSPCamera
         /// </summary>
         private void DrawWindow(int id)
         {
-            Graphics.DrawTexture(texturePosition, bg);
             ExtendedDrawWindowL1();
             ExtendedDrawWindowL2();
-            ExtendedDrawWindowL3();
+            //if (!IsOldTv)
+                ExtendedDrawWindowL3();
             GUI.DragWindow();
         }
 
         /// <summary>
-        /// drawing method, first layer
+        /// drawing method, first layer, for cameras
         /// </summary>
         protected virtual void ExtendedDrawWindowL1()
-        {
+        { 
+            GUI.Label(new Rect(windowPosition.width - 77, windowPosition.height - 25, 75, 20), "zoom: " + (int)(maxZoom-currentZoom+minZoom));
+            Graphics.DrawTexture(texturePosition, bg); //background
             Graphics.DrawTexture(texturePosition, Render(), CameraShaders.Get(shaderType));
         }
 
         /// <summary>
-        /// drawing method, second layer
+        /// drawing method, second layer (draw any texture between cam and interface)
         /// </summary>
         protected virtual void ExtendedDrawWindowL2()
         {
-
+       
         }
 
         /// <summary>
-        /// drawing method, third layer
+        /// drawing method, third layer, interface
         /// </summary>
-        protected virtual void ExtendedDrawWindowL3()
+        protected virtual void ExtendedDrawWindowL3()  
         {
+            if (IsAuxiliaryWindowOpen)
+                GUI.DrawTexture(new Rect(texturePosition.width+8,15,1,texturePosition.height), separator);  //vert line, separator
+
             if (GUI.Button(new Rect(7, texturePosition.yMax - 20, 20, 20), "☼"))
             {
                 shaderType++;
                 if (!Enum.IsDefined(typeof(ShaderType), shaderType))
                     shaderType = ShaderType.None;
             }
-            if (GUI.RepeatButton(new Rect(texturePosition.xMax - 10, texturePosition.yMax - 10, 9, 9), " "))
+            if (GUI.Button(new Rect(windowPosition.width - 20, 4, 16, 16), IsAuxiliaryWindowOpen ? "◄" : "►")) //AuxWindow
+            {
+                IsAuxiliaryWindowOpen = !IsAuxiliaryWindowOpen;
+                IsAuxiliaryWindowButtonPres = true;
+            }
+            if (GUI.RepeatButton(new Rect(texturePosition.xMax - 10, texturePosition.yMax - 10, 9, 9), " ") && 
+                Camera.allCameras.FirstOrDefault(x => x.name == "Camera 00") != null) //Size of main window
             {
                 switch (windowSizeCoef)
                 {
@@ -175,14 +198,15 @@ namespace KSPCamera
                         windowSizeCoef = 2;
                         break;
                 }
-                //windowSizeCoef = windowSizeCoef == 1f ? 2f : 1f;
                 Deactivate();
                 InitWindow();
                 InitTextures();
                 Activate();
-
+                IsAuxiliaryWindowOpen = false;
             }
-            var left = windowPosition.width / 2 - 50;
+
+            //var left = windowPosition.width / 2 - 50;
+            var left = texturePosition.width / 2 - 50;
             currentZoom = GUI.HorizontalSlider(new Rect(left, 25, 100, 10),
                 currentZoom,
                 maxZoom,
@@ -196,6 +220,27 @@ namespace KSPCamera
         {
             allCameras.ForEach(a => a.Render());
             return renderTexture;
+        }
+
+        public IEnumerator ResizeWindow()
+        {
+            IsAuxiliaryWindowButtonPres = false;
+            while (true)
+            {
+                if (IsAuxiliaryWindowOpen)
+                {
+                    windowPosition.width += 4;
+                    if (windowPosition.width >= windowSize*windowSizeCoef + 80)
+                        break;
+                }
+                else
+                {
+                    windowPosition.width -= 4;
+                    if (windowPosition.width <= windowSize*windowSizeCoef)
+                        break;
+                }
+                yield return new WaitForSeconds(1/20);
+            }
         }
 
         /// <summary>
@@ -217,6 +262,60 @@ namespace KSPCamera
             allCamerasGameObject[2].transform.position = allCamerasGameObject.Last().transform.position;
             allCameras.ForEach(cam => cam.fieldOfView = currentZoom);
         }
+
+        //public IEnumerator DeactivateOldTv(BaseKspCamera self)
+        //{
+        //    if (self.IsOldTv) yield return null;
+        //    self.IsOldTv = true;
+        //    var textPos = new Rect(self.texturePosition);
+        //    //self.IsActivate = false;
+        //    int coef = 100;
+        //    var shift = textPos.height / coef / 2;
+        //    for (int i = 0; i < coef-1; i++)
+        //    {
+        //        texturePosition.yMax -= shift;
+        //        texturePosition.yMin += shift;
+        //        yield return new WaitForSeconds(.0003f);
+        //    }
+        //    shift = textPos.width / coef / 2;
+        //    for (int i = 0; i < coef-1; i++)
+        //    {
+        //        texturePosition.xMax -= shift;
+        //        texturePosition.xMin += shift;
+        //        yield return new WaitForSeconds(.0003f);
+        //    }
+        //    //self.IsActivate = true;
+        //    self.Deactivate();
+        //    self.IsOldTv = false;
+        //}
+        //public IEnumerator ActivateOldTv(BaseKspCamera self)
+        //{
+        //    if (self.IsOldTv) yield return null;
+        //    self.IsOldTv = true;
+        //    //return OldTv(1, self);
+        //    var centr = self.texturePosition.center;
+        //    var textPos = new Rect(self.texturePosition);
+        //    self.texturePosition = new Rect(centr.x, centr.y, 1, 1);
+        //    self.Activate();
+        //    //self.IsActivate = false;
+        //    int coef = 20;
+        //    var shift = textPos.height/coef/2;
+        //    for (int i = 0; i < coef; i++)
+        //    {
+        //        texturePosition.yMax += shift;
+        //        texturePosition.yMin -= shift;
+        //        yield return new WaitForSeconds(.0003f);
+        //    }
+        //    shift = textPos.width/coef/2;
+        //    for (int i = 0; i < coef; i++)
+        //    {
+        //        texturePosition.xMax += shift;
+        //        texturePosition.xMin -= shift;
+        //        yield return new WaitForSeconds(.0003f);
+        //    }
+        //    self.IsOldTv = false;
+        //    //self.IsActivate = true;
+        //}
     }
     
 }

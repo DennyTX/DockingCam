@@ -37,7 +37,7 @@ namespace KSPCamera
         private GameObject capObject;
         //private GameObject lenzObject;
 
-        PartCamera camera;
+        private new PartCamera camera;
         
         public override void OnStart(StartState state = StartState.Flying)
         {
@@ -50,7 +50,6 @@ namespace KSPCamera
             if (camera == null)
                 camera = new PartCamera(this.part, rotatorZ, rotatorY, zoommer, stepper, cap, cameraName);
             capObject = part.gameObject.GetChild(cap);
-            //lenzObject = part.gameObject.GetChild(zoommer);
         }
         public override void OnUpdate()
         {
@@ -62,6 +61,13 @@ namespace KSPCamera
                 Activate();
             else
                 Deactivate();
+            if (camera.IsAuxiliaryWindowButtonPres)
+                StartCoroutine(camera.ResizeWindow());
+            if (camera.IsToZero)
+            {
+                camera.IsToZero = false;
+                StartCoroutine(camera.ToZero());
+            }
         }
 
         public void Activate()
@@ -79,14 +85,13 @@ namespace KSPCamera
         private IEnumerator CapRotator()
         {
             int step = camera.IsActivate ? 5 : -5;
-            //float zzz = camera.IsActivate ? 0.0001f : -0.0001f;
             for (int i = 0; i < 54; i++)
             {
-                //lenzObject.transform.Translate(new Vector3(zzz, 0, 0));
                 capObject.transform.Rotate(new Vector3(0, 1f, 0), step);
                 yield return new WaitForSeconds(1f / 270);
             }
         }
+
         
     }
     interface ICamPart
