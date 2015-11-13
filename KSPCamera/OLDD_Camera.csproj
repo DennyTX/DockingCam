@@ -7,8 +7,8 @@
     <ProjectGuid>{EC0B143E-C41C-44BF-9B47-ED92074D2986}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KSPCamera</RootNamespace>
-    <AssemblyName>KSPCamera</AssemblyName>
+    <RootNamespace>DockingCamera</RootNamespace>
+    <AssemblyName>DockingCamera</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>pdbonly</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\KSP_104\GameData\OLDD\DockingCam\</OutputPath>
+    <OutputPath>C:\KSP_105\GameData\OLDD\DockingCam\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -32,12 +32,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>C:\KSP_104\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>C:\KSP_105\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="UnityEngine">
-      <HintPath>C:\KSP_104\KSP_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>C:\KSP_105\KSP_Data\Managed\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

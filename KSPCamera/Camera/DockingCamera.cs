@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine; 
 
 
-namespace KSPCamera
+namespace DockingCamera
 {
     class DockingCamera:BaseKspCamera
     {
@@ -51,13 +51,12 @@ namespace KSPCamera
             target = new TargetHelper(part);
             guiStyleRedLabel = new GUIStyle(HighLogic.Skin.label);
             guiStyleGreenLabel = new GUIStyle(HighLogic.Skin.label);
-            //guiStyleRedLabel = HighLogic.Skin.label;
             guiStyleRedLabel.normal.textColor = Color.red;
             guiStyleGreenLabel.normal.textColor = Color.green;
 
             GameEvents.onVesselChange.Add(vesselChange);
 
-            moduleDockingNodeGameObject = partGameObject.GetChild("dockingNode") ?? partGameObject;  //orient as dockingnode
+            moduleDockingNodeGameObject = partGameObject.GetChild("dockingNode") ?? partGameObject;  //GET orientation from dockingnode
 
             if (textureWhiteNoise != null || !noiseActive) return;
             textureWhiteNoise = new List<Texture2D>[3];
@@ -94,31 +93,31 @@ namespace KSPCamera
 
         protected override void ExtendedDrawWindowL1()
         {
-            cameraData = GUI.Toggle(new Rect(windowPosition.width - 78, 20, 76, 36), cameraData, "Flight\n data");
-            rotatorState = GUI.Toggle(new Rect(windowPosition.width - 78, 60, 76, 20), rotatorState, "Rotator");
-            targetCrossState = GUI.Toggle(new Rect(windowPosition.width - 78, 80, 76, 20), targetCrossState, "Cross");
+            cameraData = GUI.Toggle(new Rect(windowPosition.width - 78, 34, 76, 36), cameraData, "Flight\n data");
+            rotatorState = GUI.Toggle(new Rect(windowPosition.width - 78, 72, 76, 20), rotatorState, "Rotator");
+            targetCrossState = GUI.Toggle(new Rect(windowPosition.width - 78, 92, 76, 20), targetCrossState, "Cross");
             base.ExtendedDrawWindowL1();
         }
 
         protected override void ExtendedDrawWindowL2()
         {
-            base.ExtendedDrawWindowL2();
             GUI.DrawTexture(texturePosition, textureCentre);
             if (noiseActive)
                 GUI.DrawTexture(texturePosition, textureWhiteNoise[windowSizeCoef-2][idTextureNoise]);  //whitenoise
+            base.ExtendedDrawWindowL2();
         }
 
 
         protected override void ExtendedDrawWindowL3()
         {
-            if (GUI.RepeatButton(new Rect(8, 20, 20, 20), "-"))
+            if (GUI.RepeatButton(new Rect(7, 33, 20, 20), "-"))
             {
                 currentZoom += 0.5f;
                 if (currentZoom > maxZoom)
                     currentZoom = maxZoom;
 
             }
-            if (GUI.RepeatButton(new Rect(28, 20, 20, 20), "+"))
+            if (GUI.RepeatButton(new Rect(26, 33, 20, 20), "+"))
             {
                 currentZoom -= 0.5f;
                 if (currentZoom < minZoom)
@@ -130,8 +129,6 @@ namespace KSPCamera
             {
                 GUI.DrawTexture(new Rect(texturePosition.xMin + 20, texturePosition.yMax - 20, 20, 20),
                     textureLampOn);
-                //GUI.Label(new Rect(texturePosition.xMax - 70, 20 + i++ * 20, 70, 20),
-                //    String.Format("Time to dock:{0:f0}s", target.SecondsToDock));
                 GUI.Label(new Rect(texturePosition.xMin + 40, texturePosition.yMax - 20, 140, 20),
                     String.Format("Time to dock:{0:f0}s", target.SecondsToDock));
             }
@@ -151,42 +148,47 @@ namespace KSPCamera
 
                     if (!target.isDockPort)
                     {
-                        GUI.Label(new Rect(texturePosition.xMin + 10, 40, 96, 40),
+                        GUI.Label(new Rect(texturePosition.xMin + 10, 54, 100, 40),
                             "Target is not\n a DockPort");
                         if (target.Destination < 200f)
-                            GUI.Label(new Rect(texturePosition.xMin + 10, 80, 96, 40),
+                            GUI.Label(new Rect(texturePosition.xMin + 10, 84, 96, 40),
                                 "DockPort is\n available",guiStyleGreenLabel);
-                    }         
+                    }
 
-                    GUI.Label(new Rect(texturePosition.xMax - 70, 20 + i++*20, 70, 20),
+                    /// <summary>
+                    /// FlightDATA
+                    /// <summary>
+                    GUI.Label(new Rect(texturePosition.xMax - 70, 32 + i++*20, 70, 20),
                         String.Format("Dist:{0:f2}", target.Destination));
-                    i += .25f;
-                    GUI.Label(new Rect(texturePosition.xMax - 70, 20 + i++*20, 70, 20),
+                    i += .2f;
+
+                    GUI.Label(new Rect(texturePosition.xMax - 70, 32 + i++*20, 70, 20),
                         String.Format("dx:{0:f2}", target.DX));
-                    GUI.Label(new Rect(texturePosition.xMax - 70, 20 + i++*20, 70, 20),
+                    GUI.Label(new Rect(texturePosition.xMax - 70, 32 + i++*20, 70, 20),
                         String.Format("dy:{0:f2}", target.DY));
-                    GUI.Label(new Rect(texturePosition.xMax - 70, 20 + i++*20, 70, 20),
+                    GUI.Label(new Rect(texturePosition.xMax - 70, 32 + i++*20, 70, 20),
                         String.Format("dz:{0:f2}", target.DZ));
-                    i += .25f;
-                    GUI.Label(new Rect(texturePosition.xMax - 70, 20 + i++*20, 70, 20),
+                    i += .2f;
+
+                    GUI.Label(new Rect(texturePosition.xMax - 70, 32 + i++*20, 70, 20),
                         String.Format("vX:{0:f2}", target.SpeedX));
-                    GUI.Label(new Rect(texturePosition.xMax - 70, 20 + i++*20, 70, 20),
+                    GUI.Label(new Rect(texturePosition.xMax - 70, 32 + i++*20, 70, 20),
                         String.Format("vY:{0:f2}", target.SpeedY));
                     if (target.SpeedZ > MaxSpeed)
-                        GUI.Label(new Rect(texturePosition.xMax - 70, 20 + i++*20, 70, 20),
+                        GUI.Label(new Rect(texturePosition.xMax - 70, 32 + i++*20, 70, 20),
                             String.Format("vZ:{0:f2}", target.SpeedZ), guiStyleRedLabel);
-                    //part.decouple();
                     else
-                        GUI.Label(new Rect(texturePosition.xMax - 70, 20 + i++*20, 70, 20),
+                        GUI.Label(new Rect(texturePosition.xMax - 70, 32 + i++*20, 70, 20),
                             String.Format("vZ:{0:f2}", target.SpeedZ));
-                    i += .25f;
-                    GUI.Label(new Rect(texturePosition.xMax - 70, 20 + i++*20, 70, 20),
+                    i += .2f;
+
+                    GUI.Label(new Rect(texturePosition.xMax - 70, 32 + i++*20, 70, 20),
                         String.Format("Yaw:{0:f0}°", target.AngleX));
-                    GUI.Label(new Rect(texturePosition.xMax - 70, 20 + i++*20, 70, 20),
+                    GUI.Label(new Rect(texturePosition.xMax - 70, 32 + i++*20, 70, 20),
                         String.Format("Pitch:{0:f0}°", target.AngleY));
-                    GUI.Label(new Rect(texturePosition.xMax - 70, 20 + i++*20, 70, 20),
+                    GUI.Label(new Rect(texturePosition.xMax - 70, 32 + i++*20, 70, 20),
                         String.Format("Roll:{0:f0}°", target.AngleZ));
-                    i += .25f;
+                    //i += .25f;
                 }
             }
 
@@ -245,7 +247,7 @@ namespace KSPCamera
             //}
             if (rotatorState) // && TargetHelper.IsTargetSelect && part.vessel.Equals(FlightGlobals.ActiveVessel))
             {
-                var size = texturePosition.width / 8;
+                var size = texturePosition.width / 8  ;
                 var x = texturePosition.xMin + texturePosition.width / 2 - size / 2;
                 GUI.DrawTexture(new Rect(x, texturePosition.yMax - size, size, size), textureRotationTarget);
                 Matrix4x4 matrixBackup = GUI.matrix;
@@ -287,7 +289,6 @@ namespace KSPCamera
                 if (!usedId.Contains(i))
                 {
                     ID = i;
-
                     windowLabel = subWindowLabel + " " + ID + " to " + TargetHelper.Target.GetName();
                     lastVesselName = TargetHelper.Target.GetName();
                     usedId.Add(i);
@@ -297,6 +298,7 @@ namespace KSPCamera
         }
         public override void Update()
         {
+            var camers = Camera.allCameras;
             allCamerasGameObject.Last().transform.position = moduleDockingNodeGameObject.transform.position; // near&&far
             allCamerasGameObject.Last().transform.rotation = moduleDockingNodeGameObject.transform.rotation;
             //allCamerasGameObject.Last().transform.Rotate(new Vector3(1f, 0, 0), 90);

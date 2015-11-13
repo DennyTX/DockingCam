@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace KSPCamera
+namespace DockingCamera
 {
     class DockingCameraModule : PartModule, ICamPart
     {
@@ -59,6 +59,11 @@ namespace KSPCamera
                 return;
             if (camera.IsActivate)
                 camera.Update();
+            if (camera.IsButtonOff)
+            {
+                IsEnabled = false;
+                camera.IsButtonOff = false;
+            }
             if (IsEnabled)
                 Activate();
             else
@@ -78,15 +83,25 @@ namespace KSPCamera
         public void Activate()
         {
             if (camera.IsActivate) return;
-            if (TargetHelper.IsTargetSelect && new TargetHelper(part).Destination <= allowedDistance)
+            if (TargetHelper.IsTargetSelect )
             {
-                camera.Activate();
-                //StartCoroutine(camera.ActivateOldTv(camera));
-                StartCoroutine("WhiteNoiseUpdate"); //whitenoise
+                var target = new TargetHelper(part);
+                target.Update();
+                if (target.Destination > allowedDistance)
+                {
+                    ScreenMessages.PostScreenMessage("You need to set target and be closer than " + allowedDistance + " meters from target", 5f, ScreenMessageStyle.UPPER_CENTER);
+                    IsEnabled = false;
+                }
+                else
+                {
+                    camera.Activate();
+                    //StartCoroutine(camera.ActivateOldTv(camera));
+                    StartCoroutine("WhiteNoiseUpdate"); //whitenoise
+                }
             }
             else
             {
-                ScreenMessages.PostScreenMessage("You need to set target and be closer than " + allowedDistance + " meters from target", 5f, ScreenMessageStyle.UPPER_CENTER);
+                ScreenMessages.PostScreenMessage("You need to set target", 5f, ScreenMessageStyle.UPPER_CENTER);
                 IsEnabled = false;
             }
         }

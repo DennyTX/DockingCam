@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace KSPCamera
+namespace DockingCamera
 {
     /// <summary>
     /// Destroyer cameras

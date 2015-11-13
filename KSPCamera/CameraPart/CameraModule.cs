@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace KSPCamera
+namespace DockingCamera
 {
     /// <summary>
     /// Module adds an external camera and gives control over it
@@ -34,8 +34,16 @@ namespace KSPCamera
         [KSPField]
         public float stepper;
 
+        [KSPField]
+        public int distance;
+
+        [KSPField(isPersistant = true)]
+        public int hits=-1;
+
         private GameObject capObject;
         //private GameObject lenzObject;
+
+
 
         private new PartCamera camera;
         
@@ -48,7 +56,11 @@ namespace KSPCamera
         public void Start()
         {
             if (camera == null)
-                camera = new PartCamera(this.part, rotatorZ, rotatorY, zoommer, stepper, cap, cameraName);
+            {
+                //camera = new GameObject().AddComponent<PartCamera>();
+                camera = new PartCamera(this.part, rotatorZ, rotatorY, zoommer, stepper, cap, cameraName, distance, hits);
+                
+            }
             capObject = part.gameObject.GetChild(cap);
         }
         public override void OnUpdate()
@@ -57,6 +69,11 @@ namespace KSPCamera
                 return;
             if (camera.IsActivate)
                 camera.Update();
+            if (camera.IsButtonOff)
+            {
+                IsEnabled = false;
+                camera.IsButtonOff = false;
+            }
             if (IsEnabled)
                 Activate();
             else
@@ -68,6 +85,12 @@ namespace KSPCamera
                 camera.IsToZero = false;
                 StartCoroutine(camera.ToZero());
             }
+            if (camera.waitRayOn)
+            {
+                camera.waitRayOn = false;
+                StartCoroutine(camera.WaitForRay());
+            }
+            hits = camera.hits;
         }
 
         public void Activate()

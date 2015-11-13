@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace KSPCamera
+
+namespace DockingCamera
 {
     /// <summary>
     /// Extended information about the selected target
@@ -62,7 +63,8 @@ namespace KSPCamera
             get
             {
                 return Target != null &&
-                    (Target as ModuleDockingNode != null || Target as Vessel != null);
+                    //(Target as ModuleDockingNode != null || Target as Vessel != null);
+                    (Target is ModuleDockingNode || Target is Vessel);
             }
         }
         public void Update()
@@ -71,12 +73,13 @@ namespace KSPCamera
             DY = targetTransform.position.y - self.transform.position.y;
             DZ = targetTransform.position.z - self.transform.position.z;
 
-            if (Target as ModuleDockingNode != null)
-                isDockPort = true;
-            else
-            {
-                isDockPort = false;
-            }
+            //if (Target as ModuleDockingNode != null)
+            //    isDockPort = true;
+            //else
+            //{
+            //    isDockPort = false;
+            //}
+            isDockPort = Target is ModuleDockingNode; 
 
             var velocity = Target.GetObtVelocity() - selfPart.vessel.GetObtVelocity();
             SpeedX = (float)velocity.x;

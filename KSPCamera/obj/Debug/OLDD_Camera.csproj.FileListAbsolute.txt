@@ -1,5 +1,6 @@
 C:\KSP_104\GameData\OLDD\DockingCam\KSPCamera.dll
 C:\KSP_104\GameData\OLDD\DockingCam\KSPCamera.pdb
-E:\DennyTX\Documents\Visual Studio 2013\Projects\DockingCam\KSPCamera\obj\Debug\KSPCamera.dll
-E:\DennyTX\Documents\Visual Studio 2013\Projects\DockingCam\KSPCamera\obj\Debug\KSPCamera.pdb
-E:\DennyTX\Documents\Visual Studio 2013\Projects\DockingCam\KSPCamera\obj\Debug\OLDD_Camera.csprojResolveAssemblyReference.cache
+C:\KSP_105\GameData\OLDD\DockingCam\DockingCamera.dll
+C:\KSP_105\GameData\OLDD\DockingCam\DockingCamera.pdb
+E:\DennyTX\Documents\Visual Studio 2013\Projects\DockingCam\KSPCamera\obj\Debug\DockingCamera.dll
+E:\DennyTX\Documents\Visual Studio 2013\Projects\DockingCam\KSPCamera\obj\Debug\DockingCamera.pdb

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace KSPCamera
+namespace DockingCamera
 {
-    enum ShaderType
+    public enum ShaderType
     {
         None,
         Grayscale,
