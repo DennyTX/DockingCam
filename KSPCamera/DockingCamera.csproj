@@ -35,6 +35,7 @@
       <HintPath>C:\KSP_105\KSP_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="UnityEngine">
       <HintPath>C:\KSP_105\KSP_Data\Managed\UnityEngine.dll</HintPath>
@@ -43,17 +44,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CameraDestroyer.cs" />
-    <Compile Include="CameraPart\CameraModule.cs" />
+    <Compile Include="Modules\CameraModule.cs" />
     <Compile Include="CameraShaders.cs" />
     <Compile Include="Camera\BaseKspCamera.cs" />
     <Compile Include="Camera\DockingCamera.cs" />
-    <Compile Include="CameraPart\DockingCameraModule.cs" />
+    <Compile Include="Modules\DockingCameraModule.cs" />
     <Compile Include="Camera\PartCamera.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TargetHelper.cs" />
     <Compile Include="Util.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>"$(SolutionDir)packages\Mono.pdb2mdb.0.1.0.20130128\tools\pdb2mdb.exe" "$(TargetPath)"</PostBuildEvent>

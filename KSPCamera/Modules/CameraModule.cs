@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections;
 using UnityEngine;
 
 namespace DockingCamera
@@ -17,8 +13,14 @@ namespace DockingCamera
         public bool IsEnabled;
 
         [KSPField]
+        public int windowSize = 256;
+
+        [KSPField]
         public string cameraName;
-        
+
+        [KSPField]
+        public string bulletName;
+
         [KSPField]
         public string rotatorZ ;
 
@@ -37,13 +39,13 @@ namespace DockingCamera
         [KSPField]
         public int distance;
 
+        [KSPField]
+        public string resource;
+
         [KSPField(isPersistant = true)]
-        public int hits=-1;
+        public int currentHits=-1;
 
         private GameObject capObject;
-        //private GameObject lenzObject;
-
-
 
         private new PartCamera camera;
         
@@ -58,8 +60,7 @@ namespace DockingCamera
             if (camera == null)
             {
                 //camera = new GameObject().AddComponent<PartCamera>();
-                camera = new PartCamera(this.part, rotatorZ, rotatorY, zoommer, stepper, cap, cameraName, distance, hits);
-                
+                camera = new PartCamera(this.part, resource, bulletName, currentHits, rotatorZ, rotatorY, zoommer, stepper, cameraName, distance, windowSize);
             }
             capObject = part.gameObject.GetChild(cap);
         }
@@ -83,14 +84,14 @@ namespace DockingCamera
             if (camera.IsToZero)
             {
                 camera.IsToZero = false;
-                StartCoroutine(camera.ToZero());
+                StartCoroutine(camera.ReturnCamToZero());
             }
-            if (camera.waitRayOn)
+            if (camera.IsWaitForRay)
             {
-                camera.waitRayOn = false;
+                camera.IsWaitForRay = false;
                 StartCoroutine(camera.WaitForRay());
             }
-            hits = camera.hits;
+            currentHits = camera.hits;
         }
 
         public void Activate()
@@ -114,7 +115,6 @@ namespace DockingCamera
                 yield return new WaitForSeconds(1f / 270);
             }
         }
-
         
     }
     interface ICamPart

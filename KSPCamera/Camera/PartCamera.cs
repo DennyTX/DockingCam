@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace DockingCamera
@@ -10,11 +9,13 @@ namespace DockingCamera
     class PartCamera:BaseKspCamera
     {
         private static HashSet<int> usedId = new HashSet<int>();
-        private int ID;
+        private static GUIStyle guiStyleBold; 
         private GameObject rotatorZ;
         private GameObject rotatorY;
         private GameObject zoommer;
         private GameObject personalCamera;
+        private LineRenderer scanningRay;
+        private LineRenderer visibilityRay;
         private float stepper;
         private float rotateZBuffer;
         private float rotateYBuffer;
@@ -22,74 +23,82 @@ namespace DockingCamera
         private float lastZoom;
         private float simplifiedRotateZBuffer;
         private float rotateStep;
+        private int ID; 
+        private int AllowedDistance;
+        private int buttonSize = 25;
+        private int ResourceUsage; 
+        public int hits = 4; 
+        private string ResourceName;
+        private string bulletName;
         private bool IsRayEnabled;
         private bool IsUpsideDown;
-        private int AllowedDistance;
-        private int buttonSize = 24;
-        private LineRenderer line;
-        private int ResourceUsage = 50;
-        private string ResourceName = "ElectricCharge";
-        private string hitName = "Sphere";
-        public int hits = 4;
+        private bool IsScienceActivate;
+        private bool IsVisibilityRay;
+        public bool IsWaitForRay;
+        public bool IsToZero;
 
+        public float realZoom
+        {
+            get { return (zoomMultiplier ? currentZoom / minZoomMultiplier : currentZoom); }
+            set { currentZoom = value; }
+        }
 
         //protected override float ExampleChieldField
         //{
         //    get { return simplifiedRotateZBuffer; }
         //}
-        public bool waitRayOn;
-        public bool IsToZero;
-        public int realZoom
-        {
-            get { return (int)(zoomMultiplier ? currentZoom / minZoomMultiplier : currentZoom); }
-            set { currentZoom = value; }
-        }
 
-        //public PartCamera()
-        //    :base(null)
-        //{
-        //}
-
-        public PartCamera(Part part, string rotatorZ, string rotatorY, string zoommer, float stepper, string cap, string cameraName, int allowedDistance, int _hits, string windowLabel = "Camera")
-            : base(part, windowLabel)
-        {
-            lastZoom = currentZoom;
-            this.stepper = stepper;
-            AllowedDistance = allowedDistance;
-            this.rotatorZ = partGameObject.gameObject.GetChild(rotatorZ);
-            this.rotatorY = partGameObject.gameObject.GetChild(rotatorY);
-            this.zoommer = partGameObject.gameObject.GetChild(zoommer);
-            personalCamera = partGameObject.gameObject.GetChild(cameraName);
-
-            if (_hits == -1)
-            {
-                hits = 0;
-                while (true)
+        public PartCamera(Part part, string resource, string bulletName, int _hits, string rotatorZ, string rotatorY, string zoommer,
+               float stepper, string cameraName, int allowedDistance, int windowSize, string windowLabel = "Camera")
+               : base(part, windowSize, windowLabel)
                 {
-                    var hit = partGameObject.GetChild(string.Format("{0}{1:000}", hitName, hits+1));
-                    if (hit == null)
-                        break;
-                    hits++;
+                    lastZoom = currentZoom;
+                    AllowedDistance = allowedDistance; 
+                    this.stepper = stepper;
+                    this.bulletName = bulletName;
+
+                    var splresource = resource.Split('.').ToList();
+                    ResourceName = (splresource[0]);
+                    ResourceUsage = Int32.Parse(splresource[1]); 
+            
+                    this.rotatorZ = partGameObject.gameObject.GetChild(rotatorZ);
+                    this.rotatorY = partGameObject.gameObject.GetChild(rotatorY);
+                    this.zoommer = partGameObject.gameObject.GetChild(zoommer);
+                    personalCamera = partGameObject.gameObject.GetChild(cameraName);
+
+                    if (_hits == -1)
+                    {
+                        hits = 0;
+                        while (true)
+                        {
+                            var hit = partGameObject.GetChild(string.Format("{0}{1:000}", bulletName, hits + 1));
+                            //var hit = partGameObject.GetChild(string.Format("{0}{1:000}", hitName, hits + 1));
+                            if (hit == null)
+                                break;
+                            hits++;
+                        }
+                    }
+                    else
+                    {
+                        hits = _hits;
+                        var i = hits+1;
+                        while (true)
+                        {
+                            var aaa = string.Format("{0}{1:000}", bulletName, i);
+                            var hit = partGameObject.GetChild(string.Format("{0}{1:000}", bulletName, i)); 
+                            //var hit = partGameObject.GetChild(string.Format("{0}{1:000}", hitName, i));
+                            if (hit == null)
+                                break;
+                            GameObject.Destroy(hit);
+                            i++;
+                        }
+                    }
                 }
-            }
-            else
-            {
-                hits = _hits;
-                var i = hits+1;
-                while (true)
-                {
-                    var hit = partGameObject.GetChild(string.Format("{0}{1:000}", hitName, i));
-                    if (hit == null)
-                        break;
-                    GameObject.Destroy(hit);
-                    i++;
-                }
-            }
-        }
 
         protected override void ExtendedDrawWindowL1()
-        //protected override void ExtendedDrawWindowL3()
         {
+            if (IsOrbital) return;
+            
             simplifiedRotateZBuffer =  rotateZBuffer;
             if (Mathf.Abs(simplifiedRotateZBuffer) > 360)
             {
@@ -119,12 +128,12 @@ namespace DockingCamera
 
             var width = windowPosition.width-78;
 
-            if (GUI.Button(new Rect(width + 2, 32, buttonSize, buttonSize), "↻"))
+            if (GUI.Button(new Rect(width, 36, buttonSize, buttonSize), "↻"))
             {
                 personalCamera.transform.Rotate(new Vector3(0, 0, 180f));
                 IsUpsideDown = !IsUpsideDown;
             }
-            if (GUI.RepeatButton(new Rect(width + 25, 32, buttonSize, buttonSize), "↑"))
+            if (GUI.RepeatButton(new Rect(width + buttonSize, 36, buttonSize, buttonSize), "↑"))
             {
                 if (rotateYBuffer < 180)
                     if (!IsUpsideDown)
@@ -132,42 +141,51 @@ namespace DockingCamera
                     else
                         rotateY -= rotateStep; 
             }
-            if (GUI.Button(new Rect(width + 48, 32, buttonSize, buttonSize), "⦿"))
+            if (GUI.Button(new Rect(width + buttonSize*2, 36, buttonSize, buttonSize), "⦿"))
             {
-                
+                //isTargetVisiable();
+                if (hits <= 0)
+                {
+                    ScreenMessages.PostScreenMessage("BULLETS DEPLETED", 3f, ScreenMessageStyle.UPPER_CENTER);
+                    return;
+                }
+                if (!TargetHelper.IsTargetSelect)
+                {
+                    ScreenMessages.PostScreenMessage("NO TARGET FOR SCANNING", 3f, ScreenMessageStyle.UPPER_CENTER);
+                    return;
+                }
                 if (HitCounter() && useEnergy())
                 {
                     IsRayEnabled = true;
-                    waitRayOn = true;
-                    scienceActivate = false;
+                    IsWaitForRay = true;
+                    IsScienceActivate = false;
                 }
             }
-            if (GUI.RepeatButton(new Rect(width + 2, 55, buttonSize, buttonSize), "←"))
+            if (GUI.RepeatButton(new Rect(width, 36 + buttonSize, buttonSize, buttonSize), "←"))
             {
                 if (!IsUpsideDown)
                     rotateZ -= rotateStep;
                 else
                     rotateZ += rotateStep; 
             }
-            if (GUI.Button(new Rect(width + 25, 55, buttonSize, buttonSize), "o"))
+            if (GUI.Button(new Rect(width + buttonSize, 36 + buttonSize, buttonSize, buttonSize), "o"))
             {
                 IsToZero = true;
             }
-            if (GUI.RepeatButton(new Rect(width + 48, 55, buttonSize, buttonSize), "→"))
+            if (GUI.RepeatButton(new Rect(width + buttonSize * 2, 36 + buttonSize, buttonSize, buttonSize), "→"))
             {
                 if (!IsUpsideDown)
                     rotateZ += rotateStep;
                 else
                     rotateZ -= rotateStep; 
-                //rotateZ += rotateStep;
             }
-            if (GUI.RepeatButton(new Rect(width + 2, 78, buttonSize, buttonSize), "-"))
+            if (GUI.Button(new Rect(width, 36 + buttonSize*2, buttonSize, buttonSize), "-"))
             {
                 currentZoom += 0.5f;
                 if (currentZoom > maxZoom)
                     currentZoom = maxZoom; 
             }
-            if (GUI.RepeatButton(new Rect(width + 25, 78, buttonSize, buttonSize), "↓"))
+            if (GUI.RepeatButton(new Rect(width + buttonSize, 36 + buttonSize*2, buttonSize, buttonSize), "↓"))
             {
                 if (rotateYBuffer > 0)
                     if (!IsUpsideDown)
@@ -175,25 +193,58 @@ namespace DockingCamera
                     else
                         rotateY += rotateStep;
             }
-            if (GUI.RepeatButton(new Rect(width + 48, 78, buttonSize, buttonSize), "+"))
+            if (GUI.Button(new Rect(width + buttonSize * 2, 36 + buttonSize*2, buttonSize, buttonSize), "+"))
             {
                 currentZoom -= 0.5f;
                 if (currentZoom < minZoom)
                     currentZoom = minZoom;
             }
 
-            zoomMultiplier = GUI.Toggle(new Rect(width + 2, 108, 70, 20), zoomMultiplier, " x 10");
-            zoomWide = GUI.Toggle(new Rect(width + 2, 128, 70, 20), zoomWide, "Wide");
+            zoomMultiplier = GUI.Toggle(new Rect(width, 110, 70, 16), zoomMultiplier, " x 10");
+            zoomWide = GUI.Toggle(new Rect(width, 126, 70, 16), zoomWide, "Wide");
 
-            GUI.Label(new Rect(windowPosition.width - 77, windowPosition.height - 65, 75, 20), string.Format("rotateZ: {0:F0}", simplifiedRotateZBuffer));
-            GUI.Label(new Rect(windowPosition.width - 77, windowPosition.height - 45, 75, 20), string.Format("rotateY: {0:F0}", rotateYBuffer));
+            if (GUI.Button(new Rect(width, 148, 70, 22), "Photo"))
+            {
+                var PhotoFrom = part.vessel.vesselName;
+                renderTexture.SavePng(PhotoFrom);
+            }
+
+            GUI.Button(new Rect(width, 170, 70, 22), new GUIContent("Video", "still WIP"));
+            //GUI.Label(new Rect(width + 8, 191, 100, 20), GUI.tooltip);
+            //if (GUI.Button(new Rect(width + 2, 185, 70, buttonSize), new GUIContent("Video","still WIP")))
+            //{
+                //if (videoCreater == null)
+                //{
+                //    videoCreater = new VideoCreater((int)windowPosition.width, (int)windowPosition.height);
+                //}
+                //else
+                //{
+                //    videoCreater.Close();
+                //    videoCreater = null;
+                //}
+            //}
+
+            IsVisibilityRay = GUI.Toggle(new Rect(width, 194, 70, 40), IsVisibilityRay, "Visibility\nRay");
+
+            GUI.Label(new Rect(width, windowPosition.height - 72, 75, 20), string.Format("Bullets: {0:F0}", hits));
+            GUI.Label(new Rect(width, windowPosition.height - 56, 75, 20), string.Format("rotateZ: {0:F0}", simplifiedRotateZBuffer));
+            GUI.Label(new Rect(width, windowPosition.height - 40, 75, 20), string.Format("rotateY: {0:F0}", rotateYBuffer));
             
             base.ExtendedDrawWindowL1();
         }
 
+        //private long tmpTime;
         public override void Update()
         {
-            DrawRay();
+            //if (DateTime.Now.Second != tmpTime)
+            //{
+            //    tmpTime = DateTime.Now.Second;
+            //    Debug.Log(Planetarium.fetch.time);
+            //}
+
+            UpdateWhiteNoise();
+            DrawScanningRay();
+            DrawVisibilityRay();
 
             allCamerasGameObject.Last().transform.position = personalCamera.gameObject.transform.position;
             allCamerasGameObject.Last().transform.rotation = personalCamera.gameObject.transform.rotation;
@@ -211,15 +262,55 @@ namespace DockingCamera
             allCamerasGameObject[1].transform.rotation = allCamerasGameObject.Last().transform.rotation;
             allCamerasGameObject[2].transform.rotation = allCamerasGameObject.Last().transform.rotation;
             allCamerasGameObject[2].transform.position = allCamerasGameObject.Last().transform.position;
-            //if (zoomMultiplier)
-            //    allCameras.ForEach(cam => cam.fieldOfView = currentZoom/minZoomMultiplier);
-            //else
             allCameras.ForEach(cam => cam.fieldOfView = realZoom); //currentZoom); 
             rotateZ = 0; 
             rotateY = 0;
         }
 
-        private bool scienceActivate;
+        void DrawScanningRay()
+        {
+            GameObject.Destroy(scanningRay);
+            if (IsRayEnabled && TargetHelper.IsTargetSelect)
+            {
+                Vector3 endPoint;
+                //var endPoint1 = new Vector3();
+                if (isInsight(out endPoint))
+                {
+                    //scanningRay = new LineRenderer();
+                    //create a new empty gameobject and scanningRay renderer component
+                    scanningRay = new GameObject("scanningRay").AddComponent<LineRenderer>();
+                    //assign the material to the scanningRay
+                    scanningRay.SetColors(Color.red, Color.red);
+                    //set the number of points to the scanningRay
+                    scanningRay.SetVertexCount(2);
+                    scanningRay.SetWidth(0.02f, 0.02f);
+                    //render scanningRay to the world origin and not to the object's position
+                    scanningRay.useWorldSpace = true;
+                    scanningRay.SetPosition(0, part.transform.position);
+                    scanningRay.SetPosition(1, endPoint);
+                }
+            }
+        }
+
+        private void DrawVisibilityRay()
+        {
+            GameObject.Destroy(visibilityRay);
+            if (IsVisibilityRay)
+            {
+                if (!TargetHelper.IsTargetSelect || !isTargetVisiable()) return;
+                //create a new empty gameobject and scanningRay renderer component
+                visibilityRay = new GameObject("visibilityRay").AddComponent<LineRenderer>();
+                var color = Color.white;
+                visibilityRay.SetColors(color, color);
+                //set the number of points to the scanningRay
+                visibilityRay.SetVertexCount(2);
+                visibilityRay.SetWidth(0.02f, 0.04f);
+                //render visibilityRay
+                visibilityRay.useWorldSpace = true;
+                visibilityRay.SetPosition(0, part.transform.position);
+                visibilityRay.SetPosition(1, TargetHelper.Target.GetTransform().position);    
+            }
+        }
 
         private bool useEnergy()
         {
@@ -228,66 +319,19 @@ namespace DockingCamera
                 return false;
             if (res.amount < ResourceUsage)
             {
-                //res.amount = 0;
                 part.RequestResource(ResourceName, ResourceUsage);
                 return false;
             }
-
             part.RequestResource(ResourceName, ResourceUsage);
-            //res.amount -= ResourceUsage;
-            
             return true;
-            //res.amount -= res.amount >= 50 ? 50 : res.amount;
         }
+
         private bool HitCounter()
         {
-            if (hits == 0)
-                return false;
-            var hit = partGameObject.GetChild(string.Format("{0}{1:000}", hitName, hits));
+            var hit = partGameObject.GetChild(string.Format("{0}{1:000}", bulletName, hits));
             GameObject.Destroy(hit);
             hits--;
             return true;
-        }
-        void DrawRay()
-        {
-            GameObject.Destroy(line);
-            //var ray = new Ray();
-            //RaycastHit hit;
-            //if (Physics.Raycast(ray, out hit, 100))
-            //{
-            if (IsRayEnabled && TargetHelper.IsTargetSelect)
-            {
-                Vector3 endPoint;
-                //var endPoint1 = new Vector3();
-                if (isInsight(out endPoint))
-                {
-                    line = new LineRenderer();
-                    //create a new empty gameobject and line renderer component
-                    line = new GameObject("Line").AddComponent<LineRenderer>();
-                    //assign the material to the line
-                    line.SetColors(Color.red, Color.red);
-                    //set the number of points to the line
-                    line.SetVertexCount(2);
-                    line.SetWidth(0.02f, 0.02f);
-                    //render line to the world origin and not to the object's position
-                    line.useWorldSpace = true;
-                    line.SetPosition(0, part.transform.position);
-                    line.SetPosition(1, endPoint);
-
-                    /////
-                    //Ray ray = new Ray(from, to);
-                    //RaycastHit hit = new RaycastHit();
-                    //if (Physics.Raycast(ray, out hit, 1000))
-                    //{
-                    //}
-
-                }
-            }
-            //else
-            //{
-            //    ScreenMessages.PostScreenMessage("NOTHING TO HIT", 5f, ScreenMessageStyle.UPPER_CENTER);
-            //}
-            //}
         }
 
         private bool isInsight(out Vector3 endPoint)
@@ -301,57 +345,55 @@ namespace DockingCamera
             return (z > 0 && 0 <= x && x <= 1 && 0 <= y && y <= 1);
         }
 
+        //int i=0;
+        private bool isTargetVisiable()
+        {
+            //var self = part.vessel.GetWorldPos3D();
+            //var target = TargetHelper.Target.GetTransform().position;
+            //foreach (var body in new[] {FlightGlobals.Bodies[i]})
+            //{
+                var body = FlightGlobals.Bodies[1];
+                var r = body.Radius;
+                var self = part.vessel.GetWorldPos3D();
+                var target = TargetHelper.Target.GetTransform().position;
+                var shift = target - self;
+                var coef = r/Vector3.Distance(self, target);
+                coef *= .5f;
+                shift *= coef;
+                var point = target - shift;
+                var distanceFromPoint = Vector3.Distance(body.position, point);
+                //i++;
+                return distanceFromPoint > r;
+            //}
+            //i=0;
+            //return false;
+        }
+
         public IEnumerator WaitForRay()
         {
             yield return new WaitForSeconds(1);
             IsRayEnabled = false;
-            //var sciencePart = part.vessel.parts.First(a => a.name == "");
             var target = new TargetHelper(part);
             target.Update();
             Vector3 endPoint;
-            if (target.Destination <= AllowedDistance && isInsight(out endPoint))
+            if (target.Destination <= AllowedDistance && isInsight(out endPoint) && isTargetVisiable())
                 {
-                    ScreenMessages.PostScreenMessage("HIT " + FlightGlobals.activeTarget.vessel.vesselName, 5f, ScreenMessageStyle.UPPER_CENTER); 
-                    if (!scienceActivate)
+                    ScreenMessages.PostScreenMessage(FlightGlobals.activeTarget.vessel.vesselName + " HAS BEEN SCANNED", 3f, ScreenMessageStyle.UPPER_CENTER); 
+                    if (!IsScienceActivate)
                     {
-                        //try
-                        //{
-
-                        //    var science = new ModuleScienceExperiment
-                        //    {
-                        //        experimentID = "gravityScan",
-                        //        useStaging = false,
-                        //        useActionGroups = true,
-                        //        hideUIwhenUnavailable = false,
-                        //        xmitDataScalar = 0.4f,
-                        //        dataIsCollectable = true,
-                        //        interactionRange = 1.2f,
-                        //        rerunnable = true,
-                        //        usageReqMaskInternal = 1,
-                        //        usageReqMaskExternal = 8,
-                        //        part = part
-                        //    };
                         var spyScience = part.GetComponent<ModuleSpyExperiment>();
-                        //var spyScience = part.GetComponent<ModuleScienceExperiment>();
-                        //var sciense = sciencePart.GetComponent<ModuleScienceExperiment>();
                         if (spyScience != null)
                             spyScience.DeployExperiment();
-                        scienceActivate = true;
-                        //    science.DeployExperiment();
-                        //    scienceActivate = true;
-                        //}
-                        //catch (Exception e)
-                        //{
-                        //    int a = 10*1;
-                        //}
+                        IsScienceActivate = true;
                     }
                 }
             else
-                {
-                    ScreenMessages.PostScreenMessage("OBJECT" + FlightGlobals.activeTarget.vessel.vesselName + " IS OUT OF RANGE", 5f, ScreenMessageStyle.UPPER_CENTER);
-                }
+            {
+                ScreenMessages.PostScreenMessage("NO DATA, TARGET " + FlightGlobals.activeTarget.vessel.vesselName + " IS OUT OF RANGE  OR VISIBILITY", 3f, ScreenMessageStyle.UPPER_CENTER);
+            }
         }
-        public IEnumerator ToZero()
+
+        public IEnumerator ReturnCamToZero()
         {
             var coef = 20;
             var stepRotZ = -simplifiedRotateZBuffer / coef;

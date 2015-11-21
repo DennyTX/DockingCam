@@ -16,7 +16,20 @@ namespace DockingCamera
         {
             GameEvents.onPartDestroyed.Add(PartCameraDeactivate);
             GameEvents.onVesselDestroy.Add(VesselDestroy);
+            GameEvents.onVesselChange.Add(RemoveLines);
+        }
 
+        private void RemoveLines(Vessel data)
+        {
+            Destroy(GameObject.Find("scanningRay"));
+            Destroy(GameObject.Find("visibilityRay"));
+        }
+
+        protected void OnDestroy()
+        {
+            GameEvents.onPartDestroyed.Remove(PartCameraDeactivate);
+            GameEvents.onVesselDestroy.Remove(VesselDestroy);
+            GameEvents.onVesselChange.Remove(RemoveLines);
         }
         /// <summary>
         /// Destroys cameras on the ship

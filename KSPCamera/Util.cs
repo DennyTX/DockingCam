@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using UnityEngine;
+using Color = UnityEngine.Color;
 
 namespace DockingCamera
 {
@@ -16,7 +14,10 @@ namespace DockingCamera
         /// <summary>
         /// Standard path to the folder with the textures
         /// </summary>
+        //static string timeMark; 
         static string dataTexturePath = "OLDD/DockingCam/";
+        private static string PhotoDirectory = "Screenshots";
+        
         /// <summary>
         /// Load Texture2D from standard folder
         /// </summary>
@@ -49,9 +50,6 @@ namespace DockingCamera
         /// <summary>
         /// Generate horizontal line
         /// </summary>
-        /// <param name="color"></param>
-        /// <param name="size"></param>
-        /// <returns></returns>
         public static Texture2D MonoColorHorizontalLineTexture(Color color, int size)
         {
             return MonoColorTexture(color, size, 1);
@@ -60,8 +58,6 @@ namespace DockingCamera
         /// <summary>
         /// Texture generating a specific color
         /// </summary>
-        /// <param name="color">Color of texture</param>
-        /// <returns></returns>
         public static Texture2D MonoColorTexture(Color color, int width, int height)
         {
             var texture = new Texture2D(width, height);
@@ -73,11 +69,10 @@ namespace DockingCamera
         }
 
         //whitenoise
-        private static float alpha = .16f;  
-        private static Color black = new Color(0, 0, 0, alpha);
-        private static Color white = new Color(1, 1, 1, alpha);
-        public static Texture2D WhiteNoiseTexture(int width, int height)
+        public static Texture2D WhiteNoiseTexture(int width, int height, float alpha = .16f)
         {
+            var black = new Color(0, 0, 0, alpha);
+            var white = new Color(1, 1, 1, alpha);
             width *= 2;
             height *= 2;
             var texture = new Texture2D(width, height);
@@ -88,16 +83,53 @@ namespace DockingCamera
             }
             texture.SetPixels(colors);
             texture.Apply();
-            ///////////////////
-            //object o = new object();
-            //using (Stream s = new MemoryStream())
-            //{
-            //    BinaryFormatter formatter = new BinaryFormatter();
-            //    formatter.Serialize(s, o);
-            //    Debug.Log(new String('-', 10) + s.Length);
-            //}
-            /// /////////////////
             return texture;
+        }
+
+        /// <summary>
+        /// This class converts time strings like "1d 2m 2s" into a
+        /// double value as seconds and also vice versa, based on
+        /// kerbin time.
+        /// </summary>
+
+
+        public static void SavePng(this RenderTexture renderTexture, string photoFrom)
+        {
+            var UniversalTime = Planetarium.fetch.time;
+            //var MET = FlightGlobals.fetch.activeVessel.missionTime;
+            var photoTime = GetTimeMark(UniversalTime);
+            RenderTexture.active = renderTexture;
+            var texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);
+            texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+            var bytes = texture.EncodeToPNG();
+            var name = string.Concat("Photo from ", photoFrom, " at UT ", photoTime, ".png");
+            var folder = Path.Combine(PhotoDirectory, HighLogic.SaveFolder);
+            Directory.CreateDirectory(folder);
+            name = Path.Combine(folder, name);
+            File.WriteAllBytes(name, bytes);
+        }
+        public static String GetTimeMark(Double UniversalTime)
+        {
+            var time = UniversalTime;
+            StringBuilder timeMark = new StringBuilder();
+            if (time >= 9201600)
+                time = converter(time, timeMark, 9201600, "y");
+            if (time >= 21600)
+                time = converter(time, timeMark, 21600, "d");
+            if (time >= 3600)
+                time = converter(time, timeMark, 3600, "h");
+            if (time >= 60)
+                time = converter(time, timeMark, 60, "m");
+            timeMark.Append(time.ToString("F0"));
+            timeMark.Append("s");
+            return timeMark.ToString();
+        }
+
+        private static Double converter(Double time, StringBuilder timeMark, uint seconds, String suffix)
+        {
+            timeMark.Append(Math.Floor(time / seconds));
+            timeMark.Append(suffix);
+            return (time % seconds);
         }
     }
 }

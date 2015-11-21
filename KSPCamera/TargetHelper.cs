@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-
 
 namespace DockingCamera
 {
@@ -29,8 +25,9 @@ namespace DockingCamera
         public float Destination;
         public bool isMoveToTarget;
         public float SecondsToDock;
-        public bool isDockPort = false;
-        //private List<bool> moveToTargetSteps = new List<bool>(100);
+        public bool LookForward;
+        public float TargetMoveHelpX;
+        public float TargetMoveHelpY;
 
         /// <param name="from">Object of comparison</param>
         public TargetHelper(Part from)
@@ -56,42 +53,31 @@ namespace DockingCamera
         }
         public static bool IsTargetSelect
         {
-            //get
-            //{
-            //    return Target != null;
-            //}
             get
             {
-                return Target != null &&
-                    //(Target as ModuleDockingNode != null || Target as Vessel != null);
-                    (Target is ModuleDockingNode || Target is Vessel);
+                return Target != null && (Target as ModuleDockingNode != null || Target as Vessel != null);
+            }
+        }
+
+        public bool isDockPort
+        {
+            get
+            {
+                return Target is ModuleDockingNode;
             }
         }
         public void Update()
         {
-            DX = targetTransform.position.x - self.transform.position.x;
-            DY = targetTransform.position.y - self.transform.position.y;
-            DZ = targetTransform.position.z - self.transform.position.z;
-
-            //if (Target as ModuleDockingNode != null)
-            //    isDockPort = true;
-            //else
-            //{
-            //    isDockPort = false;
-            //}
-            isDockPort = Target is ModuleDockingNode; 
-
-            var velocity = Target.GetObtVelocity() - selfPart.vessel.GetObtVelocity();
-            SpeedX = (float)velocity.x;
-            SpeedY = (float)velocity.y;
-            SpeedZ = (float)velocity.z;
-
+            UpdatePosition();
+            var velocity = UpdateSpeed();
             Destination = (float)Math.Sqrt(Math.Pow(DX, 2) + Math.Pow(DY, 2) + Math.Pow(DZ, 2));
+            UpdateAngles();
+            UpdateIsMoveToTarget(velocity);
+            UpdateTargetMoveHelp();
+        }
 
-            AngleX = AngleAroundVector(-targetTransform.forward, self.transform.up, -self.transform.forward);
-            AngleY = AngleAroundVector(-targetTransform.forward, self.transform.up, self.transform.right);
-            AngleZ = AngleAroundVector(targetTransform.up, -self.transform.forward, -self.transform.up);
-
+        private void UpdateIsMoveToTarget(Vector3 velocity)
+        {
             // dockingLamp- 
             var checkedDevByZero = false;
 
@@ -107,9 +93,6 @@ namespace DockingCamera
 
             if (checkedDevByZero)
             {
-                //var timeX = (Mathf.Abs(DX) < .5f && DX * SpeedX < 0) ? SecondsToDock : -DX / SpeedX;
-                //var timeY = (Mathf.Abs(DY) < .5f && DY * SpeedY < 0) ? SecondsToDock : -DY / SpeedY;
-                //var timeZ = (Mathf.Abs(DZ) < .5f && DZ * SpeedZ < 0) ? SecondsToDock : -DZ / SpeedZ;
                 float timeX;
                 float timeY;
                 if (SpeedX == 0 && Mathf.Abs(DX) < .5f)
@@ -126,18 +109,63 @@ namespace DockingCamera
                 else
                     timeY = (Mathf.Abs(DY) < .5f) ? SecondsToDock : -DY / SpeedY;
 
-                //var timeZ = (Mathf.Abs(DZ) < .5f && DZ * SpeedZ < 0) ? SecondsToDock : -DZ / SpeedZ;
-
                 isMoveToTarget = Mathf.Abs(SecondsToDock - timeX) < 1 &&
                                  Mathf.Abs(SecondsToDock - timeY) < 1 &&
                                  DZ * SpeedZ < 0;
-                //Mathf.Abs(SecondsToDock - timeZ) < 1;
-                
             }
-
         }
 
-        private static float AngleAroundVector(Vector3 a, Vector3 b, Vector3 c)
+        private void UpdateAngles()
+        {
+            AngleX = SignedAngleAroundVector(-targetTransform.forward, self.transform.up, -self.transform.forward);
+            AngleY = SignedAngleAroundVector(-targetTransform.forward, self.transform.up, self.transform.right);
+            AngleZ = SignedAngleAroundVector(targetTransform.up, -self.transform.forward, -self.transform.up);
+        }
+
+        private Vector3 UpdateSpeed()
+        {
+            var velocity = Target.GetObtVelocity() - selfPart.vessel.GetObtVelocity();
+            SpeedX = (float)velocity.x;
+            SpeedY = (float)velocity.y;
+            SpeedZ = (float)velocity.z;
+            return velocity;
+        }
+
+        private void UpdatePosition()
+        {
+            DX = targetTransform.position.x - self.transform.position.x;
+            DY = targetTransform.position.y - self.transform.position.y;
+            DZ = targetTransform.position.z - self.transform.position.z;
+        }
+
+        private void UpdateTargetMoveHelp()
+        {
+            Vector3 targetToOwnship = self.transform.position - targetTransform.position;
+            var translationDeviation = new Vector2(
+                SignedAngleAroundVector(targetToOwnship, targetTransform.forward.normalized, self.transform.forward),
+                SignedAngleAroundVector(targetToOwnship, targetTransform.forward.normalized, -self.transform.right));
+            LookForward = Math.Abs(translationDeviation.x) < 90;
+            float gaugeX = (LookForward ? 1 : -1) * ((translationDeviation.x / 90f)%2);
+            float gaugeY = (LookForward ? 1 : -1) * ((translationDeviation.y / 90f)%2);
+            float exponent = .75f;
+
+            if (Destination <= 5f)
+                exponent = 1f;
+            else
+                if (Destination < 15f)
+                {
+                    float toGo = Destination - 5f;
+                    float range = 15f - 5f;
+                    float lerp = toGo / range;
+                    float exponentReduction = 1f - .75f;
+                    exponent = 1 - (exponentReduction) * lerp;
+                }
+
+            TargetMoveHelpX = (scaleExponentially(gaugeX, exponent) + 1) / 2f;
+            TargetMoveHelpY = (scaleExponentially(gaugeY, exponent) + 1) / 2f;
+        }
+
+        private static float SignedAngleAroundVector(Vector3 a, Vector3 b, Vector3 c)
         {
             var v1 = Vector3.Cross(c, a);
             var v2 = Vector3.Cross(c, b);
@@ -145,5 +173,11 @@ namespace DockingCamera
                 return -Vector3.Angle(v1, v2);
             return Vector3.Angle(v1, v2);
         }
+        
+        private static float scaleExponentially(float value, float exponent)
+        {
+            return (float)Math.Pow(Math.Abs(value), exponent) * Math.Sign(value);
+        }
+
     }
 }

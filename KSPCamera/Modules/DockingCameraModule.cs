@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace DockingCamera
@@ -20,10 +17,13 @@ namespace DockingCamera
         //public bool IsTargeted;
 
         [KSPField]
-        public int allowedDistance;
+        public int allowedDistance = 1000;
 
         [KSPField]
         public float maxSpeed = 3;
+
+        [KSPField]
+        public int windowSize = 256;
         
         [KSPField]
         public bool noise = false;
@@ -32,7 +32,10 @@ namespace DockingCamera
         public string nightVisionArgs = "0.5,0.7,0.5,0.5";
 
         [KSPField]
-        public string targetCrossColor = "0.0,0.9,0.0,1.0";
+        public string targetCrossColor = "0.9,0.0,0.0,1.0";
+
+        [KSPField]
+        public string targetCrossColorOLDD = "0.0,0.9,0.0,1.0";
 
         private new DockingCamera camera;
 
@@ -42,17 +45,20 @@ namespace DockingCamera
                 return;
             Start();
         }
+
         public void Start()
         {
             CameraShaders.NightVisionArgs = nightVisionArgs;
             if (camera == null)
-                camera = new DockingCamera(this.part, noise);
+                camera = new DockingCamera(this.part, noise, windowSize);
 
             camera.MaxSpeed = maxSpeed;
+            var splColorOLDD = targetCrossColorOLDD.Split(',').Select(float.Parse).ToList(); // parsing color to RGBA
+            camera.TargetCrossColorOLDD = new Color(splColorOLDD[0], splColorOLDD[1], splColorOLDD[2], splColorOLDD[3]);
             var splColor = targetCrossColor.Split(',').Select(float.Parse).ToList(); // parsing color to RGBA
             camera.TargetCrossColor = new Color(splColor[0], splColor[1], splColor[2], splColor[3]);
-
         }
+
         public override void OnUpdate()
         {
             if (camera == null) 
