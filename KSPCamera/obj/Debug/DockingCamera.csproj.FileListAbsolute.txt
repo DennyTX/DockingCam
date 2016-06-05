@@ -1,4 +1,0 @@
-C:\KSP_105\GameData\OLDD\DockingCam\DockingCamera.dll
-C:\KSP_105\GameData\OLDD\DockingCam\DockingCamera.pdb
-E:\DennyTX\Documents\Visual Studio 2013\Projects\DockingCam\KSPCamera\obj\Debug\DockingCamera.dll
-E:\DennyTX\Documents\Visual Studio 2013\Projects\DockingCam\KSPCamera\obj\Debug\DockingCamera.pdb

@@ -1,6 +1,0 @@
-E:\DennyTX\Documents\Visual Studio 2013\Projects\DockingCam\MapCamera\bin\Debug\MapCamera.dll
-E:\DennyTX\Documents\Visual Studio 2013\Projects\DockingCam\MapCamera\bin\Debug\MapCamera.pdb
-E:\DennyTX\Documents\Visual Studio 2013\Projects\DockingCam\MapCamera\obj\Debug\MapCamera.dll
-E:\DennyTX\Documents\Visual Studio 2013\Projects\DockingCam\MapCamera\obj\Debug\MapCamera.pdb
-C:\KSP_105\GameData\OLDD\DockingCam\MapCamera.dll
-C:\KSP_105\GameData\OLDD\DockingCam\MapCamera.pdb
