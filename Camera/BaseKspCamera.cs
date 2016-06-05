@@ -113,7 +113,6 @@ namespace DockingCamera
             textureBackGroundCamera = Util.MonoColorRectTexture(new Color(0.45f, 0.45f, 0.45f, 1));
             textureSeparator = Util.MonoColorVerticalLineTexture(Color.white, (int)texturePosition.height);
             textureTargetPoint = AssetLoader.texTargetPoint;
-            //textureTargetPoint = Util.LoadTexture("targetPoint");
             textureNoSignal = new Texture[8];
             for (int i = 0; i < textureNoSignal.Length; i++)
             {
