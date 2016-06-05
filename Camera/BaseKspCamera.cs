@@ -10,8 +10,6 @@ namespace DockingCamera
     {
         public Rect texturePosition;
         protected static int windowCount = 0;
-        protected int windowId;
-        protected int textureNoSignalId; 
         protected string windowLabel;
         protected string subWindowLabel; 
         protected RenderTexture renderTexture;
@@ -20,7 +18,7 @@ namespace DockingCamera
         protected Part part;
         protected Texture textureBackGroundCamera;
         protected Texture textureSeparator;
-        protected Texture textureTargetPoint;
+        protected Texture textureTargetMark;
         protected Texture[] textureNoSignal;
         protected ShaderType shaderType;
 
@@ -32,13 +30,15 @@ namespace DockingCamera
         protected float currentZoom = 40f;
         protected float minZoomMultiplier = 4;
 
-        protected bool ShaderSwitcher = false;
-        protected bool zoomMultiplier = false;
-
         protected bool zoomWide = false;
-        protected bool isTargetPoint = true;
+        protected bool isTargetPoint = false;
         protected float windowSize = 128f;
         protected int windowSizeCoef = 2;
+        protected int windowId;
+        protected int textureNoSignalId;
+
+        protected bool ShaderSwitcher = false;
+        protected bool zoomMultiplier = false;
 
         public bool IsActivate = false;
         public bool IsAuxiliaryWindowOpen = false;
@@ -47,13 +47,14 @@ namespace DockingCamera
         public bool IsOrbital = false;
 
         public static double ElectricChargeAmount;
+
         protected List<Camera> allCameras = new List<Camera>();
         protected List<GameObject> allCamerasGameObject = new List<GameObject>();
         protected List<string> cameraNames = new List<string>{"GalaxyCamera", "Camera ScaledSpace", "Camera 01", "Camera 00" };
 
 		//UPDATE_MARK
 		protected UpdateGUIObject updateGUIObject;
-
+        
         public BaseKspCamera(Part part, int windowSize, string windowLabel = "Camera")
         {
             this.windowSize = windowSize/2;
@@ -68,7 +69,6 @@ namespace DockingCamera
 			//UPDATE_MARK
 			GameObject updateGUIHolder = new GameObject();
  			updateGUIObject = updateGUIHolder.AddComponent<UpdateGUIObject>(); // добавление компонента на объект
-
 			updateGUIHolder.transform.parent = part.transform;
         }
 
@@ -77,6 +77,10 @@ namespace DockingCamera
             GameEvents.OnFlightUIModeChanged.Remove(FlightUIModeChanged);
         }
 
+        private void Awake()
+        {
+            
+        }
         private void FlightUIModeChanged(FlightUIMode mode)
         {
             if (mode == FlightUIMode.ORBITAL)
@@ -112,7 +116,7 @@ namespace DockingCamera
             renderTexture.Create();
             textureBackGroundCamera = Util.MonoColorRectTexture(new Color(0.45f, 0.45f, 0.45f, 1));
             textureSeparator = Util.MonoColorVerticalLineTexture(Color.white, (int)texturePosition.height);
-            textureTargetPoint = AssetLoader.texTargetPoint;
+            textureTargetMark = AssetLoader.texTargetPoint;
             textureNoSignal = new Texture[8];
             for (int i = 0; i < textureNoSignal.Length; i++)
             {
@@ -157,6 +161,7 @@ namespace DockingCamera
             if (IsActivate) return;
             InitCameras();
             IsActivate = true;
+            textureTargetMark = AssetLoader.texTargetPoint;
 			//Debug.LogWarning("BaseKspCamera::Activate");
             updateGUIObject.updateGUIFunction += OnPostRender;
         }
@@ -177,7 +182,8 @@ namespace DockingCamera
         {
 			if (IsActivate)
 			{
-				CamGui();
+                windowPosition = GUI.Window(windowId, windowPosition, DrawWindow, windowLabel); //main window
+                //CamGui();
                 ElectricChargeAmount = part.vessel.GetActiveResources().First(x => x.info.name == "ElectricCharge").amount;
                 if (ElectricChargeAmount <= 0)
                 {
@@ -189,10 +195,10 @@ namespace DockingCamera
 			}
 		}
 
-        private void CamGui()  //main window
-        {
-            windowPosition = GUI.Window(windowId, windowPosition, DrawWindow, windowLabel);
-        }
+        //private void CamGui()  //main window
+        //{
+        //    windowPosition = GUI.Window(windowId, windowPosition, DrawWindow, windowLabel);
+        //}
 
         #region DRAW LAYERS 
 
@@ -220,8 +226,8 @@ namespace DockingCamera
             isTargetPoint = GUI.Toggle(new Rect(windowPosition.width - 86, 235, 77, 40), isTargetPoint, "Target\nMark");
 
             Graphics.DrawTexture(texturePosition, textureBackGroundCamera);
-            Material currentMaterial = CameraShaders.Get(shaderType);
-            Graphics.DrawTexture(texturePosition, Render(), currentMaterial);
+            //Material currentMaterial = CameraShaders.Get(shaderType);
+            Graphics.DrawTexture(texturePosition, Render(), CameraShaders.Get(shaderType));
         }
 
         /// <summary>
@@ -235,19 +241,27 @@ namespace DockingCamera
                 var vessel = TargetHelper.Target as Vessel;
                 if (vessel == null)
                 {
-                    var part = TargetHelper.Target as ModuleDockingNode;
-                    vessel = part.vessel;
+                    var zzz = TargetHelper.Target as ModuleDockingNode;
+                    vessel = zzz.vessel;
                 }
+
                 var point = camera.WorldToViewportPoint(vessel.transform.position); //get current targeted vessel 
                 var x = point.x; //(0;1)
-                var y = point.y; 
+                var y = point.y;
                 var z = point.z;
+                //var heading = point.normalized.z; 
+                //if (x >= 0.96 && z <= 0) x = 0.96f;
+                //if (x <= 0 && z <= 0) x = -0.02f;
+                //if (y >= 0.96 || z <= 0) y = 0.96f;
+                //if (y <= 0 || z <= 0) y = -0.02f;
+                var offsetX = texturePosition.width * x;
+                var offsetY = texturePosition.height * y;
+
                 if (isTargetPoint)
                 {
                     if (z > 0 && 0 <= x && x <= 1 && 0 <= y && y <= 1)
                     {
-                        GUI.DrawTexture(new Rect(texturePosition.xMin + texturePosition.width*x,
-                                texturePosition.yMax - texturePosition.height * y, 20, 20), textureTargetPoint);
+                        GUI.DrawTexture(new Rect(texturePosition.xMin + offsetX, texturePosition.yMax - offsetY, 20, 20), textureTargetMark);
                     }    
                 }
             }

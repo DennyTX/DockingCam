@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DockingCamera
@@ -9,7 +10,10 @@ namespace DockingCamera
     class CameraModule : PartModule, ICamPart
     {
         [KSPField(guiActive = true, guiActiveEditor = true, guiName = "Camera powered: ")]
-        public bool IsPowered;
+        public string IsPowered;
+
+        [KSPField(guiActive = true, guiActiveEditor = true, guiName = "Bullets", isPersistant = true)]
+        public int currentHits = -1;
 
         [KSPField(guiActive = true, guiActiveEditor = true, guiName = "Camera", isPersistant = true)]
         [UI_Toggle(controlEnabled = true, enabledText = "On", disabledText = "Off", scene = UI_Scene.All)]
@@ -48,12 +52,9 @@ namespace DockingCamera
         [KSPField]
         public string resourceScanning;
 
-        [KSPField(isPersistant = true)]
-        public int currentHits=-1;
-
         private GameObject capObject;
 
-        private new PartCamera camera;
+        private PartCamera camera;
         
         public override void OnStart(StartState state = StartState.Flying)
         {
@@ -98,16 +99,36 @@ namespace DockingCamera
                 StartCoroutine(camera.WaitForRay());
             }
             currentHits = camera.hits;
-
-            if (HighLogic.LoadedSceneIsFlight)
-            {
-                if (BaseKspCamera.ElectricChargeAmount > 0)
-                    IsPowered = true;
-                else
-                    IsPowered = false;
-            }
-
         }
+
+        private void Update()
+        {
+            PartResourceDefinition definition = PartResourceLibrary.Instance.GetDefinition("ElectricCharge");
+            List<Part> parts = new List<Part>();
+            parts = FlightGlobals.ActiveVessel.Parts;
+            double ElectricChargeAmount = 0;
+            foreach (Part p in parts)
+            {
+                foreach (PartResource r in p.Resources)
+                {
+                    if (r.info.id == definition.id)
+                    {
+                        ElectricChargeAmount += r.amount;
+                    }
+                }
+            }
+            //var ElectricChargeAmount = BaseKspCamera.ElectricChargeAmount;
+            if (ElectricChargeAmount > 0)
+            {
+                if (IsEnabled)
+                    IsPowered = "ACTIVE";
+                else
+                    IsPowered = "TRUE";                
+            }
+            else
+                IsPowered = "FALSE";
+        }
+
         public void Activate()
         {
             if (camera.IsActivate) return;

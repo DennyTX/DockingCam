@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
@@ -24,6 +25,7 @@ namespace DockingCamera
         }
     }
     // UPDATE_112 END
+
     public static class Util
     {
         /// <summary>
