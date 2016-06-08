@@ -175,7 +175,7 @@ namespace DockingCamera
             {
                 if (part.vessel.Equals(FlightGlobals.ActiveVessel))
                 {
-                    windowLabel = subWindowLabel + " " + ID;// + " NO TARGET";
+                    windowLabel = subWindowLabel + " " + ID;
                     lastVesselName = "";
                     windowLabelSuffix = lastVesselName;                   
                 }

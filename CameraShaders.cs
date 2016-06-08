@@ -28,6 +28,18 @@ namespace DockingCamera
                 default: return null;
             }
         }
+        static Material oldtv = null;
+        public static Material OldTV
+        {
+            get
+            {
+                if (oldtv == null)
+                {
+                    oldtv = AssetLoader.matOldTV;
+                }
+                return oldtv;
+            }
+        }
 
         static Material grayscale = null;
         public static Material Grayscale
@@ -91,25 +103,6 @@ namespace DockingCamera
                     noisenightvision = AssetLoader.matNoiseNightVision;
                 }
                 return noisenightvision;
-            }
-        }
-        private static int i = 0;
-        static Material oldtv = null;
-        public static Material OldTV
-        {
-            get
-            {
-                if (oldtv == null)
-                {
-                    oldtv = AssetLoader.matOldTV;
-                }
-                //var Time = -0.4f;
-                //var TimeX = Random.Range(-0.4f, 2f);
-                //TimeX += Time.deltaTime;
-                ////if (TimeX > 100) TimeX = 0;
-                ////oldtv.SetFloat("_Distortion", Offset);
-                //oldtv.SetFloat("_TimeX", TimeX);                   
-                  return oldtv;
             }
         }
     }

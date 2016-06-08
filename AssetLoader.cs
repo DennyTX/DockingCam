@@ -33,12 +33,11 @@ namespace DockingCamera
             // Load and retrieve the AssetBundle
             Debug.Log("AssetLoader:finished");
             AssetBundle bundle = www.assetBundle;
-            matNightVisionClear = (Material)bundle.LoadAsset("NightVisionClear");
+            matOldTV = (Material)bundle.LoadAsset("OldTV");
             matNightVisionNoise1 = (Material)bundle.LoadAsset("NightVisionNoise1");
-            matNightVisionNoise2 = (Material)bundle.LoadAsset("NightVisionNoise2");
             matNoise = (Material)bundle.LoadAsset("Noise");
             matNoiseNightVision = (Material)bundle.LoadAsset("NoiseNightVision");
-            matOldTV = (Material)bundle.LoadAsset("OldTV");
+            matNightVisionClear = (Material)bundle.LoadAsset("NightVisionClear");
             texSelfRot = (Texture2D)bundle.LoadAsset("selfrot");
             texTargetRot = (Texture2D)bundle.LoadAsset("targetrot");
             texTargetPoint = (Texture2D)bundle.LoadAsset("targetPoint");

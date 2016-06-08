@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 
 namespace DockingCamera
@@ -157,8 +156,6 @@ namespace DockingCamera
         {
             allCameras.ForEach(Camera.Destroy);
             allCameras = new List<Camera>();
-            //var node = ConfigNode.CreateConfigFromObject(CurrentShader);
-            //node.Save("shader.sav");
         }
 
         /// <summary>
@@ -187,8 +184,7 @@ namespace DockingCamera
         {
 			if (IsActivate)
 			{
-                windowPosition = GUI.Window(windowId, windowPosition, DrawWindow, windowLabel); //main window
-                //CamGui();
+                windowPosition = GUI.Window(windowId, windowPosition, DrawWindow, windowLabel); //draw main window
                 ElectricChargeAmount = part.vessel.GetActiveResources().First(x => x.info.name == "ElectricCharge").amount;
                 if (ElectricChargeAmount <= 0)
                 {
@@ -199,11 +195,6 @@ namespace DockingCamera
                     part.RequestResource("ElectricCharge", 0.002);               
 			}
 		}
-
-        //private void CamGui()  //main window
-        //{
-        //    windowPosition = GUI.Window(windowId, windowPosition, DrawWindow, windowLabel);
-        //}
 
         #region DRAW LAYERS 
 
@@ -324,8 +315,6 @@ namespace DockingCamera
             }
             if (z < 0)
             {
-                //y = 0.02f;
-                //return y;
                 if (y <= 0.02)
                 {
                     y = 0.02f;

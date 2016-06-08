@@ -11,9 +11,7 @@ namespace DockingCamera
         /// </summary>
         [KSPField(guiActive = true, guiActiveEditor = true, guiName = "Camera", isPersistant = true)]
         [UI_Toggle(controlEnabled = true, enabledText = "On", disabledText = "Off", scene = UI_Scene.All)]
-        
         public bool IsEnabled;
-        //public bool IsTargeted;
 
         [KSPField]
         public int allowedDistance = 1000;
