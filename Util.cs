@@ -15,7 +15,15 @@ namespace DockingCamera
     public class UpdateGUIObject : MonoBehaviour
     {
         public UpdateGUIFunction updateGUIFunction;
+        //public UpdateGUIFunction awakeFunction;
 
+        //void Awake()
+        //{
+        //    if (awakeFunction != null)
+        //    {
+        //        awakeFunction();
+        //    }          
+        //}
         void OnGUI()
         {
             if (updateGUIFunction != null)
@@ -116,6 +124,7 @@ namespace DockingCamera
             //var MET = FlightGlobals.fetch.activeVessel.missionTime;
             var photoTime = GetTimeMark(UniversalTime);
             RenderTexture.active = renderTexture;
+            Graphics.Blit(renderTexture, BaseKspCamera.CurrentShader);
             var texture = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.RGB24, false);
             texture.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
             var bytes = texture.EncodeToPNG();

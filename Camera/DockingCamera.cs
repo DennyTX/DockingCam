@@ -11,33 +11,33 @@ namespace DockingCamera
         private HashSet<int> usedId = new HashSet<int>();
         private int ID;
         private int idTextureNoise; 
-        private Texture2D textureCentre;
+
         private Texture2D textureVLineOLDD;
         private Texture2D textureHLineOLDD; 
         private Texture2D textureVLine;
         private Texture2D textureHLine;
         private Texture2D textureVLineBack;
         private Texture2D textureHLineBack;
-        private Texture2D textureRotationSelf;
-        private Texture2D textureRotationTarget;
-        private Texture2D textureLampOn;
-        private Texture2D textureLampOff;
-        private static List<Texture2D>[]textureWhiteNoise;
+
+        private GameObject moduleDockingNodeGameObject; 
+        private static List<Texture2D>[] textureWhiteNoise;
         private static GUIStyle guiStyleRedLabel;
         private static GUIStyle guiStyleGreenLabel; 
         private TargetHelper target;
+
         private string lastVesselName;
         private bool noiseActive;
         private bool cameraData = true;
         private bool rotatorState = true;
         private bool targetCrossDenny = false;
         private bool targetCrossDPAI = true;
-        private GameObject moduleDockingNodeGameObject;
         public float MaxSpeed = 3;
+
         private Color targetCrossColorOLDD = new Color(0, 0, 0.9f, 1);
         private Color targetCrossColor = new Color(0.5f, .0f, 0, 1);
         private Color targetCrossColorBack = new Color(.9f, 0, 0, 1);
 
+        private string windowLabelSuffix;
         public Color TargetCrossColorOLDD
         {
             get { return targetCrossColorOLDD; }
@@ -79,7 +79,7 @@ namespace DockingCamera
             guiStyleRedLabel.normal.textColor = Color.red;
             guiStyleGreenLabel.normal.textColor = Color.green;
 
-            GameEvents.onVesselChange.Add(vesselChange);
+            //GameEvents.onVesselChange.Add(vesselChange);
 
             moduleDockingNodeGameObject = partGameObject.GetChild("dockingNode") ?? partGameObject;  //GET orientation from dockingnode
 
@@ -93,29 +93,23 @@ namespace DockingCamera
             }
         }
 
-        ~DockingCamera()  //desctruction
-        {
-            GameEvents.onVesselChange.Remove(vesselChange);
-        }
+        //~DockingCamera()  //desctruction
+        //{
+        //    GameEvents.onVesselChange.Remove(vesselChange);
+        //}
 
-        private void vesselChange(Vessel vessel)
-        {
-            windowLabel = subWindowLabel + " " + ID + " to " + lastVesselName;
-        }
+        //private void vesselChange(Vessel vessel)
+        //{
+        //    //if (TargetHelper.IsTargetSelect)
+        //    //    windowLabelSuffix = TargetHelper.Target.GetName();
+        //    //else
+        //    //    windowLabelSuffix = " NO TARGET";
+        //    windowLabel = subWindowLabel + " " + ID + " to " + lastVesselName;  //TargetHelper.Target.GetName(); //
+        //}
 
         protected override void InitTextures()
         {
             base.InitTextures();
-            textureCentre = AssetLoader.texDockingCam;
-            textureRotationSelf = AssetLoader.texSelfRot;
-            textureRotationTarget = AssetLoader.texTargetRot;
-            textureLampOn = AssetLoader.texLampOn;
-            textureLampOff = AssetLoader.texLampOff;
-            //textureCentre = Util.LoadTexture("dockingcam");
-            //textureRotationSelf = Util.LoadTexture("selfrot");
-            //textureRotationTarget = Util.LoadTexture("targetrot");
-            //textureLampOn = Util.LoadTexture("lampon");
-            //textureLampOff = Util.LoadTexture("lampoff");
             textureVLineOLDD = Util.MonoColorVerticalLineTexture(TargetCrossColorOLDD, (int)windowSize * windowSizeCoef);
             textureHLineOLDD = Util.MonoColorHorizontalLineTexture(TargetCrossColorOLDD, (int)windowSize * windowSizeCoef); 
             textureVLine = Util.MonoColorVerticalLineTexture(TargetCrossColor, (int)windowSize * windowSizeCoef);
@@ -126,21 +120,22 @@ namespace DockingCamera
 
         protected override void ExtendedDrawWindowL1()
         {
-            cameraData = GUI.Toggle(new Rect(windowPosition.width - 84, 34, 76, 36), cameraData, "Flight data");
-            rotatorState = GUI.Toggle(new Rect(windowPosition.width - 84, 70, 76, 20), rotatorState, "Rotator");
-            targetCrossDPAI = GUI.Toggle(new Rect(windowPosition.width - 84, 90, 76, 36), targetCrossDPAI, "Cross DPAI");
-            targetCrossDenny = GUI.Toggle(new Rect(windowPosition.width - 84, 126, 76, 36), targetCrossDenny, "Cross OLDD");
+            var widthOffset = windowPosition.width - 86;
+            cameraData = GUI.Toggle(new Rect(widthOffset, 34, 76, 20), cameraData, "Flight data");
+            rotatorState = GUI.Toggle(new Rect(widthOffset, 54, 76, 20), rotatorState, "Rotator");
+            targetCrossDPAI = GUI.Toggle(new Rect(widthOffset, 74, 76, 30), targetCrossDPAI, "Cross\n DPAI");
+            targetCrossDenny = GUI.Toggle(new Rect(widthOffset, 106, 76, 30), targetCrossDenny, "Cross\n OLDD");
+            noiseActive = GUI.Toggle(new Rect(widthOffset, 180, 76, 20), noiseActive, "Noise");
             base.ExtendedDrawWindowL1();
         }
 
         protected override void ExtendedDrawWindowL2()
         {
-            GUI.DrawTexture(texturePosition, textureCentre);
+            GUI.DrawTexture(texturePosition, AssetLoader.texDockingCam);
             if (noiseActive)
                 GUI.DrawTexture(texturePosition, textureWhiteNoise[windowSizeCoef-2][idTextureNoise]);  //whitenoise
             base.ExtendedDrawWindowL2();
         }
-
 
         protected override void ExtendedDrawWindowL3()
         {
@@ -162,25 +157,114 @@ namespace DockingCamera
             if (target.isMoveToTarget)
             {
                 GUI.DrawTexture(new Rect(texturePosition.xMin + 20, texturePosition.yMax - 20, 20, 20),
-                    textureLampOn);
+                    AssetLoader.texLampOn);
                 GUI.Label(new Rect(texturePosition.xMin + 40, texturePosition.yMax - 20, 140, 20),
                     String.Format("Time to dock:{0:f0}s", target.SecondsToDock));
             }
             else
                 GUI.DrawTexture(new Rect(texturePosition.xMin + 20, texturePosition.yMax - 20, 20, 20),
-                    textureLampOff);
+                    AssetLoader.texLampOff);
 
+            if (TargetHelper.IsTargetSelect) // && part.vessel.Equals(FlightGlobals.ActiveVessel))
+            {
+                lastVesselName = TargetHelper.Target.GetName();
+                windowLabelSuffix = " to " + lastVesselName;
+                windowLabel = subWindowLabel + " " + ID + windowLabelSuffix;
+            }
+            else
+            {
+                if (part.vessel.Equals(FlightGlobals.ActiveVessel))
+                {
+                    windowLabel = subWindowLabel + " " + ID;// + " NO TARGET";
+                    lastVesselName = "";
+                    windowLabelSuffix = lastVesselName;                   
+                }
+            }
+            if (!part.vessel.Equals(FlightGlobals.ActiveVessel))
+                windowLabel = subWindowLabel + " " + ID + windowLabelSuffix;               
 
+            GetFlightData();
+            GetCross();
 
+            if (rotatorState) // && TargetHelper.IsTargetSelect && part.vessel.Equals(FlightGlobals.ActiveVessel))
+            {
+                var size = texturePosition.width / 8  ;
+                var x = texturePosition.xMin + texturePosition.width / 2 - size / 2;
+                GUI.DrawTexture(new Rect(x, texturePosition.yMax - size, size, size), AssetLoader.texSelfRot);
+                Matrix4x4 matrixBackup = GUI.matrix;
+                var position = new Rect(x, texturePosition.yMax - size, size, size);
+                GUIUtility.RotateAroundPivot(target.AngleZ, position.center);
+                GUI.DrawTexture(position, AssetLoader.texTargetRot);
+                GUI.matrix = matrixBackup;
+            }
+
+            base.ExtendedDrawWindowL3();
+        }
+
+        private void GetCross()
+        {
+            if (targetCrossDPAI)
+            {
+                ////RotationXY Block
+                var textV = target.LookForward ? textureVLine : textureVLineBack;
+                var textH = target.LookForward ? textureHLine : textureHLineBack;
+                var tx = target.TargetMoveHelpX;
+                var ty = target.TargetMoveHelpY;
+                if (!target.LookForward)
+                {
+                    tx = 1 - tx;
+                    ty = 1 - ty;
+                }
+                GUI.DrawTexture(
+                    new Rect(texturePosition.xMin + Math.Abs(tx*texturePosition.width)%texturePosition.width,
+                        texturePosition.yMin,
+                        1,
+                        texturePosition.height),
+                    textV);
+                GUI.DrawTexture(
+                    new Rect(texturePosition.xMin,
+                        texturePosition.yMin + Math.Abs(ty*texturePosition.height)%texturePosition.height,
+                        texturePosition.width,
+                        1),
+                    textH);
+            }
+
+            if (targetCrossDenny)
+            {
+                ////RotationXY Block
+                var tx = texturePosition.width/2;
+                var ty = texturePosition.height/2;
+                if (Mathf.Abs(target.AngleX) > 20)
+                    tx += (target.AngleX > 0 ? -1 : 1)*(texturePosition.width/2 - 1);
+                else
+                    tx += (texturePosition.width/40)*-target.AngleX;
+                if (Mathf.Abs(target.AngleY) > 20)
+                    ty += (target.AngleY > 0 ? -1 : 1)*(texturePosition.height/2 - 1);
+                else
+                    ty += (texturePosition.height/40)*-target.AngleY;
+
+                GUI.DrawTexture(
+                    new Rect(texturePosition.xMin + tx, texturePosition.yMin, 1, texturePosition.height),
+                    textureVLineOLDD);
+                GUI.DrawTexture(
+                    new Rect(texturePosition.xMin, texturePosition.yMin + ty, texturePosition.width, 1),
+                    textureHLineOLDD);
+            }
+        }
+
+        private void GetFlightData()
+        {
             if (cameraData)
             {
                 if (TargetHelper.IsTargetSelect && part.vessel.Equals(FlightGlobals.ActiveVessel))
                 {
-                    /// <summary>
                     /// DATA block
                     /// <summary>
                     float i = 0;
                     target.Update();
+
+                    //lastVesselName = TargetHelper.Target.GetName();
+                    //windowLabel = subWindowLabel + " " + ID + " to " + lastVesselName;
 
                     if (!target.isDockPort)
                     {
@@ -188,7 +272,7 @@ namespace DockingCamera
                             "Target is not\n a DockPort");
                         if (target.Destination < 200f)
                             GUI.Label(new Rect(texturePosition.xMin + 10, 84, 96, 40),
-                                "DockPort is\n available",guiStyleGreenLabel);
+                                "DockPort is\n available", guiStyleGreenLabel);
                     }
 
                     /// <summary>
@@ -226,71 +310,11 @@ namespace DockingCamera
                         String.Format("Roll:{0:f0}°", target.AngleZ));
                     //i += .25f;
                 }
+                //else
+                //{
+                //    windowLabel = subWindowLabel + " " + ID + " NO TARGET";
+                //}
             }
-
-            if (targetCrossDPAI)
-            {
-                ////RotationXY Block
-                //TargetMoveHelp
-                var textV = target.LookForward ? textureVLine : textureVLineBack;
-                var textH = target.LookForward ? textureHLine : textureHLineBack;
-                var tx = target.TargetMoveHelpX;
-                var ty = target.TargetMoveHelpY;
-                if (!target.LookForward)
-                {
-                    tx = 1 - tx;
-                    ty = 1 - ty;
-                }
-                GUI.DrawTexture(
-                    new Rect(texturePosition.xMin + Math.Abs(tx * texturePosition.width) % texturePosition.width,
-                        texturePosition.yMin,
-                        1,
-                        texturePosition.height),
-                    textV);
-                GUI.DrawTexture(
-                    new Rect(texturePosition.xMin,
-                        texturePosition.yMin + Math.Abs(ty * texturePosition.height) % texturePosition.height,
-                        texturePosition.width,
-                        1),
-                    textH);
-            }
-
-            if (targetCrossDenny)
-            {
-                ////RotationXY Block
-                var tx = texturePosition.width / 2;
-                var ty = texturePosition.height / 2;
-                if (Mathf.Abs(target.AngleX) > 20)
-                    tx += (target.AngleX > 0 ? -1 : 1) * (texturePosition.width / 2 - 1);
-                else
-                    tx += (texturePosition.width / 40) * -target.AngleX;
-                if (Mathf.Abs(target.AngleY) > 20)
-                    ty += (target.AngleY > 0 ? -1 : 1) * (texturePosition.height / 2 - 1);
-                else
-                    ty += (texturePosition.height / 40) * -target.AngleY;
-
-                GUI.DrawTexture(
-                    new Rect(texturePosition.xMin + tx, texturePosition.yMin, 1, texturePosition.height),
-                    textureVLineOLDD);
-                GUI.DrawTexture(
-                    new Rect(texturePosition.xMin, texturePosition.yMin + ty, texturePosition.width, 1),
-                    textureHLineOLDD);
-            }                
-
-            if (rotatorState) // && TargetHelper.IsTargetSelect && part.vessel.Equals(FlightGlobals.ActiveVessel))
-            {
-                var size = texturePosition.width / 8  ;
-                var x = texturePosition.xMin + texturePosition.width / 2 - size / 2;
-                GUI.DrawTexture(new Rect(x, texturePosition.yMax - size, size, size), textureRotationTarget);
-                Matrix4x4 matrixBackup = GUI.matrix;
-                var position = new Rect(x, texturePosition.yMax - size, size, size);
-                GUIUtility.RotateAroundPivot(target.AngleZ, position.center);
-                //new Vector2(x + size / 2, texturePosition.yMax - size / 2));
-                GUI.DrawTexture(position, textureRotationSelf);
-                GUI.matrix = matrixBackup;
-            }
-
-            base.ExtendedDrawWindowL3();
         }
 
         public override void Activate()
@@ -321,17 +345,18 @@ namespace DockingCamera
                 if (!usedId.Contains(i))
                 {
                     ID = i;
-                    windowLabel = subWindowLabel + " " + ID + " to " + TargetHelper.Target.GetName();
-                    lastVesselName = TargetHelper.Target.GetName();
+                    //lastVesselName = TargetHelper.Target.GetName();
+                    //windowLabel = subWindowLabel + " " + ID + " to " + lastVesselName;
                     usedId.Add(i);
                     return;
                 }
             }
         }
+
         public override void Update()
         {
             UpdateWhiteNoise();
-            var camers = Camera.allCameras;
+            
             allCamerasGameObject.Last().transform.position = moduleDockingNodeGameObject.transform.position; // near&&far
             allCamerasGameObject.Last().transform.rotation = moduleDockingNodeGameObject.transform.rotation;
             

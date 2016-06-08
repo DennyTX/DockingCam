@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace DockingCamera
@@ -128,7 +129,7 @@ namespace DockingCamera
             //BUTTONS
 
             var width = windowPosition.width-84;
-            var buttonSize = 26;
+            var buttonSize = 25;
 
             if (GUI.Button(new Rect(width, 36, buttonSize, buttonSize), "↻"))
             {
@@ -204,18 +205,18 @@ namespace DockingCamera
 
             var widthOffset = width - 2;
 
-            zoomMultiplier = GUI.Toggle(new Rect(widthOffset, 120, 77, 20), zoomMultiplier, " x 10");
-            
-            GUI.Label(new Rect(widthOffset, 160, 77, 20), string.Format("rotateZ: {0:F0}", simplifiedRotateZBuffer));
-            GUI.Label(new Rect(widthOffset, 180, 77, 20), string.Format("rotateY: {0:F0}", rotateYBuffer));
+            zoomMultiplier = GUI.Toggle(new Rect(widthOffset, 116, 77, 20), zoomMultiplier, " x 10");
 
-            if (GUI.Button(new Rect(widthOffset, 210, 80, 25), "Photo"))
+            GUI.Label(new Rect(widthOffset, 158, 77, 20), string.Format("rotateZ: {0:F0}°", simplifiedRotateZBuffer));
+            GUI.Label(new Rect(widthOffset, 178, 77, 20), string.Format("rotateY: {0:F0}°", rotateYBuffer));
+
+            if (GUI.Button(new Rect(widthOffset, 202, 80, 25), "Photo"))
             {
                 var PhotoFrom = part.vessel.vesselName; 
                 renderTexture.SavePng(PhotoFrom);
             }
-
-            IsVisibilityRay = GUI.Toggle(new Rect(widthOffset, 265, 77, 40), IsVisibilityRay, "Target\nRay");
+            
+            IsVisibilityRay = GUI.Toggle(new Rect(widthOffset, 260, 77, 40), IsVisibilityRay, "Target\nRay");
 
             GUI.Label(new Rect(widthOffset, 305, 77, 20), string.Format("Bullets: {0:F0}", hits));
            

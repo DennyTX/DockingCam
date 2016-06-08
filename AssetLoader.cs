@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DockingCamera 
 {
-    [KSPAddon(KSPAddon.Startup.Flight, true)]
+    [KSPAddon(KSPAddon.Startup.EveryScene, true)]
 
     public class AssetLoader:MonoBehaviour
     {
@@ -12,6 +12,7 @@ namespace DockingCamera
         public static Material matNightVisionNoise2 = null;
         public static Material matNoise = null;
         public static Material matNoiseNightVision = null;
+        public static Material matOldTV = null;
         public static Texture2D texSelfRot = null;
         public static Texture2D texTargetRot = null;
         public static Texture2D texTargetPoint = null;
@@ -37,6 +38,7 @@ namespace DockingCamera
             matNightVisionNoise2 = (Material)bundle.LoadAsset("NightVisionNoise2");
             matNoise = (Material)bundle.LoadAsset("Noise");
             matNoiseNightVision = (Material)bundle.LoadAsset("NoiseNightVision");
+            matOldTV = (Material)bundle.LoadAsset("OldTV");
             texSelfRot = (Texture2D)bundle.LoadAsset("selfrot");
             texTargetRot = (Texture2D)bundle.LoadAsset("targetrot");
             texTargetPoint = (Texture2D)bundle.LoadAsset("targetPoint");

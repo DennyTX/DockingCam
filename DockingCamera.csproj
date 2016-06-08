@@ -53,7 +53,7 @@
   <ItemGroup>
     <Compile Include="AssetLoader.cs" />
     <Compile Include="CameraDestroyer.cs" />
-    <Compile Include="Modules\CameraModule.cs" />
+    <Compile Include="Modules\PartCameraModule.cs" />
     <Compile Include="CameraShaders.cs" />
     <Compile Include="Camera\BaseKspCamera.cs" />
     <Compile Include="Camera\DockingCamera.cs" />

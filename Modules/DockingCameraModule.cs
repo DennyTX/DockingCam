@@ -13,7 +13,6 @@ namespace DockingCamera
         [UI_Toggle(controlEnabled = true, enabledText = "On", disabledText = "Off", scene = UI_Scene.All)]
         
         public bool IsEnabled;
-
         //public bool IsTargeted;
 
         [KSPField]
@@ -29,7 +28,7 @@ namespace DockingCamera
         public bool noise = false;
 
         [KSPField]
-        public string targetCrossColor = "0.9,0.0,0.0,1.0";
+        public string targetCrossColorDPAI = "0.9,0.0,0.0,1.0";
 
         [KSPField]
         public string targetCrossColorOLDD = "0.0,0.9,0.0,1.0";
@@ -51,7 +50,7 @@ namespace DockingCamera
             camera.MaxSpeed = maxSpeed;
             var splColorOLDD = targetCrossColorOLDD.Split(',').Select(float.Parse).ToList(); // parsing color to RGBA
             camera.TargetCrossColorOLDD = new Color(splColorOLDD[0], splColorOLDD[1], splColorOLDD[2], splColorOLDD[3]);
-            var splColor = targetCrossColor.Split(',').Select(float.Parse).ToList(); // parsing color to RGBA
+            var splColor = targetCrossColorDPAI.Split(',').Select(float.Parse).ToList(); // parsing color to RGBA
             camera.TargetCrossColor = new Color(splColor[0], splColor[1], splColor[2], splColor[3]);
         }
 
@@ -85,7 +84,7 @@ namespace DockingCamera
         public void Activate()
         {
             if (camera.IsActivate) return;
-            if (TargetHelper.IsTargetSelect )
+            if (TargetHelper.IsTargetSelect)
             {
                 var target = new TargetHelper(part);
                 target.Update();

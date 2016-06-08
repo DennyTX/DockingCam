@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace DockingCamera
@@ -12,7 +13,6 @@ namespace DockingCamera
         protected static int windowCount = 0;
         protected string windowLabel;
         protected string subWindowLabel; 
-        protected RenderTexture renderTexture;
         protected Rect windowPosition;
         protected GameObject partGameObject;
         protected Part part;
@@ -20,6 +20,7 @@ namespace DockingCamera
         protected Texture textureSeparator;
         protected Texture textureTargetMark;
         protected Texture[] textureNoSignal;
+        protected RenderTexture renderTexture; 
         protected ShaderType shaderType;
 
         protected float rotateX = 0;
@@ -48,6 +49,9 @@ namespace DockingCamera
 
         public static double ElectricChargeAmount;
 
+        public static Material CurrentShader;
+        public static string CurrentShaderName;
+
         protected List<Camera> allCameras = new List<Camera>();
         protected List<GameObject> allCamerasGameObject = new List<GameObject>();
         protected List<string> cameraNames = new List<string>{"GalaxyCamera", "Camera ScaledSpace", "Camera 01", "Camera 00" };
@@ -70,6 +74,7 @@ namespace DockingCamera
 			GameObject updateGUIHolder = new GameObject();
  			updateGUIObject = updateGUIHolder.AddComponent<UpdateGUIObject>(); // добавление компонента на объект
 			updateGUIHolder.transform.parent = part.transform;
+            //updateGUIObject.awakeFunction += Awake; //добавление скриптов monobehaviour к выполнению тут
         }
 
         ~BaseKspCamera()
@@ -77,10 +82,10 @@ namespace DockingCamera
             GameEvents.OnFlightUIModeChanged.Remove(FlightUIModeChanged);
         }
 
-        private void Awake()
-        {
-            
-        }
+        //private void Awake()
+        //{
+        //    textureTargetMark = AssetLoader.texTargetPoint;
+        //}
         private void FlightUIModeChanged(FlightUIMode mode)
         {
             if (mode == FlightUIMode.ORBITAL)
@@ -120,7 +125,8 @@ namespace DockingCamera
             textureNoSignal = new Texture[8];
             for (int i = 0; i < textureNoSignal.Length; i++)
             {
-                textureNoSignal[i] = Util.WhiteNoiseTexture((int) texturePosition.width, (int) texturePosition.height, 1f); //Util.LoadTexture("nosignal");
+                textureNoSignal[i] = Util.WhiteNoiseTexture((int) texturePosition.width, (int) texturePosition.height, 1f); 
+                //Util.LoadTexture("nosignal");
             }
         }
 
@@ -151,6 +157,8 @@ namespace DockingCamera
         {
             allCameras.ForEach(Camera.Destroy);
             allCameras = new List<Camera>();
+            //var node = ConfigNode.CreateConfigFromObject(CurrentShader);
+            //node.Save("shader.sav");
         }
 
         /// <summary>
@@ -161,9 +169,7 @@ namespace DockingCamera
             if (IsActivate) return;
             InitCameras();
             IsActivate = true;
-            textureTargetMark = AssetLoader.texTargetPoint;
-			//Debug.LogWarning("BaseKspCamera::Activate");
-            updateGUIObject.updateGUIFunction += OnPostRender;
+            updateGUIObject.updateGUIFunction += Begin;
         }
 
         /// <summary>
@@ -174,11 +180,10 @@ namespace DockingCamera
             if (!IsActivate) return;
             DestroyCameras();
             IsActivate = false;
-			//Debug.LogWarning("BaseKspCamera::Deactivate");
-            updateGUIObject.updateGUIFunction -= OnPostRender;
+            updateGUIObject.updateGUIFunction -= Begin;
         }
 
-        void OnPostRender()
+        void Begin()
         {
 			if (IsActivate)
 			{
@@ -218,16 +223,25 @@ namespace DockingCamera
         /// </summary>
         protected virtual void ExtendedDrawWindowL1()
         {
+            var widthOffset = windowPosition.width - 86;
             if (!zoomMultiplier)
-                GUI.Label(new Rect(windowPosition.width - 86, 140, 77, 20), "zoom: " + (int)(maxZoom - currentZoom + minZoom));
+                GUI.Label(new Rect(widthOffset, 140, 77, 20), "zoom: " + (int)(maxZoom - currentZoom + minZoom));
             else
-                GUI.Label(new Rect(windowPosition.width - 86, 140, 77, 20), "zoom: " + (int)((maxZoom - currentZoom + minZoom)) * 10);
+                GUI.Label(new Rect(widthOffset, 140, 77, 20), "zoom: " + (int)(maxZoom - currentZoom + minZoom) * 10);
 
-            isTargetPoint = GUI.Toggle(new Rect(windowPosition.width - 86, 235, 77, 40), isTargetPoint, "Target\nMark");
+            isTargetPoint = GUI.Toggle(new Rect(widthOffset, 230, 77, 40), isTargetPoint, "Target\nMark");
 
             Graphics.DrawTexture(texturePosition, textureBackGroundCamera);
-            //Material currentMaterial = CameraShaders.Get(shaderType);
-            Graphics.DrawTexture(texturePosition, Render(), CameraShaders.Get(shaderType));
+            CurrentShader = CameraShaders.Get(shaderType);
+            if (CurrentShader == null)
+            {
+                CurrentShaderName = "none";
+            }
+            else
+            {
+                CurrentShaderName = CurrentShader.name;
+            }
+            Graphics.DrawTexture(texturePosition, Render(), CurrentShader);
         }
 
         /// <summary>
@@ -238,31 +252,29 @@ namespace DockingCamera
             if (TargetHelper.IsTargetSelect)
             {
                 var camera = allCameras.Last();
+
+
                 var vessel = TargetHelper.Target as Vessel;
                 if (vessel == null)
                 {
-                    var zzz = TargetHelper.Target as ModuleDockingNode;
-                    vessel = zzz.vessel;
+                    var targetedDockingNode = TargetHelper.Target as ModuleDockingNode;
+                    vessel = targetedDockingNode.vessel;
                 }
 
                 var point = camera.WorldToViewportPoint(vessel.transform.position); //get current targeted vessel 
                 var x = point.x; //(0;1)
                 var y = point.y;
                 var z = point.z;
-                //var heading = point.normalized.z; 
-                //if (x >= 0.96 && z <= 0) x = 0.96f;
-                //if (x <= 0 && z <= 0) x = -0.02f;
-                //if (y >= 0.96 || z <= 0) y = 0.96f;
-                //if (y <= 0 || z <= 0) y = -0.02f;
+ 
+                x = GetX(x,z);
+                y = GetY(y,z);
+
                 var offsetX = texturePosition.width * x;
                 var offsetY = texturePosition.height * y;
 
                 if (isTargetPoint)
                 {
-                    if (z > 0 && 0 <= x && x <= 1 && 0 <= y && y <= 1)
-                    {
-                        GUI.DrawTexture(new Rect(texturePosition.xMin + offsetX, texturePosition.yMax - offsetY, 20, 20), textureTargetMark);
-                    }    
+                    GUI.DrawTexture(new Rect(texturePosition.xMin + offsetX, texturePosition.yMax - offsetY, 20, 20), textureTargetMark);
                 }
             }
             if (IsOrbital)
@@ -271,6 +283,62 @@ namespace DockingCamera
             }
         }
 
+        private float GetX(float x, float z)
+        {
+            if (x < 0 && z > 0)
+            {
+                if (x <= -0.02) x = -0.02f;
+                return x;
+            }
+            if (x > 0 && z < 0)
+            {
+                x = -0.02f;
+                return x;
+            }
+            if (x < 0 && z < 0) 
+            {
+                x = 0.96f;
+                return x;
+            }
+            if (x > 0 && z > 0)
+            {
+                if (x >= 0.96) x = 0.96f;
+                return x;
+            }
+            return x;
+        }
+        private float GetY(float y, float z)
+        {
+            if (z > 0)
+            {
+                if (y <= 0.02)
+                {
+                    y = 0.02f;
+                    return y;
+                }
+                if (y >= 1.02)
+                {
+                    y = 1.02f;
+                    return y;
+                }
+            }
+            if (z < 0)
+            {
+                //y = 0.02f;
+                //return y;
+                if (y <= 0.02)
+                {
+                    y = 0.02f;
+                    return y;
+                }
+                if (y >= 1.02)
+                {
+                    y = 1.02f;
+                    return y;
+                }
+            }
+            return y;
+        }
         /// <summary>
         /// drawing method, third layer, interface
         /// </summary>
@@ -292,14 +360,20 @@ namespace DockingCamera
                 IsAuxiliaryWindowOpen = !IsAuxiliaryWindowOpen;
                 IsAuxiliaryWindowButtonPres = true;
             }
-            if (GUI.Button(new Rect(8, texturePosition.yMax - 22, 20, 20), "☼")) //shader switch
+
+            var aaa = new Rect(8, texturePosition.yMax - 22, 20, 20);
+            var bbb = new GUIContent("☼", CurrentShaderName);
+            GUI.Box(new Rect(aaa), bbb);
+            GUI.Label(new Rect(64, 128, 200, 40), GUI.tooltip);
+            if (GUI.Button(new Rect(aaa), "☼")) //shader switch "▼" 
+            //if (GUI.Button(new Rect(8, texturePosition.yMax - 22, 20, 20), "☼")) //shader switch "▼" 
             {
                 shaderType++;
                 if (!Enum.IsDefined(typeof(ShaderType), shaderType))
-                    shaderType = ShaderType.Noise;
+                    shaderType = ShaderType.OldTV;
             }
 
-            if (GUI.RepeatButton(new Rect(texturePosition.xMax - 22, texturePosition.yMax - 22, 20, 20), "◰") && 
+            if (GUI.RepeatButton(new Rect(texturePosition.xMax - 22, texturePosition.yMax - 22, 20, 20), "±") && 	
                 Camera.allCameras.FirstOrDefault(x => x.name == "Camera 00") != null) //Size of main window
             {
                 switch (windowSizeCoef)
@@ -371,8 +445,8 @@ namespace DockingCamera
         {
             allCamerasGameObject.Last().transform.position = partGameObject.transform.position;
             allCamerasGameObject.Last().transform.rotation = partGameObject.transform.rotation;
-            allCamerasGameObject.Last().transform.Rotate(new Vector3(-1f, 0, 0), 90);
 
+            allCamerasGameObject.Last().transform.Rotate(new Vector3(-1f, 0, 0), 90);
             allCamerasGameObject.Last().transform.Rotate(new Vector3(0, 1f, 0), rotateY);
             allCamerasGameObject.Last().transform.Rotate(new Vector3(1f, 0, 0), rotateX);
             allCamerasGameObject.Last().transform.Rotate(new Vector3(0, 0, 1f), rotateZ);

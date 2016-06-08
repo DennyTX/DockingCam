@@ -4,11 +4,11 @@ namespace DockingCamera
 {
     public enum ShaderType
     {
+        OldTV,
+        NightVisionNoise1,
         Noise,
         NoiseNightVision,
         NightVisionClear,
-        NightVisionNoise1,
-        NightVisionNoise2,
         Grayscale,
         None
     }
@@ -18,11 +18,11 @@ namespace DockingCamera
         {
             switch (type)
             {
+                case ShaderType.OldTV: return OldTV;
+                case ShaderType.NightVisionNoise1: return NightVisionNoise1;
                 case ShaderType.Noise: return Noise;
                 case ShaderType.NoiseNightVision: return NoiseNightVision;
                 case ShaderType.NightVisionClear: return NightVisionClear;
-                case ShaderType.NightVisionNoise1: return NightVisionNoise1;
-                case ShaderType.NightVisionNoise2: return NightVisionNoise2;
                 case ShaderType.Grayscale: return Grayscale;
                 case ShaderType.None: return null;
                 default: return null;
@@ -50,7 +50,7 @@ namespace DockingCamera
                 if (nightvisionclear == null)
                 {
                     nightvisionclear = AssetLoader.matNightVisionClear;
-   }
+                }
                 return nightvisionclear;
             }
         }
@@ -65,19 +65,6 @@ namespace DockingCamera
                     nightvisionnoise1 = AssetLoader.matNightVisionNoise1;
                 }
                 return nightvisionnoise1;
-            }
-        }
-
-        static Material nightvisionnoise2 = null;
-        public static Material NightVisionNoise2
-        {
-            get
-            {
-                if (nightvisionnoise2 == null)
-                {
-                    nightvisionnoise2 = AssetLoader.matNightVisionNoise2;
-                }
-                return nightvisionnoise2;
             }
         }
 
@@ -104,6 +91,25 @@ namespace DockingCamera
                     noisenightvision = AssetLoader.matNoiseNightVision;
                 }
                 return noisenightvision;
+            }
+        }
+        private static int i = 0;
+        static Material oldtv = null;
+        public static Material OldTV
+        {
+            get
+            {
+                if (oldtv == null)
+                {
+                    oldtv = AssetLoader.matOldTV;
+                }
+                //var Time = -0.4f;
+                //var TimeX = Random.Range(-0.4f, 2f);
+                //TimeX += Time.deltaTime;
+                ////if (TimeX > 100) TimeX = 0;
+                ////oldtv.SetFloat("_Distortion", Offset);
+                //oldtv.SetFloat("_TimeX", TimeX);                   
+                  return oldtv;
             }
         }
     }

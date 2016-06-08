@@ -7,17 +7,23 @@ namespace DockingCamera
     /// <summary>
     /// Module adds an external camera and gives control over it
     /// </summary>
-    class CameraModule : PartModule, ICamPart
+    class PartCameraModule : PartModule, ICamPart
     {
         [KSPField(guiActive = true, guiActiveEditor = true, guiName = "Camera powered: ")]
         public string IsPowered;
 
-        [KSPField(guiActive = true, guiActiveEditor = true, guiName = "Bullets", isPersistant = true)]
+        [KSPField(guiActive = true, guiActiveEditor = true, guiName = "Bullets: ")]
+        public string aboutHits;
+
+        [KSPField(isPersistant = true)]
         public int currentHits = -1;
 
         [KSPField(guiActive = true, guiActiveEditor = true, guiName = "Camera", isPersistant = true)]
         [UI_Toggle(controlEnabled = true, enabledText = "On", disabledText = "Off", scene = UI_Scene.All)]
         public bool IsEnabled;
+
+        [KSPField]
+        public int baseHits;
 
         [KSPField]
         public int windowSize = 256;
@@ -99,6 +105,7 @@ namespace DockingCamera
                 StartCoroutine(camera.WaitForRay());
             }
             currentHits = camera.hits;
+            aboutHits = currentHits + "/4";
         }
 
         private void Update()
@@ -117,7 +124,7 @@ namespace DockingCamera
                     }
                 }
             }
-            //var ElectricChargeAmount = BaseKspCamera.ElectricChargeAmount;
+            
             if (ElectricChargeAmount > 0)
             {
                 if (IsEnabled)
