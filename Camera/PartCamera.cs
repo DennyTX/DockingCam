@@ -9,7 +9,11 @@ namespace DockingCamera
     class PartCamera:BaseKspCamera
     {
         private static HashSet<int> usedId = new HashSet<int>();
-        //private static GUIStyle guiStyleBold; 
+
+        private static float CurrentX = -32;
+        private static float CurrentY = 32;
+
+        //private static GUIStyle guiStyleBold;  
         private GameObject rotatorZ;
         private GameObject rotatorY;
         private GameObject zoommer;
@@ -42,11 +46,6 @@ namespace DockingCamera
             set { currentZoom = value; }
         }
 
-        //protected override float ExampleChieldField
-        //{
-        //    get { return simplifiedRotateZBuffer; }
-        //}
-
         public PartCamera(Part part, string resourceScanning, string bulletName, int _hits, string rotatorZ, string rotatorY, string zoommer,
                float stepper, string cameraName, int allowedDistance, int windowSize, string windowLabel = "Camera")
                : base(part, windowSize, windowLabel)
@@ -64,6 +63,8 @@ namespace DockingCamera
                     this.rotatorY = partGameObject.gameObject.GetChild(rotatorY);
                     this.zoommer = partGameObject.gameObject.GetChild(zoommer);
                     personalCamera = partGameObject.gameObject.GetChild(cameraName);
+
+                    GameEvents.onLevelWasLoaded.Add(LevelWasLoaded);
 
                     if (_hits == -1)
                     {
@@ -83,7 +84,7 @@ namespace DockingCamera
                         var i = hits+1;
                         while (true)
                         {
-                            var aaa = string.Format("{0}{1:000}", bulletName, i);
+                            //var aaa = string.Format("{0}{1:000}", bulletName, i);
                             var hit = partGameObject.GetChild(string.Format("{0}{1:000}", bulletName, i)); 
                             //var hit = partGameObject.GetChild(string.Format("{0}{1:000}", hitName, i));
                             if (hit == null)
@@ -93,6 +94,17 @@ namespace DockingCamera
                         }
                     }
                 }
+        private void LevelWasLoaded(GameScenes data)
+        {
+            usedId = new HashSet<int>();
+            CurrentX = -32;
+            CurrentY = 32;
+        }
+
+        ~PartCamera()
+        {
+            GameEvents.onLevelWasLoaded.Remove(LevelWasLoaded);
+        }
 
         protected override void ExtendedDrawWindowL1()
         {
@@ -222,6 +234,7 @@ namespace DockingCamera
             base.ExtendedDrawWindowL1();
         }
 
+        
         public override void Update()
         {
             UpdateWhiteNoise();
@@ -247,6 +260,8 @@ namespace DockingCamera
             allCameras.ForEach(cam => cam.fieldOfView = realZoom); //currentZoom); 
             rotateZ = 0; 
             rotateY = 0;
+
+            
         }
 
         void DrawScanningRay()
@@ -407,12 +422,25 @@ namespace DockingCamera
         {
             if (IsActivate) return;
             SetFreeId();
+
+            windowPosition.x = CurrentX + 32;
+            windowPosition.y = CurrentY + 32;
+            CurrentX = windowPosition.x;
+            CurrentY = windowPosition.y;
+
             base.Activate();
         }
 
         public override void Deactivate()
         {
             if (!IsActivate) return;
+            //var aaa = usedId.Count;
+            windowPosition.x = -32 + 32 * ID;
+            windowPosition.y = 32 + 32 * ID;
+            windowPosition.x -= 32;
+            windowPosition.y -= 32;
+            CurrentX = windowPosition.x;
+            CurrentY = windowPosition.y;
             usedId.Remove(ID);
             base.Deactivate();
         }
@@ -444,7 +472,7 @@ namespace DockingCamera
         [KSPEvent(guiName = "Review Data", active = true, guiActive = true)]
         public void ReviewDataEvent()
         {
-            
+            base.ReviewData();
         }
     }
 }

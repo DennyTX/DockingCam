@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -53,6 +54,7 @@
   <ItemGroup>
     <Compile Include="AssetLoader.cs" />
     <Compile Include="CameraDestroyer.cs" />
+    <Compile Include="DontUnload.cs" />
     <Compile Include="Modules\PartCameraModule.cs" />
     <Compile Include="CameraShaders.cs" />
     <Compile Include="Camera\BaseKspCamera.cs" />
@@ -61,6 +63,7 @@
     <Compile Include="Camera\PartCamera.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TargetHelper.cs" />
+    <Compile Include="UnloadRangeChanges.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="VisibilityRayOnMap.cs" />
   </ItemGroup>

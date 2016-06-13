@@ -77,6 +77,7 @@ namespace DockingCamera
             }
             capObject = part.gameObject.GetChild(cap);
         }
+        public Transform lookAtTarget;
         public override void OnUpdate()
         {
             if (camera == null)
@@ -106,10 +107,10 @@ namespace DockingCamera
             }
             currentHits = camera.hits;
             aboutHits = currentHits + "/4";
-        }
+        //}
 
-        private void Update()
-        {
+        //private void Update()
+        //{
             PartResourceDefinition definition = PartResourceLibrary.Instance.GetDefinition("ElectricCharge");
             List<Part> parts = new List<Part>();
             parts = FlightGlobals.ActiveVessel.Parts;
@@ -134,6 +135,34 @@ namespace DockingCamera
             }
             else
                 IsPowered = "FALSE";
+
+            var aaa = vessel.name;
+            var bbb = FlightGlobals.ActiveVessel.name;
+            if (aaa != bbb)
+            {
+            //    var CamToAim = GameObject.Find("CamExt"); // это поиск не в конкретном месте, а во всей сцене.
+
+            //if (lookAtTarget != null)
+            //{
+                var aaa1 = transform.FindChild("model");
+                Transform aaa11 = null;
+                foreach (Transform child in aaa1)
+                {
+                    //Debug.Log("AAAAAA "+child.name);
+                    if (child.name.IndexOf("OnboardCamera") != -1)
+                        aaa11 = child;
+                }
+               // var aaa11 = aaa1.FindChild("OLDD/DockingCam/OnboardCamera(Clone)");
+                var aaa2 = aaa11.FindChild("OnboardCamera_03");
+                var aaa3 = aaa2.FindChild("Case");
+                var aaa4 = aaa3.FindChild("Tube");
+                var aaa5 = aaa4.FindChild("Lenz");
+                var CamToAim = aaa5.FindChild("CamExt");
+
+                CamToAim.transform.LookAt(FlightGlobals.ActiveVessel.transform.position);
+
+                //CamToAim.transform.LookAt(lookAtTarget.position);
+            }
         }
 
         public void Activate()

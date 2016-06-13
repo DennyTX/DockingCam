@@ -5,3 +5,4 @@ E:\DennyTX\Documents\Visual Studio 2013\Projects\111\obj\Debug\DockingCamera.pdb
 D:\KSP_112_test\GameData\OLDD\DockingCam\DockingCamera.pdb
 E:\DennyTX\Documents\Visual Studio 2013\Projects\112_DockingCam\obj\Debug\DockingCamera.dll
 E:\DennyTX\Documents\Visual Studio 2013\Projects\112_DockingCam\obj\Debug\DockingCamera.pdb
+E:\DennyTX\Documents\Visual Studio 2013\Projects\112_DockingCam\obj\Debug\DockingCamera.csprojResolveAssemblyReference.cache

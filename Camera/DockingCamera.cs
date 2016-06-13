@@ -8,7 +8,14 @@ namespace DockingCamera
 {
     class DockingCamera:BaseKspCamera
     {
-        private HashSet<int> usedId = new HashSet<int>();
+        private static List<Texture2D>[] textureWhiteNoise;
+        private static GUIStyle guiStyleRedLabel;
+        private static GUIStyle guiStyleGreenLabel; 
+
+        private static HashSet<int> usedId = new HashSet<int>();
+
+        private static float CurrentY = 64;
+
         private int ID;
         private int idTextureNoise; 
 
@@ -20,12 +27,8 @@ namespace DockingCamera
         private Texture2D textureHLineBack;
 
         private GameObject moduleDockingNodeGameObject; 
-        private static List<Texture2D>[] textureWhiteNoise;
-        private static GUIStyle guiStyleRedLabel;
-        private static GUIStyle guiStyleGreenLabel; 
         private TargetHelper target;
 
-        private string lastVesselName;
         private bool noiseActive;
         private bool cameraData = true;
         private bool rotatorState = true;
@@ -37,6 +40,7 @@ namespace DockingCamera
         private Color targetCrossColor = new Color(0.5f, .0f, 0, 1);
         private Color targetCrossColorBack = new Color(.9f, 0, 0, 1);
 
+        private string lastVesselName;
         private string windowLabelSuffix;
         public Color TargetCrossColorOLDD
         {
@@ -165,24 +169,7 @@ namespace DockingCamera
                 GUI.DrawTexture(new Rect(texturePosition.xMin + 20, texturePosition.yMax - 20, 20, 20),
                     AssetLoader.texLampOff);
 
-            if (TargetHelper.IsTargetSelect) // && part.vessel.Equals(FlightGlobals.ActiveVessel))
-            {
-                lastVesselName = TargetHelper.Target.GetName();
-                windowLabelSuffix = " to " + lastVesselName;
-                windowLabel = subWindowLabel + " " + ID + windowLabelSuffix;
-            }
-            else
-            {
-                if (part.vessel.Equals(FlightGlobals.ActiveVessel))
-                {
-                    windowLabel = subWindowLabel + " " + ID;
-                    lastVesselName = "";
-                    windowLabelSuffix = lastVesselName;                   
-                }
-            }
-            if (!part.vessel.Equals(FlightGlobals.ActiveVessel))
-                windowLabel = subWindowLabel + " " + ID + windowLabelSuffix;               
-
+            GetWindowLabel();
             GetFlightData();
             GetCross();
 
@@ -199,6 +186,33 @@ namespace DockingCamera
             }
 
             base.ExtendedDrawWindowL3();
+        }
+
+        private void GetWindowLabel()
+        {
+            if (part.vessel.Equals(FlightGlobals.ActiveVessel))
+                if (TargetHelper.IsTargetSelect) // && part.vessel.Equals(FlightGlobals.ActiveVessel))
+                {
+                    lastVesselName = TargetHelper.Target.GetName();
+                    windowLabelSuffix = " to " + lastVesselName;
+                    windowLabel = subWindowLabel + " " + ID + windowLabelSuffix;
+                }
+                else
+                {
+                    if (part.vessel.Equals(FlightGlobals.ActiveVessel))
+                    {
+                        windowLabel = subWindowLabel + " " + ID;
+                        lastVesselName = "";
+                        windowLabelSuffix = lastVesselName;
+                    }
+                }
+            else
+            {
+                windowLabel = subWindowLabel + " " + ID + windowLabelSuffix;    
+            }
+            //if (!part.vessel.Equals(FlightGlobals.ActiveVessel))  //autoaim?
+            //    windowLabel = subWindowLabel + " " + ID + windowLabelSuffix;  
+           
         }
 
         private void GetCross()
@@ -263,9 +277,6 @@ namespace DockingCamera
                     float i = 0;
                     target.Update();
 
-                    //lastVesselName = TargetHelper.Target.GetName();
-                    //windowLabel = subWindowLabel + " " + ID + " to " + lastVesselName;
-
                     if (!target.isDockPort)
                     {
                         GUI.Label(new Rect(texturePosition.xMin + 10, 54, 100, 40),
@@ -308,12 +319,7 @@ namespace DockingCamera
                         String.Format("Pitch:{0:f0}°", target.AngleY));
                     GUI.Label(new Rect(texturePosition.xMax - 70, 32 + i++*20, 70, 20),
                         String.Format("Roll:{0:f0}°", target.AngleZ));
-                    //i += .25f;
                 }
-                //else
-                //{
-                //    windowLabel = subWindowLabel + " " + ID + " NO TARGET";
-                //}
             }
         }
 
@@ -321,12 +327,20 @@ namespace DockingCamera
         {
             if (IsActivate) return;
             SetFreeId();
+
+                windowPosition.y = CurrentY;
+                CurrentY = windowPosition.y+windowPosition.height;
+              
             base.Activate();
         }
 
         public override void Deactivate()
         {
             if (!IsActivate) return;
+
+                CurrentY = windowPosition.y;
+                windowPosition.y = CurrentY - windowPosition.height;
+
             usedId.Remove(ID);
             base.Deactivate();
         }

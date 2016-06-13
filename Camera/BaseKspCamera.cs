@@ -2,14 +2,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace DockingCamera
 {
     public class BaseKspCamera
     {
-        public Rect texturePosition;
+
+
         protected static int windowCount = 0;
+        protected static double ElectricChargeAmount;
+        public static Material CurrentShader;
+        public static string CurrentShaderName;
+
+        public Rect texturePosition;
         protected string windowLabel;
         protected string subWindowLabel; 
         protected Rect windowPosition;
@@ -35,6 +42,8 @@ namespace DockingCamera
         protected float windowSize = 128f;
         protected int windowSizeCoef = 2;
         protected int windowId;
+        //protected int WindowIdPrevious;
+
         protected int textureNoSignalId;
 
         protected bool ShaderSwitcher = false;
@@ -45,11 +54,6 @@ namespace DockingCamera
         public bool IsAuxiliaryWindowButtonPres = false;
         public bool IsButtonOff = false;
         public bool IsOrbital = false;
-
-        public static double ElectricChargeAmount;
-
-        public static Material CurrentShader;
-        public static string CurrentShaderName;
 
         protected List<Camera> allCameras = new List<Camera>();
         protected List<GameObject> allCamerasGameObject = new List<GameObject>();
@@ -67,8 +71,9 @@ namespace DockingCamera
             partGameObject = part.gameObject;
             InitWindow();
             InitTextures();
-            windowCount++;
+            //windowCount++;
             GameEvents.OnFlightUIModeChanged.Add(FlightUIModeChanged);
+            //GameEvents.onLevelWasLoaded.Add(LevelWasLoaded);
 			//UPDATE_MARK
 			GameObject updateGUIHolder = new GameObject();
  			updateGUIObject = updateGUIHolder.AddComponent<UpdateGUIObject>(); // добавление компонента на объект
@@ -76,15 +81,20 @@ namespace DockingCamera
             //updateGUIObject.awakeFunction += Awake; //добавление скриптов monobehaviour к выполнению тут
         }
 
+        //private void LevelWasLoaded(GameScenes data)
+        //{
+        //    //var aaa = PartCamera.usedId;
+        //    PartCamera.usedId = new HashSet<int>();
+        //    PartCamera.CurrentX = 0;
+        //    PartCamera.CurrentY = 64;
+        //}
+
         ~BaseKspCamera()
         {
             GameEvents.OnFlightUIModeChanged.Remove(FlightUIModeChanged);
+            //GameEvents.onLevelWasLoaded.Remove(LevelWasLoaded);
         }
 
-        //private void Awake()
-        //{
-        //    textureTargetMark = AssetLoader.texTargetPoint;
-        //}
         private void FlightUIModeChanged(FlightUIMode mode)
         {
             if (mode == FlightUIMode.ORBITAL)
@@ -114,7 +124,7 @@ namespace DockingCamera
         /// </summary>
         protected virtual void InitTextures()
         {
-            texturePosition = new Rect(6f, 34f, windowPosition.width - 12f, windowPosition.height - 40f); //42f);
+            texturePosition = new Rect(6, 34, windowPosition.width - 12f, windowPosition.height - 40f); //42f);
             renderTexture = new RenderTexture((int)windowSize * 4, (int)windowSize * 4, 24, RenderTextureFormat.RGB565);  
             RenderTexture.active = renderTexture;
             renderTexture.Create();
@@ -164,7 +174,11 @@ namespace DockingCamera
         public virtual void Activate()
         {
             if (IsActivate) return;
+            windowCount++;
             InitCameras();
+
+
+                
             IsActivate = true;
             updateGUIObject.updateGUIFunction += Begin;
         }
@@ -175,7 +189,12 @@ namespace DockingCamera
         public virtual void Deactivate()
         {
             if (!IsActivate) return;
+            windowCount--;
+
+ 
+
             DestroyCameras();
+
             IsActivate = false;
             updateGUIObject.updateGUIFunction -= Begin;
         }
@@ -185,6 +204,7 @@ namespace DockingCamera
 			if (IsActivate)
 			{
                 windowPosition = GUI.Window(windowId, windowPosition, DrawWindow, windowLabel); //draw main window
+
                 ElectricChargeAmount = part.vessel.GetActiveResources().First(x => x.info.name == "ElectricCharge").amount;
                 if (ElectricChargeAmount <= 0)
                 {
@@ -192,7 +212,7 @@ namespace DockingCamera
                     IsButtonOff = true;
                 }
                 if (HighLogic.LoadedSceneIsFlight && !FlightDriver.Pause)
-                    part.RequestResource("ElectricCharge", 0.002);               
+                    part.RequestResource("ElectricCharge", 0.002 * TimeWarp.fixedDeltaTime);               
 			}
 		}
 
@@ -371,11 +391,11 @@ namespace DockingCamera
                         windowSizeCoef = 3;
                         break;
                     case 3:
-                        windowSizeCoef = 4;
+                        windowSizeCoef = 2; //4;
                         break;
-                    case 4:
-                        windowSizeCoef = 2;
-                        break;
+                    //case 4:
+                    //    windowSizeCoef = 2;
+                    //    break;
                 }
                 Deactivate();
                 InitWindow();
