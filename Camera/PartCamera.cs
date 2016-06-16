@@ -72,7 +72,6 @@ namespace DockingCamera
                         while (true)
                         {
                             var hit = partGameObject.GetChild(string.Format("{0}{1:000}", bulletName, hits + 1));
-                            //var hit = partGameObject.GetChild(string.Format("{0}{1:000}", hitName, hits + 1));
                             if (hit == null)
                                 break;
                             hits++;
@@ -86,7 +85,6 @@ namespace DockingCamera
                         {
                             //var aaa = string.Format("{0}{1:000}", bulletName, i);
                             var hit = partGameObject.GetChild(string.Format("{0}{1:000}", bulletName, i)); 
-                            //var hit = partGameObject.GetChild(string.Format("{0}{1:000}", hitName, i));
                             if (hit == null)
                                 break;
                             GameObject.Destroy(hit);
@@ -216,7 +214,7 @@ namespace DockingCamera
 
             var widthOffset = width - 2;
 
-            zoomMultiplier = GUI.Toggle(new Rect(widthOffset, 116, 77, 20), zoomMultiplier, " x 10");
+            zoomMultiplier = GUI.Toggle(new Rect(widthOffset, 116, 77, 20), zoomMultiplier, " x 24");
 
             GUI.Label(new Rect(widthOffset, 158, 77, 20), string.Format("rotateZ: {0:F0}°", simplifiedRotateZBuffer));
             GUI.Label(new Rect(widthOffset, 178, 77, 20), string.Format("rotateY: {0:F0}°", rotateYBuffer));
@@ -260,8 +258,6 @@ namespace DockingCamera
             allCameras.ForEach(cam => cam.fieldOfView = realZoom); //currentZoom); 
             rotateZ = 0; 
             rotateY = 0;
-
-            
         }
 
         void DrawScanningRay()
