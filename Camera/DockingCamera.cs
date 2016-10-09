@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine; 
+using UnityEngine;
 
-
-namespace DockingCamera
+namespace OLDD_camera.Camera
 {
     class DockingCamera:BaseKspCamera
     {
+        private static HashSet<int> usedId = new HashSet<int>(); 
+        
         private static List<Texture2D>[] textureWhiteNoise;
         private static GUIStyle guiStyleRedLabel;
         private static GUIStyle guiStyleGreenLabel; 
-
-        private static HashSet<int> usedId = new HashSet<int>();
 
         private static float CurrentY = 64;
 
@@ -124,12 +123,12 @@ namespace DockingCamera
 
         protected override void ExtendedDrawWindowL1()
         {
-            var widthOffset = windowPosition.width - 86;
-            cameraData = GUI.Toggle(new Rect(widthOffset, 34, 76, 20), cameraData, "Flight data");
-            rotatorState = GUI.Toggle(new Rect(widthOffset, 54, 76, 20), rotatorState, "Rotator");
-            targetCrossDPAI = GUI.Toggle(new Rect(widthOffset, 74, 76, 30), targetCrossDPAI, "Cross\n DPAI");
-            targetCrossDenny = GUI.Toggle(new Rect(widthOffset, 106, 76, 30), targetCrossDenny, "Cross\n OLDD");
-            noiseActive = GUI.Toggle(new Rect(widthOffset, 180, 76, 20), noiseActive, "Noise");
+            var widthOffset = windowPosition.width - 92;
+            cameraData = GUI.Toggle(new Rect(widthOffset, 34, 88, 20), cameraData, "Flight data");
+            rotatorState = GUI.Toggle(new Rect(widthOffset, 54, 88, 20), rotatorState, "Rotator");
+            targetCrossDPAI = GUI.Toggle(new Rect(widthOffset, 74, 88, 20), targetCrossDPAI, "Cross DPAI");
+            targetCrossDenny = GUI.Toggle(new Rect(widthOffset, 94, 88, 20), targetCrossDenny, "Cross OLDD");
+            noiseActive = GUI.Toggle(new Rect(widthOffset, 253, 88, 20), noiseActive, "Noise");
             base.ExtendedDrawWindowL1();
         }
 
@@ -327,20 +326,16 @@ namespace DockingCamera
         {
             if (IsActivate) return;
             SetFreeId();
-
-                windowPosition.y = CurrentY;
-                CurrentY = windowPosition.y+windowPosition.height;
-              
+            windowPosition.y = CurrentY;
+            CurrentY = windowPosition.y+windowPosition.height;
             base.Activate();
         }
 
         public override void Deactivate()
         {
             if (!IsActivate) return;
-
-                CurrentY = windowPosition.y;
-                windowPosition.y = CurrentY - windowPosition.height;
-
+            CurrentY = windowPosition.y;
+            windowPosition.y = CurrentY - windowPosition.height;
             usedId.Remove(ID);
             base.Deactivate();
         }
