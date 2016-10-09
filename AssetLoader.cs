@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace DockingCamera 
+namespace OLDD_camera 
 {
     [KSPAddon(KSPAddon.Startup.EveryScene, true)]
 
@@ -13,6 +13,8 @@ namespace DockingCamera
         public static Material matNoise = null;
         public static Material matNoiseNightVision = null;
         public static Material matOldTV = null;
+        public static Material matGrayscale = null;
+
         public static Texture2D texSelfRot = null;
         public static Texture2D texTargetRot = null;
         public static Texture2D texTargetPoint = null;
@@ -33,6 +35,7 @@ namespace DockingCamera
             // Load and retrieve the AssetBundle
             Debug.Log("AssetLoader:finished");
             AssetBundle bundle = www.assetBundle;
+            matGrayscale = (Material)bundle.LoadAsset("Grayscale");
             matOldTV = (Material)bundle.LoadAsset("OldTV");
             matNightVisionNoise1 = (Material)bundle.LoadAsset("NightVisionNoise1");
             matNoise = (Material)bundle.LoadAsset("Noise");
