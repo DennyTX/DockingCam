@@ -1,15 +1,15 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace OLDD_camera 
+namespace OLDD_camera.Utils 
 {
-    [KSPAddon(KSPAddon.Startup.EveryScene, true)]
+    [KSPAddon(KSPAddon.Startup.Flight, true)]
 
     public class AssetLoader:MonoBehaviour
     {
         public static Material matNightVisionClear = null;
         public static Material matNightVisionNoise1 = null;
-        public static Material matNightVisionNoise2 = null;
+        //public static Material matNightVisionNoise2 = null;
         public static Material matNoise = null;
         public static Material matNoiseNightVision = null;
         public static Material matOldTV = null;
@@ -24,16 +24,16 @@ namespace OLDD_camera
 
         IEnumerator Start()
         {
-            string url = "file://" + Application.dataPath.Substring(0, Application.dataPath.LastIndexOf('/')) + "/GameData/OLDD/DockingCam/dockingcameraassets";
+            string url = "file://" + KSPUtil.ApplicationRootPath + "GameData/OLDD/DockingCam/Resources/DockingCam.ksp"; 
             while (!Caching.ready)
                 yield return null;
-            Debug.Log("AssetLoader::Start caching ready");
+            Debug.Log("OLDD_AssetLoader: Start caching ready");
             // Start a download of the given URL
             WWW www = new WWW(url);
             // Wait for download to complete
             yield return www;
             // Load and retrieve the AssetBundle
-            Debug.Log("AssetLoader:finished");
+            Debug.Log("OLDD_AssetLoader: finished");
             AssetBundle bundle = www.assetBundle;
             matGrayscale = (Material)bundle.LoadAsset("Grayscale");
             matOldTV = (Material)bundle.LoadAsset("OldTV");
@@ -47,7 +47,7 @@ namespace OLDD_camera
             texLampOn = (Texture2D)bundle.LoadAsset("lampon");
             texLampOff = (Texture2D)bundle.LoadAsset("lampoff");
             texDockingCam = (Texture2D)bundle.LoadAsset("dockingcam");
-            Debug.Log("AssetLoader: get all materials");
+            Debug.Log("OLDD_AssetLoader: get all materials");
             www.Dispose();
         }
     }
