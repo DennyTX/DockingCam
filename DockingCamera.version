@@ -1,24 +1,30 @@
 {
   "NAME": "DockingCameraKURS",
+    "URL": "https://raw.githubusercontent.com/linuxgurugamer/DockingCam/master/DockingCamera.versionn",
+  "DOWNLOAD": "https://spacedock.info/mod/1542/Docking%20camera%20%28KURS%29",
+  "GITHUB": {
+    "USERNAME": "linuxgurugamer",
+    "REPOSITORY": "DockingCam"
+  },
   "VERSION": {
     "MAJOR": 1,
-    "MINOR": 3,
-    "PATCH": 3,
-    "BUILD": 1
+    "MINOR": 1,
+    "PATCH": 6,
+    "BUILD": 6
   },
   "KSP_VERSION": {
     "MAJOR": 1,
-    "MINOR": 3,
+    "MINOR": 4,
     "PATCH": 1
   },
   "KSP_VERSION_MIN": {
     "MAJOR": 1,
-    "MINOR": 3,
+    "MINOR": 4,
     "PATCH": 1
   },
   "KSP_VERSION_MAX": {
     "MAJOR": 1,
-    "MINOR": 3,
-    "PATCH": 1
+    "MINOR": 4,
+    "PATCH": 99
   }
 }

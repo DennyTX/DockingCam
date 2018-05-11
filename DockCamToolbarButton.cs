@@ -8,6 +8,14 @@ using UnityEngine;
 
 namespace OLDD_camera
 {
+    [KSPAddon(KSPAddon.Startup.MainMenu, true)]
+    public class RegisterToolbar : MonoBehaviour
+    {
+        void Start()
+        {
+            ToolbarControl.RegisterMod(DockCamToolbarButton.MODID, DockCamToolbarButton.MODNAME);
+        }
+    }
     [KSPAddon(KSPAddon.Startup.Flight, false)]
     public class DockCamToolbarButton : MonoBehaviour
     {
@@ -68,8 +76,8 @@ namespace OLDD_camera
 
         private void OnGUI()
         {
-            if (toolbarControl != null)
-                toolbarControl.UseBlizzy(HighLogic.CurrentGame.Parameters.CustomParams<CameraGameSettings>().useBlizzy);
+            //if (toolbarControl != null)
+            //    toolbarControl.UseBlizzy(HighLogic.CurrentGame.Parameters.CustomParams<CameraGameSettings>().useBlizzy);
             if (mainWindowVisible)
                 OnWindowOLDD();
         }
@@ -85,16 +93,21 @@ namespace OLDD_camera
         }
 
         private ToolbarControl toolbarControl;
+        internal const string MODID = "OLDD_camera_NS";
+        internal const string MODNAME = "Docking Camera KURS";
+
         private void OnAppLauncherReady()
         {
             if (toolbarControl != null) return;
             toolbarControl = gameObject.AddComponent<ToolbarControl>();
             toolbarControl.AddToAllToolbars(ShowMainWindow, HideMainWindow,
-                ApplicationLauncher.AppScenes.FLIGHT, "OLDD_camera", "DockingCameraButton",
+                ApplicationLauncher.AppScenes.FLIGHT,
+                MODID, 
+                "DockingCameraButton",
                 "OLDD/DockingCam/Icons/DockingCamIcon32",
                 "OLDD/DockingCam/Icons/DockingCamIcon",
-                "Docking Camera");
-            toolbarControl.UseBlizzy(HighLogic.CurrentGame.Parameters.CustomParams<CameraGameSettings>().useBlizzy);
+                MODNAME);
+            //toolbarControl.UseBlizzy(HighLogic.CurrentGame.Parameters.CustomParams<CameraGameSettings>().useBlizzy);
         }
 
         private static void OnWindowOLDD()
