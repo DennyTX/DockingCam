@@ -80,10 +80,10 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
-start /D D:\Users\jbb\github\DockingCamera /WAIT deploy.bat  $(TargetDir) $(TargetFileName)
+start /D D:\Users\jbb\github\DockingCam /WAIT deploy.bat  $(TargetDir) $(TargetFileName)
 
 if $(ConfigurationName) == Release (
-start /D D:\Users\jbb\github\DockingCamera /WAIT buildRelease.bat $(TargetDir) $(TargetFileName)
+start /D D:\Users\jbb\github\DockingCam /WAIT buildRelease.bat $(TargetDir) $(TargetFileName)
 )
 </PostBuildEvent>
   </PropertyGroup>

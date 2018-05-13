@@ -2,9 +2,9 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-// Управление общими сведениями о сборке осуществляется с помощью 
-// набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
-// связанные со сборкой.
+// Manage general information about the assembly using
+// set of attributes. Change the values of these attributes to change the information,
+// associated with the assembly.
 [assembly: AssemblyTitle("DockingCamera")]
 [assembly: AssemblyDescription("docking camera for KSP")]
 [assembly: AssemblyConfiguration("")]
@@ -14,23 +14,23 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("DennyTX")]
 [assembly: AssemblyCulture("")]
 
-// Параметр ComVisible со значением FALSE делает типы в сборке невидимыми 
-// для COM-компонентов.  Если требуется обратиться к типу в этой сборке через 
-// COM, задайте атрибуту ComVisible значение TRUE для этого типа.
+// The ComVisible parameter with the FALSE value makes the types in the assembly invisible
+// for COM components. If you want to access the type in this assembly via
+// COM, set the ComVisible attribute to TRUE for this type.
 [assembly: ComVisible(false)]
 
-// Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
+// The next GUID is used to identify the type library if this project is visible to COM
 [assembly: Guid("b02cc2b5-1175-4757-9718-f952d6b968ab")]
 
-// Сведения о версии сборки состоят из следующих четырех значений:
+// The version information for the assembly consists of the following four values:
 //
-//      Основной номер версии
-//      Дополнительный номер версии 
-//   Номер сборки
-//      Редакция
+// Main version number
+// Additional version number
+// Build number
+// Revision
 //
-// Можно задать все значения или принять номера сборки и редакции по умолчанию 
-// используя "*", как показано ниже:
+// You can set all values or accept assembly numbers and revision numbers by default
+// using "*", as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 //[assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
