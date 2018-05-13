@@ -1,0 +1,33 @@
+1.3.0-rc1
+	Decompiled code from last release
+	Massive editing to make it compilable again
+	copied comments from old code
+
+	Removed extra level of directory from release (removed the OLDD directory)
+
+	Changed Plus and Minus to work with continuous click
+	Fixed up/down movement of camera when flipped over
+
+	Reorganized release folder
+	Added deploy.bat and buildRelease.bat
+	Added AssemblyVersion.tt
+	Added License file 
+
+	Change scan messages from all upper case to normal case
+	Replaced Debug.Log calls with Log.Info (new class Log added for this)
+
+1.3.0.1
+	Fixed bug where window would be displayed on entry to flight scene
+
+1.3.1.1
+	Rebuild for KSP 1.3.1 and release
+
+1.3.1.2
+	Added code to fix NullRef exception
+
+1.3.2
+	Added ability to rotate the docking camera
+	Added zoom to docking camera
+
+1.1.6.6
+	
