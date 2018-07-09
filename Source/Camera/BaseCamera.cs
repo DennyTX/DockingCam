@@ -283,6 +283,8 @@ namespace OLDD_camera.Camera
                         _shaderType++;
                         if (!Enum.IsDefined(typeof (ShaderType), _shaderType))
                             _shaderType = ShaderType.OldTV;
+
+                        Debug.Log("_shaderType: " + _shaderType);
                         break;
                     case 1:
                         _shaderType1++;

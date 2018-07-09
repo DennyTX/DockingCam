@@ -46,3 +46,4 @@ obj/
 *.sln
 .vs
 GameData/
+Unity/

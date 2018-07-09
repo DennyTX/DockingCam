@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using System.IO;
 
 namespace OLDD_camera.Utils 
 {
@@ -28,25 +29,55 @@ namespace OLDD_camera.Utils
             while (!Caching.ready)
                 yield return null;
             Debug.Log("OLDD_AssetLoader: Start caching ready");
+
             // Start a download of the given URL
             WWW www = new WWW(url);
             // Wait for download to complete
             yield return www;
+
             // Load and retrieve the AssetBundle
             Debug.Log("OLDD_AssetLoader: finished");
             AssetBundle bundle = www.assetBundle;
+            foreach (var i in bundle.GetAllAssetNames())
+            {
+                Debug.Log("assetName: " + i);
+            }
             matGrayscale = (Material)bundle.LoadAsset("Grayscale");
+            if (matGrayscale == null)
+                Debug.Log("matGrayscale is null");
+
             matOldTV = (Material)bundle.LoadAsset("OldTV");
+            if (matOldTV == null)
+                Debug.Log("matOldTV 1 is null");
+
+            matOldTV = (Material)bundle.LoadAsset("OldTV");
+            if (matOldTV == null)
+                Debug.Log("matOldTV 2 is null");
+
             matNightVisionNoise1 = (Material)bundle.LoadAsset("NightVisionNoise1");
+            if (matNightVisionNoise1 == null)
+                Debug.Log("matNightVisionNoise1 is null");
+
             matNoise = (Material)bundle.LoadAsset("Noise");
+            if (matNoise == null)
+                Debug.Log("matNoise is null");
+
             matNoiseNightVision = (Material)bundle.LoadAsset("NoiseNightVision");
+            if (matNoiseNightVision == null)
+                Debug.Log("matNoiseNightVision is null");
+
             matNightVisionClear = (Material)bundle.LoadAsset("NightVisionClear");
+            if (matNightVisionClear == null)
+                Debug.Log("matNightVisionClear is null");
+
+
             texSelfRot = (Texture2D)bundle.LoadAsset("selfrot");
             texTargetRot = (Texture2D)bundle.LoadAsset("targetrot");
-            texTargetPoint = (Texture2D)bundle.LoadAsset("targetPoint");
+            texTargetPoint = (Texture2D)bundle.LoadAsset("targetPoint");     
             texLampOn = (Texture2D)bundle.LoadAsset("lampon");
-            texLampOff = (Texture2D)bundle.LoadAsset("lampoff");
+            texLampOff = (Texture2D)bundle.LoadAsset("lampoff"); 
             texDockingCam = (Texture2D)bundle.LoadAsset("dockingcam");
+
             Debug.Log("OLDD_AssetLoader: get all materials");
             www.Dispose();
         }
