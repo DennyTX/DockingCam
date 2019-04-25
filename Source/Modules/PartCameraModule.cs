@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using OLDD_camera.Camera;
 using OLDD_camera.Utils;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace OLDD_camera.Modules
 {

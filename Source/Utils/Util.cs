@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using OLDD_camera.Camera;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace OLDD_camera.Utils
 {

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using System.IO;
 
 namespace OLDD_camera.Utils 

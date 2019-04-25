@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OLDD_camera.Utils;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace OLDD_camera.Camera
 {

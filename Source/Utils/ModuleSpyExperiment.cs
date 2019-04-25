@@ -1,4 +1,7 @@
-﻿namespace OLDD_camera.Utils
+﻿
+using UnityEngine.UI;
+
+namespace OLDD_camera.Utils
 {
     public class ModuleSpyExperiment : ModuleScienceExperiment
     {
