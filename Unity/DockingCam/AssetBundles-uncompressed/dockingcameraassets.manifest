@@ -1,0 +1,31 @@
+ManifestFileVersion: 0
+CRC: 4057864073
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 4cc7419671f1e31b0b50b6e8d6303046
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 34efae5bc6a9371e297c873e037a0df1
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/dockingcameratextures/lampoff.png
+- Assets/CustomCRT.shader
+- Assets/CustomNightVision.shader
+- Assets/HiddenNightvision.shader
+- Assets/dockingcameratextures/lampon.png
+- Assets/dockingcameratextures/targetrot.png
+- Assets/NightvisionClear.shader
+- Assets/CustomMovieTime.shader
+- Assets/dockingcameratextures/dockingcam.png
+- Assets/dockingcameratextures/targetPoint.png
+- Assets/dockingcameratextures/Image6.png
+- Assets/dockingcameratextures/selfrot.png
+Dependencies: []

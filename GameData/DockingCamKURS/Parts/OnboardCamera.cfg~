@@ -1,0 +1,56 @@
+PART
+{
+	name = OnboardCamera
+	module = Part
+	author = DennyTX
+	MODEL
+	{
+		model = OLDD/DockingCam/Parts/OnboardCamera
+	}
+	scale = 1
+	rescaleFactor = 0.8
+	node_attach = 0.0, -0.08, 0.0, 0.0, -1.0, 0.0, 0
+	TechRequired = engineering101
+	entryCost = 256
+	cost = 256
+	category = Control
+	subcategory = 0
+	title = Onboard Camera
+	manufacturer = OLDD
+	description = Camera. Just a camera. May provide some different visual modes.
+	attachRules = 0,1,0,0,1
+	mass = 0.01
+	dragModelType = default
+	maximum_drag = 0.2
+	minimum_drag = 0.2
+	angularDrag = 2
+	crashTolerance = 7
+	maxTemp = 1256
+	bulkheadProfiles = size0, srf
+
+	MODULE
+	{
+		name = PartCameraModule
+		windowSize = 300  // initial camera window size
+		allowedScanDistance = 1000 //max allowed distance for scanning experiment
+		resourceScanning = ElectricCharge.50  //(resourseName/resourceUsage) for scanning
+	}
+
+	MODULE
+	{
+		name = ModuleSpyExperiment
+		experimentID = TargetScanning
+		experimentActionName = Scan Target
+		resetActionName = Delete Data
+		useStaging = False
+		useActionGroups = True
+		hideUIwhenUnavailable = False
+		xmitDataScalar = 0.8
+		dataIsCollectable = True
+		collectActionName = Take Data
+		interactionRange = 1.2
+		rerunnable = True
+		usageReqMaskInternal = 1
+		usageReqMaskExternal = 8
+	}
+}

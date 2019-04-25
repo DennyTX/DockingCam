@@ -1,0 +1,7 @@
+ManifestFileVersion: 0
+CRC: 457379617
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: dockingcam
+      Dependencies: {}

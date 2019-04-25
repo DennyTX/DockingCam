@@ -45,5 +45,3 @@ bin/
 obj/
 *.sln
 .vs
-GameData/
-Unity/

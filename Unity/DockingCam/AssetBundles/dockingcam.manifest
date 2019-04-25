@@ -1,0 +1,16 @@
+ManifestFileVersion: 0
+CRC: 1534541376
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 5f715f0115da7b3eb2c4bd20d428d0fe
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: bf45a693cba34bf6690ae7a121f21f9c
+HashAppended: 0
+ClassTypes:
+- Class: 48
+  Script: {instanceID: 0}
+Assets:
+- Assets/Shaders/NightVision.shader
+Dependencies: []

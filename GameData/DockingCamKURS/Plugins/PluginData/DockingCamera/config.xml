@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <rect name="toolbarWindowPosition">
+        <xmin>1117</xmin>
+        <xmax>1373</xmax>
+        <ymin>235</ymin>
+        <ymax>385</ymax>
+    </rect>
+    <bool name="shadersToUse0">1</bool>
+    <bool name="shadersToUse1">0</bool>
+    <bool name="shadersToUse2">0</bool>
+    <bool name="FCS">1</bool>
+</config>
