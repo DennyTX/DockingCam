@@ -27,7 +27,7 @@ namespace OLDD_camera.Utils
 
     public static class Util
     {
-        private static string dataTexturePath = "DockingCamKURS/";
+        private static string dataTexturePath = "OLDD/DockingCam/";
         private static string PhotoDirectory = "Screenshots";
 
         public static Texture2D LoadTexture(string name)

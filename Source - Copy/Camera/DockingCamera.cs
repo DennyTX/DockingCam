@@ -124,7 +124,7 @@ namespace OLDD_camera.Camera
                     if (_target != null && _target.IsDockPort)
                     {
                         TargetCrossDPAI = GUI.Toggle(new Rect(widthOffset, 74, 88, 20), TargetCrossDPAI, "Cross DPAI");
-                        TargetCrossOLDD = GUI.Toggle(new Rect(widthOffset, 94, 88, 20), TargetCrossOLDD, "Cross KURS");
+                        TargetCrossOLDD = GUI.Toggle(new Rect(widthOffset, 94, 88, 20), TargetCrossOLDD, "Cross OLDD");
                     }
                     else
                         GUI.Label(new Rect(widthOffset, 76, 88, 60), " Select\n docking\n port", Styles.RedLabel13B);

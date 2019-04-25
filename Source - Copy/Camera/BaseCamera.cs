@@ -283,12 +283,12 @@ namespace OLDD_camera.Camera
                     case 0:
                         _shaderType++;
                         if (!Enum.IsDefined(typeof (ShaderType), _shaderType))
-                            _shaderType = ShaderType.CRT;
+                            _shaderType = ShaderType.OldTV;
                         break;
                     case 1:
                         _shaderType1++;
                         if (!Enum.IsDefined(typeof(ShaderType1), _shaderType1))
-                            _shaderType1 = ShaderType1.CRT;
+                            _shaderType1 = ShaderType1.OldTV;
                         break;
                     case 2:
                         _shaderType2++;
@@ -301,28 +301,20 @@ namespace OLDD_camera.Camera
             if (GUI.RepeatButton(new Rect(TexturePosition.xMax - 22, TexturePosition.yMax - 22, 20, 20), "±") && 	
                 UnityEngine.Camera.allCameras.FirstOrDefault(x => x.name == "Camera 00") != null) //Size of main window
             {
-                WindowSizeCoef = ((WindowSizeCoef - 1)%3)+2;
-#if false
                 switch (WindowSizeCoef)
                 {
                     case 2:
                         WindowSizeCoef = 3;
                         break;
                     case 3:
-                        WindowSizeCoef = 4;
-                        break;
-                    case 4:
-                        WindowSizeCoef = 2;
+                        WindowSizeCoef = 2; 
                         break;
                 }
-#endif
                 Deactivate();
                 InitWindow();
                 InitTextures();
                 Activate();
-                //IsAuxiliaryWindowOpen = false;
-                
-                    IsAuxiliaryWindowButtonPres = IsAuxiliaryWindowOpen;
+                IsAuxiliaryWindowOpen = false;
             }
 
             CurrentZoom = GUI.HorizontalSlider(new Rect(TexturePosition.width / 2 - 80, 20, 160, 10), CurrentZoom, MaxZoom, MinZoom);

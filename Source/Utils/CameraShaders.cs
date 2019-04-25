@@ -4,49 +4,48 @@ namespace OLDD_camera.Utils
 {
     public enum ShaderType
     {
-        OldTV,
-        NightVisionNoise1,
-        Noise,
-        NoiseNightVision,
-        NightVisionClear,
-        Grayscale,
-        None
+        None = 0,
+        CRT = 1,              // Custom/CRT
+        NightVision = 2,  // Hidden/NightVision
+        NightVisionClear = 3,   // NightVisionClear
+        Grayscale = 4,          // Custom/MovieTime
+ #if SHADERTEST
+        Test = 5,          // none
+#endif
+       
     }
     public enum ShaderType1
     {
-        OldTV,
-        NightVisionNoise1,
+        CRT = 1,
+        NightVision = 2,
     }
     public enum ShaderType2
     {
-        None,
-        Grayscale,
-        NightVisionClear
+        None = 0,
+        NightVisionClear = 3,
+        Grayscale = 4,
     }
-    public enum ShaderType3
-    {
-        Noise,
-        NoiseNightVision,
-    }
+
     internal class CameraShaders
     {
         public static Material GetShader(ShaderType type)
         {
+            Debug.Log("GetShader, type: " + type);
+#if false
             Material result;
             switch (type)
             {
-                case ShaderType.OldTV:
-                    result = OldTV;
+                case ShaderType.CRT:
+                    result= CRT;
                     break;
-                case ShaderType.NightVisionNoise1:
-                    result = NightVisionNoise1;
+                case ShaderType.NightVision:
+                    result = NightVision;
                     break;
-                case ShaderType.Noise:
-                    result = Noise;
+#if false
+                case ShaderType.Test:
+                    result = TestMaterial;
                     break;
-                case ShaderType.NoiseNightVision:
-                    result = NoiseNightVision;
-                    break;
+#endif
                 case ShaderType.NightVisionClear:
                     result = NightVisionClear;
                     break;
@@ -61,36 +60,42 @@ namespace OLDD_camera.Utils
                     break;
             }
             return result;
-            //switch (type)
-            //{
-            //case ShaderType.OldTV: return OldTV;
-            //case ShaderType.NightVisionNoise1: return NightVisionNoise1;
-            //case ShaderType.Noise: return Noise;
-            //case ShaderType.NoiseNightVision: return NoiseNightVision;
-            //case ShaderType.NightVisionClear: return NightVisionClear;
-            //case ShaderType.Grayscale: return Grayscale;
-            //case ShaderType.None: return null;
-            //default: return null;
-            //}
+#endif
+            switch (type)
+            {
+                case ShaderType.CRT: return CRT;
+                case ShaderType.NightVision: return NightVision;                    
+                case ShaderType.NightVisionClear: return NightVisionClear;
+                case ShaderType.Grayscale: return Grayscale;
+                case ShaderType.None: return null;
+#if SHADERTEST
+                case ShaderType.Test: return TestMaterial;
+#endif
+                default: return null;
+            }
         }
         public static Material GetShader1(ShaderType1 type)
         {
+#if false
             Material result;
-            if (type != ShaderType1.OldTV)
-                result = type != ShaderType1.NightVisionNoise1 ? null : NightVisionNoise1;
+            if (type != ShaderType1.CRT)
+                result = type != ShaderType1.NightVision ? null : NightVision;
             else
-                result = OldTV;
+                result = CRT;
             return result;
-            //switch (type)
-            //{
-            //    case ShaderType1.OldTV: return OldTV;
-            //    case ShaderType1.NightVisionNoise1: return NightVisionNoise1;
-            //    default: return null;
-            //}
+#endif
+            switch (type)
+            {
+                case ShaderType1.CRT: return CRT;
+                case ShaderType1.NightVision: return NightVision;
+
+                default: return null;
+            }
         }
 
         public static Material GetShader2(ShaderType2 type)
         {
+#if false
             Material result;
             switch (type)
             {
@@ -108,29 +113,30 @@ namespace OLDD_camera.Utils
                     break;
             }
             return result;
-            //switch (type)
-            //{
-            //    case ShaderType2.None: return null;
-            //    case ShaderType2.NightVisionClear: return NightVisionClear;
-            //    case ShaderType2.Grayscale: return Grayscale;
-            //    default: return null;
-            //}
+#endif
+            switch (type)
+            {
+                case ShaderType2.None: return null;
+                case ShaderType2.NightVisionClear: return NightVisionClear;
+                case ShaderType2.Grayscale: return Grayscale;
+                default: return null;
+            }
         }
 
-        static Material oldtv = null;
+        static Material crt = null;
         static Material grayscale = null;
         static Material nightvisionclear = null;
-        static Material nightvisionnoise1 = null;
-        static Material noise = null;
-        static Material noisenightvision = null;
-
-        public static Material OldTV
+        static Material nightvision = null;
+#if SHADERTEST
+        static Material testMaterial = null;
+#endif
+        public static Material CRT
         {
             get
             {
-                if (oldtv == null)
-                    oldtv = AssetLoader.matOldTV;
-                return oldtv;
+                if (crt == null)
+                    crt = AssetLoader.matCRT;
+                return crt;
             }
         }
 
@@ -154,34 +160,26 @@ namespace OLDD_camera.Utils
             }
         }
 
-        public static Material NightVisionNoise1
+        public static Material NightVision
         {
             get
             {
-                if (nightvisionnoise1 == null)
-                    nightvisionnoise1 = AssetLoader.matNightVisionNoise1;
-                return nightvisionnoise1;
+                if (nightvision == null)
+                    nightvision = AssetLoader.matNightVision;
+                return nightvision;
             }
         }
+#if SHADERTEST
+        public static Material TestMaterial
+        {
+            get
+            {
+                if (testMaterial == null)
+                    testMaterial = AssetLoader.matTest;
+                return testMaterial;
+            }
+        }
+#endif
 
-        public static Material Noise
-        {
-            get
-            {
-                if (noise == null)
-                    noise = AssetLoader.matNoise;
-                return noise;
-            }
-        }
-
-        public static Material NoiseNightVision
-        {
-            get
-            {
-                if (noisenightvision == null)
-                    noisenightvision = AssetLoader.matNoiseNightVision;
-                return noisenightvision;
-            }
-        }
     }
 }

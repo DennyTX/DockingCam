@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // Manage general information about the assembly using
 // set of attributes. Change the values of these attributes to change the information,
 // associated with the assembly.
-[assembly: AssemblyTitle("DockingCamKURS")]
+[assembly: AssemblyTitle("DockingCamera")]
 [assembly: AssemblyDescription("docking camera for KSP")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("OLDD")]

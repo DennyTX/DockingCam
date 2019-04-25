@@ -18,7 +18,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -64,14 +64,14 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>R:\KSP_1.5.1_dev\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>R:\KSP_1.6.1_dev\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="ToolbarControl">
-      <HintPath>R:\KSP_1.5.1_dev\GameData\001_ToolbarControl\Plugins\ToolbarControl.dll</HintPath>
+      <HintPath>R:\KSP_1.6.1_dev\GameData\001_ToolbarControl\Plugins\ToolbarControl.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>R:\KSP_1.5.1_dev\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>R:\KSP_1.6.1_dev\KSP_x64_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -84,10 +84,16 @@ start /D D:\Users\jbb\github\DockingCam /WAIT deploy.bat  $(TargetDir) $(TargetF
 
 
 
+
+
 if $(ConfigurationName) == Release (
 
 
+
+
      start /D D:\Users\jbb\github\DockingCam /WAIT buildRelease.bat $(TargetDir) $(TargetFileName)
+
+
 
 
 )
@@ -96,6 +102,8 @@ if $(ConfigurationName) == Release (
   <PropertyGroup>
     <PreBuildEvent>
 set textTemplatingPath="%25ProgramFiles(x86)%25\Microsoft Visual Studio\2017\Community\Common7\IDE \texttransform.exe"
+
+
 
 %25textTemplatingPath%25 "$(ProjectDir)AssemblyVersion.tt"</PreBuildEvent>
   </PropertyGroup>

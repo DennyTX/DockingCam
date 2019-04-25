@@ -104,8 +104,8 @@ namespace OLDD_camera
                 ApplicationLauncher.AppScenes.FLIGHT,
                 MODID, 
                 "DockingCameraButton",
-                "DockingCamKURS/Icons/DockingCamIcon32",
-                "DockingCamKURS/Icons/DockingCamIcon",
+                "OLDD/DockingCam/Icons/DockingCamIcon32",
+                "OLDD/DockingCam/Icons/DockingCamIcon",
                 MODNAME);
             //toolbarControl.UseBlizzy(HighLogic.CurrentGame.Parameters.CustomParams<CameraGameSettings>().useBlizzy);
         }
@@ -117,7 +117,7 @@ namespace OLDD_camera
             var vesselsCount = _vesselsWithCamera.Count;
             var height = 20 * vesselsCount;
             _windowPosition.height = 140 + height + 10;
-            _windowPosition = Util.ConstrainToScreen(GUI.Window(2222, _windowPosition, DrawOnWindowOLDD, "KURS Camera Settings"), 100);
+            _windowPosition = Util.ConstrainToScreen(GUI.Window(2222, _windowPosition, DrawOnWindowOLDD, "OLDD Camera Settings"), 100);
         }
 
         private static void DrawOnWindowOLDD(int windowID)

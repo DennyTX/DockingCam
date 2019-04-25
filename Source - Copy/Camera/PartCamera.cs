@@ -33,9 +33,6 @@ namespace OLDD_camera.Camera
         private readonly int _resourceUsage;
         private readonly string _resourceName;
         private bool _isRayEnabled;
-        
-        enum Alignment { up, right, down, left};
-        private Alignment _alignment = Alignment.up;
         private bool _isUpsideDown;
         private bool _isScienceActivate;
         private bool _isVisibilityRay;
@@ -238,23 +235,11 @@ namespace OLDD_camera.Camera
         {
             if (GUI.Button(new Rect(widthOffset, 36, ButtonSize, ButtonSize), "↻"))
             {
-                //_camObject.transform.Rotate(new Vector3(0, 0, 180f));
-                _camObject.transform.Rotate(new Vector3(0, 0, 90f));
+                _camObject.transform.Rotate(new Vector3(0, 0, 180f));
                 _isUpsideDown = !_isUpsideDown;
-                _alignment++;
-                if ((int)_alignment > 3)
-                    _alignment = Alignment.up;
             }
             if (GUI.RepeatButton(new Rect(widthOffset + ButtonSize, 36, ButtonSize, ButtonSize), "↑"))
             {
-                switch (_alignment)
-                {
-                    case Alignment.up: RotateY += _rotateStep; break;
-                    case Alignment.right: RotateZ -= _rotateStep; break;
-                    case Alignment.down: RotateY -= _rotateStep; break;
-                    case Alignment.left: RotateZ += _rotateStep;break;
-                }
-#if false
                 if (_rotateYbuffer < 180)
                 {
                     if (!_isUpsideDown)
@@ -262,7 +247,6 @@ namespace OLDD_camera.Camera
                     else
                         RotateY -= _rotateStep;
                 }
-#endif
             }
             if (GUI.Button(new Rect(widthOffset + ButtonSize * 2, 36, ButtonSize, ButtonSize), "⦿"))
             {
@@ -282,7 +266,7 @@ namespace OLDD_camera.Camera
                             ThisPart.GetConnectedResourceTotals(id, out amount, out maxAmount);
                             if (amount > _resourceUsage)
                             {
-                                ThisPart.RequestResource(id, (double)_resourceUsage);
+                                ThisPart.RequestResource(id, _resourceUsage);
                                 var hit = PartGameObject.GetChild($"{_bulletName}{Hits:000}");
                                 Object.Destroy(hit);
                                 Hits--;
@@ -306,19 +290,10 @@ namespace OLDD_camera.Camera
             }
             if (GUI.RepeatButton(new Rect(widthOffset, 36 + ButtonSize, ButtonSize, ButtonSize), "←"))
             {
-#if false
                 if (!_isUpsideDown)
                     RotateZ -= _rotateStep;
                 else
                     RotateZ += _rotateStep;
-#endif
-                switch (_alignment)
-                {
-                    case Alignment.up: RotateZ -= _rotateStep; break;
-                    case Alignment.right: RotateY -= _rotateStep; break;
-                    case Alignment.down: RotateZ += _rotateStep; break;
-                    case Alignment.left: RotateY += _rotateStep; break;
-                }
             }
             if (GUI.Button(new Rect(widthOffset + ButtonSize, 36 + ButtonSize, ButtonSize, ButtonSize), "o"))
             {
@@ -326,20 +301,10 @@ namespace OLDD_camera.Camera
             }
             if (GUI.RepeatButton(new Rect(widthOffset + ButtonSize * 2, 36 + ButtonSize, ButtonSize, ButtonSize), "→"))
             {
-#if false
                 if (!_isUpsideDown)
                     RotateZ += _rotateStep;
                 else
                     RotateZ -= _rotateStep;
-
-#endif
-                switch (_alignment)
-                {
-                    case Alignment.up: RotateZ += _rotateStep; break;
-                    case Alignment.right: RotateY += _rotateStep; break;
-                    case Alignment.down: RotateZ -= _rotateStep; break;
-                    case Alignment.left: RotateY -= _rotateStep; break;
-                }
             }
             if (GUI.Button(new Rect(widthOffset, 36 + ButtonSize * 2, ButtonSize, ButtonSize), "-"))
             {
@@ -349,23 +314,11 @@ namespace OLDD_camera.Camera
             }
             if (GUI.RepeatButton(new Rect(widthOffset + ButtonSize, 36 + ButtonSize * 2, ButtonSize, ButtonSize), "↓"))
             {
-#if false
                 if (_rotateYbuffer > 0)
-                {
-
                     if (!_isUpsideDown)
                         RotateY -= _rotateStep;
                     else
                         RotateY += _rotateStep;
-                }
-#endif
-                switch (_alignment)
-                {
-                    case Alignment.up: RotateY -= _rotateStep; break;
-                    case Alignment.right: RotateZ += _rotateStep; break;
-                    case Alignment.down: RotateY += _rotateStep; break;
-                    case Alignment.left: RotateZ -= _rotateStep; break;
-                }
             }
             if (GUI.Button(new Rect(widthOffset + ButtonSize * 2, 36 + ButtonSize * 2, ButtonSize, ButtonSize), "+"))
             {
@@ -479,7 +432,7 @@ namespace OLDD_camera.Camera
                 }
             }
         }
-#endregion DRAW LAYERS
+        #endregion DRAW LAYERS
 
         private void CameraPositioning(string lastCameraMode)
         {
@@ -552,21 +505,9 @@ namespace OLDD_camera.Camera
             if (!IsInsight(out endPoint)) return;
             _scanningRay = new GameObject("scanningRay").AddComponent<LineRenderer>();
             _scanningRay.material = new Material(Shader.Find("Particles/Additive"));
-            // The following commented lines were obsolete, replaced with the methods immediately following.
-            // The old lines were left as historical documentation
-
-            //_scanningRay.SetColors(Color.red, Color.red);
-            _scanningRay.startColor = Color.red;
-            _scanningRay.endColor = Color.red;
-
-            //_scanningRay.SetVertexCount(2);
-            //_scanningRay.numPositions = 2;
-            _scanningRay.positionCount = 2;
-
-            //_scanningRay.SetWidth(0.02f, 0.02f);
-            _scanningRay.startWidth = 0.02f;
-            _scanningRay.endWidth = 0.02f;
-
+            _scanningRay.SetColors(Color.red, Color.red);
+            _scanningRay.SetVertexCount(2);
+            _scanningRay.SetWidth(0.02f, 0.02f);
             _scanningRay.useWorldSpace = true;
             _scanningRay.SetPosition(0, ThisPart.transform.position);
             _scanningRay.SetPosition(1, endPoint);
@@ -580,22 +521,9 @@ namespace OLDD_camera.Camera
             _visibilityRay = new GameObject("visibilityRay").AddComponent<LineRenderer>();
             var color = Color.white;
             _visibilityRay.material = new Material(Shader.Find("Particles/Additive"));
-
-            // The following commented lines were obsolete, replaced with the methods immediately following.
-            // The old lines were left as historical documentation
-
-            //_visibilityRay.SetColors(color, color);
-            _visibilityRay.startColor = color;
-            _visibilityRay.endColor = color;
-
-            //_visibilityRay.SetVertexCount(2);
-            //_visibilityRay.numPositions = 2;
-            _visibilityRay.positionCount = 2;
-
-            //_visibilityRay.SetWidth(0.02f, 0.02f);
-            _visibilityRay.startWidth = 0.02f;
-            _visibilityRay.endWidth = 0.02f;
-
+            _visibilityRay.SetColors(color, color);
+            _visibilityRay.SetVertexCount(2);
+            _visibilityRay.SetWidth(0.02f, 0.02f);
             _visibilityRay.useWorldSpace = true;
             _visibilityRay.SetPosition(0, _camObject.transform.position);
             _visibilityRay.SetPosition(1, TargetHelper.Target.GetTransform().position);
