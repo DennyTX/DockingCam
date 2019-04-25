@@ -1,6 +1,6 @@
 ﻿using OLDD_camera.Modules;
 using UnityEngine;
-using UnityEngine.UI
+using UnityEngine.UI;
 
 namespace OLDD_camera.Utils
 {
