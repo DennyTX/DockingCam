@@ -5,6 +5,9 @@ using System.Linq;
 using OLDD_camera.Utils;
 using UnityEngine;
 using UnityEngine.UI;
+#if KSP170
+using FlightCamera;
+#endif
 
 namespace OLDD_camera.Camera
 {
