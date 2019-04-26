@@ -5,9 +5,6 @@ using System.Linq;
 using OLDD_camera.Utils;
 using UnityEngine;
 using UnityEngine.UI;
-#if KSP170
-using FlightCamera;
-#endif
 
 namespace OLDD_camera.Camera
 {
@@ -88,11 +85,17 @@ namespace OLDD_camera.Camera
         {
             GameEvents.OnFlightUIModeChanged.Remove(FlightUIModeChanged);
         }
-
+#if KSP170
+        private void FlightUIModeChanged(FlightCamera mode)
+        {
+            IsOrbital = mode == FlightCamera.ORBITAL;
+        }
+#else
         private void FlightUIModeChanged(FlightUIMode mode)
         {
             IsOrbital = mode == FlightUIMode.ORBITAL;
         }
+#endif
 
         protected virtual void InitWindow()
         {
