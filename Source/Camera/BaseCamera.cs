@@ -85,17 +85,15 @@ namespace OLDD_camera.Camera
         {
             GameEvents.OnFlightUIModeChanged.Remove(FlightUIModeChanged);
         }
-#if KSP170
-        private void FlightUIModeChanged(FlightCamera mode)
-        {
-            IsOrbital = mode == FlightCamera.MODES.ORBITAL;
-        }
-#else
         private void FlightUIModeChanged(FlightUIMode mode)
         {
+#if KSP170
+            IsOrbital = ThisPart.vessel.situation == Vessel.Situations.ORBITING;
+#else
+
             IsOrbital = mode == FlightUIMode.ORBITAL;
-        }
 #endif
+        }
 
         protected virtual void InitWindow()
         {
