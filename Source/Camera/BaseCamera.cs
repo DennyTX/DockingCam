@@ -88,7 +88,7 @@ namespace OLDD_camera.Camera
 #if KSP170
         private void FlightUIModeChanged(FlightCamera mode)
         {
-            IsOrbital = mode == FlightCamera.ORBITAL;
+            IsOrbital = mode == FlightCamera.MODES.ORBITAL;
         }
 #else
         private void FlightUIModeChanged(FlightUIMode mode)
