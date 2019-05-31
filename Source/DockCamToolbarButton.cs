@@ -2,6 +2,7 @@
 using KSP.IO;
 using KSP.UI.Screens;
 using OLDD_camera.Camera;
+using OLDD_camera.Modules;
 using OLDD_camera.Utils;
 using ToolbarControl_NS;
 using UnityEngine;
@@ -9,19 +10,16 @@ using UnityEngine.UI;
 
 namespace OLDD_camera
 {
-    [KSPAddon(KSPAddon.Startup.MainMenu, true)]
-    public class RegisterToolbar : MonoBehaviour
-    {
-        void Start()
-        {
-            ToolbarControl.RegisterMod(DockCamToolbarButton.MODID, DockCamToolbarButton.MODNAME);
-        }
-    }
+
     [KSPAddon(KSPAddon.Startup.Flight, false)]
     public class DockCamToolbarButton : MonoBehaviour
     {
+        internal static DockCamToolbarButton instance;
         private static PluginConfiguration _config;
         private static List<Vessel> _vesselsWithCamera = new List<Vessel>();
+        private static List<Vessel> _vesselsWithDockingCamera = new List<Vessel>();
+        private static List<Vessel> _vesselsWithAttachedCamera = new List<Vessel>();
+
         private static Rect _lastWindowPosition;
         private static Rect _windowPosition;
         private static readonly VesselRanges DefaultRanges = PhysicsGlobals.Instance.VesselRangesDefault;
@@ -31,15 +29,16 @@ namespace OLDD_camera
         private static bool _shadersToUse0 = true;
         private static bool _shadersToUse1;
         private static bool _shadersToUse2;
-        private static bool _dist2500 = true;
-        private static bool _dist9999;
+        //private static bool _dist2500 = true;
+        //private static bool _dist9999;
         private bool mainWindowVisible;
-        private readonly int _modulePartCameraId = "PartCameraModule".GetHashCode();
+       // private readonly string _modulePartCameraId = "PartCameraModule";
 
-        public static bool FCS;
+        //public static bool FCS;
 
         public void Awake()
         {
+            instance = this;
             mainWindowVisible = false; 
         }
 
@@ -50,6 +49,7 @@ namespace OLDD_camera
             GameEvents.onVesselCreate.Add(NewVesselCreated);
             GameEvents.onVesselChange.Add(NewVesselCreated);
             GameEvents.onVesselLoaded.Add(NewVesselCreated);
+            GameEvents.onVesselsUndocking.Add(VesselsUndocked);
             GameEvents.onGUIApplicationLauncherReady.Add(OnAppLauncherReady);
         }
 
@@ -58,6 +58,7 @@ namespace OLDD_camera
             GameEvents.onVesselCreate.Remove(NewVesselCreated);
             GameEvents.onVesselChange.Remove(NewVesselCreated);
             GameEvents.onVesselLoaded.Remove(NewVesselCreated);
+            GameEvents.onVesselsUndocking.Remove(VesselsUndocked);
             GameEvents.onGUIApplicationLauncherReady.Remove(OnAppLauncherReady);
             toolbarControl.OnDestroy();
             Destroy(toolbarControl);
@@ -66,21 +67,31 @@ namespace OLDD_camera
 
         public void Update()
         {
-            _showWindow = mainWindowVisible && HighLogic.LoadedSceneIsFlight && !FlightGlobals.ActiveVessel.isEVA && !MapView.MapIsEnabled;
+            _showWindow = mainWindowVisible && HighLogic.LoadedSceneIsFlight && !FlightGlobals.ActiveVessel.isEVA; // && !MapView.MapIsEnabled;
+#if false
             if (_shadersToUse0)
                 BaseCamera.ShadersToUse = 0;
             else if (_shadersToUse1)
                 BaseCamera.ShadersToUse = 1;
             else if (_shadersToUse2)
                 BaseCamera.ShadersToUse = 2;
+#endif
         }
 
         private void OnGUI()
         {
-            //if (toolbarControl != null)
-            //    toolbarControl.UseBlizzy(HighLogic.CurrentGame.Parameters.CustomParams<CameraGameSettings>().useBlizzy);
-            if (mainWindowVisible)
+            if (mainWindowVisible && HighLogic.LoadedSceneIsFlight) // && !MapView.MapIsEnabled)
+            {
+                if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().useKSPskin)
+                {
+                    GUI.skin = HighLogic.Skin;
+                }
+                if (OLDD_camera.Utils.Styles.KspSkin != HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().useKSPskin)
+                {
+                    OLDD_camera.Utils.Styles.InitStyles();
+                }
                 OnWindowOLDD();
+            }
         }
 
         private void ShowMainWindow()
@@ -94,7 +105,7 @@ namespace OLDD_camera
         }
 
         private ToolbarControl toolbarControl;
-        internal const string MODID = "OLDD_camera_NS";
+        internal const string MODID = "Docking_Camera_KURS";
         internal const string MODNAME = "Docking Camera KURS";
 
         private void OnAppLauncherReady()
@@ -108,7 +119,6 @@ namespace OLDD_camera
                 "DockingCamKURS/Icons/DockingCamIcon32",
                 "DockingCamKURS/Icons/DockingCamIcon",
                 MODNAME);
-            //toolbarControl.UseBlizzy(HighLogic.CurrentGame.Parameters.CustomParams<CameraGameSettings>().useBlizzy);
         }
 
         private static void OnWindowOLDD()
@@ -118,12 +128,24 @@ namespace OLDD_camera
             var vesselsCount = _vesselsWithCamera.Count;
             var height = 20 * vesselsCount;
             _windowPosition.height = 140 + height + 10;
-            _windowPosition = Util.ConstrainToScreen(GUI.Window(2222, _windowPosition, DrawOnWindowOLDD, "KURS Camera Settings"), 100);
-        }
+            //if (!HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().useKSPskin)
+            {
+                _windowPosition.width += 50;
+            }
 
+            _windowPosition = Util.ConstrainToScreen(GUI.Window(BaseCamera.SettingsWinID, _windowPosition, DrawOnWindowOLDD, "KURS Camera Info"), 100);
+        }
+        private static string vesselStr(int i)
+        {
+            if (i == 1)
+                return "vessel";
+            else
+                return "vessels";
+        }
         private static void DrawOnWindowOLDD(int windowID)
         {
             var checkDist = FlightGlobals.ActiveVessel.vesselRanges.landed.load;
+#if false
             if (GUI.Toggle(new Rect(20, 20, 44, 20), _dist2500, "2250"))
             {
                 _dist2500 = true;
@@ -131,6 +153,7 @@ namespace OLDD_camera
                 if (checkDist > 3333 && _dist2500)
                     GameEvents.onVesselChange.Fire(FlightGlobals.ActiveVessel);
             }
+
             if (GUI.Toggle(new Rect(80, 20, 44, 20), _dist9999, "9999"))
             {
                 _dist9999 = true;
@@ -138,17 +161,21 @@ namespace OLDD_camera
                 if (checkDist < 3333 && _dist9999)
                     GameEvents.onVesselChange.Fire(FlightGlobals.ActiveVessel);
             }
+#endif
             var unloadDistance = "Unload at: " + FlightGlobals.ActiveVessel.vesselRanges.landed.load;
-            GUI.Label(new Rect(140, 20, 100, 20), unloadDistance, Styles.Label13B);
+            GUI.Label(new Rect(22, 48, 100, 20), unloadDistance, Styles.Label13B);
 
-            GetShadersPack();
-
+            //GetShadersPack();
+#if false
             if (FCS = GUI.Toggle(new Rect(20, 100, 222, 20), FCS, "Cam shutdown if out of range"))
                 SaveWindowData();
-
+#endif
             var vessels = _vesselsWithCamera;
             vessels.Remove(FlightGlobals.ActiveVessel);
-            GUI.Label(new Rect(2, 120, WINDOW_WIDTH, 24), " " + vessels.Count + " vessels with camera in range ", Styles.GreenLabel15B);
+            //DockCamToolbarButton.instance.NewVesselCreated(FlightGlobals.ActiveVessel);
+
+            GUI.Label(new Rect(22, 78, WINDOW_WIDTH, 24), " " + _vesselsWithAttachedCamera.Count + " " + vesselStr(_vesselsWithAttachedCamera.Count) + " w/camera in range ", Styles.GreenLabel15B);
+            GUI.Label(new Rect(22, 100, WINDOW_WIDTH, 24), " " + _vesselsWithDockingCamera.Count + " " + vesselStr(_vesselsWithDockingCamera.Count) + " w/docking cam in range ", Styles.GreenLabel15B);
 
             if (vessels.Count > 1)
             {
@@ -159,9 +186,9 @@ namespace OLDD_camera
                     var situation = vessel.RevealSituationString();
                     var str = $"{i}. {vessel.vesselName} ({range:N} m) - {situation} ";
                     if (range <= checkDist)
-                        GUI.Label(new Rect(20, 120 + 20 * i, 222, 20), str, Styles.GreenLabel13);
+                        GUI.Label(new Rect(20, 144 + 20 * i, 222, 20), str, Styles.GreenLabel13);
                     else
-                        GUI.Label(new Rect(20, 120 + 20 * i, 222, 20), str);
+                        GUI.Label(new Rect(20, 144 + 20 * i, 222, 20), str);
                 }
             }
 
@@ -172,7 +199,7 @@ namespace OLDD_camera
             _lastWindowPosition.y = _windowPosition.y;
             SaveWindowData();
         }
-
+#if false
         private static void GetShadersPack()
         {
             if (GUI.Toggle(new Rect(20, 40, 222, 20), _shadersToUse0, "Shaders pack Full (7 choices)"))
@@ -191,7 +218,7 @@ namespace OLDD_camera
                 _shadersToUse2 = false;
                 SaveWindowData();
             }
-            if (GUI.Toggle(new Rect(20, 80, 222, 20), _shadersToUse2, "Shaders pack Standart (3 choices)"))
+            if (GUI.Toggle(new Rect(20, 80, 222, 20), _shadersToUse2, "Shaders pack Standard (3 choices)"))
             {
                 BaseCamera.ShadersToUse = 2;
                 _shadersToUse0 = false;
@@ -200,12 +227,16 @@ namespace OLDD_camera
                 SaveWindowData();
             }
         }
-
+#endif
+        private void VesselsUndocked(Vessel d1, Vessel d2)
+        {
+            NewVesselCreated(d1);
+        }
         private void NewVesselCreated(Vessel data)
         {
             var allVessels = FlightGlobals.Vessels;
             _vesselsWithCamera = GetVesselsWithCamera(allVessels);
-            if (!_dist2500)
+            if (!HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>()._dist2500)
             {
                 foreach (var vessel in _vesselsWithCamera)
                 {
@@ -234,16 +265,30 @@ namespace OLDD_camera
         private List<Vessel> GetVesselsWithCamera(List<Vessel> allVessels)
         {
             List<Vessel> vesselsWithCamera = new List<Vessel>();
+            //List<Vessel> _vesselsWithDockingCamera = new List<Vessel>();
+            //List<Vessel> _vesselsWithAttachedCamera = new List<Vessel>();
+
             foreach (var vessel in allVessels)
             {
                 if (vessel.Parts.Count == 0) continue;
                 if (vessel.vesselType == VesselType.Debris || vessel.vesselType == VesselType.Flag || vessel.vesselType == VesselType.Unknown) continue;
+
                 foreach (var part in vessel.Parts)
                 {
-                    if (!part.Modules.Contains(_modulePartCameraId)) continue;
+                    if (!part.Modules.Contains<PartCameraModule>() && !part.Modules.Contains<DockingCameraModule>()) continue;
                     if (vesselsWithCamera.Contains(vessel)) continue;
+                    if (part.Modules.Contains<PartCameraModule>() && !_vesselsWithAttachedCamera.Contains(vessel))
+                        _vesselsWithAttachedCamera.Add(vessel);
+                    if (part.Modules.Contains<DockingCameraModule>() && !_vesselsWithDockingCamera.Contains(vessel))
+                        _vesselsWithDockingCamera.Add(vessel);
                     vesselsWithCamera.Add(vessel);
+                    break;
                 }
+                if (_vesselsWithAttachedCamera.Contains(FlightGlobals.ActiveVessel))
+                    _vesselsWithAttachedCamera.Remove(FlightGlobals.ActiveVessel);
+                if (_vesselsWithDockingCamera.Contains(FlightGlobals.ActiveVessel))
+                    _vesselsWithDockingCamera.Remove(FlightGlobals.ActiveVessel);
+
             }
             return vesselsWithCamera;
         }
@@ -254,7 +299,7 @@ namespace OLDD_camera
             _config.SetValue("shadersToUse0", _shadersToUse0);
             _config.SetValue("shadersToUse1", _shadersToUse1);
             _config.SetValue("shadersToUse2", _shadersToUse2);
-            _config.SetValue("FCS", FCS);
+            //_config.SetValue("FCS", FCS);
             _config.save();
         }
 
@@ -267,7 +312,7 @@ namespace OLDD_camera
             _shadersToUse0 = _config.GetValue("shadersToUse0", _shadersToUse0);
             _shadersToUse1 = _config.GetValue("shadersToUse1", _shadersToUse1);
             _shadersToUse2 = _config.GetValue("shadersToUse2", _shadersToUse2);
-            FCS = _config.GetValue("FCS", FCS);
+            //FCS = _config.GetValue("FCS", FCS);
         }
     }
 }

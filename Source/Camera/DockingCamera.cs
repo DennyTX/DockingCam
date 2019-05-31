@@ -7,27 +7,29 @@ using UnityEngine.UI;
 
 namespace OLDD_camera.Camera
 {
-    class DockingCamera:BaseCamera
+    class DockingCamera : BaseCamera
     {
-        private static HashSet<int> _usedId = new HashSet<int>(); 
+        private static HashSet<int> _usedId = new HashSet<int>();
         private static List<Texture2D>[] _textureWhiteNoise;
 
         private int _id;
-        private int _idTextureNoise; 
+        private int _idTextureNoise;
 
         private Texture2D _textureVLineOLDD;
-        private Texture2D _textureHLineOLDD; 
+        private Texture2D _textureHLineOLDD;
         private Texture2D _textureVLine;
         private Texture2D _textureHLine;
         private Texture2D _textureVLineBack;
         private Texture2D _textureHLineBack;
 
-        private readonly GameObject _moduleDockingNodeGameObject; 
+        private readonly GameObject _moduleDockingNodeGameObject;
         private TargetHelper _target;
 
         internal bool Noise;
         internal bool TargetCrossOLDD;
         internal bool TargetCrossDPAI;
+        internal bool TargetCrossStock;
+
         private bool _cameraData = true;
         private bool _rotatorState = true;
         private readonly float _maxSpeed = 2;
@@ -41,6 +43,7 @@ namespace OLDD_camera.Camera
 
         public Color TargetCrossColorOLDD
         {
+
             get { return _targetCrossColorOLDD; }
             set
             {
@@ -70,20 +73,22 @@ namespace OLDD_camera.Camera
             }
         }
 
-        public DockingCamera(Part thisPart, bool noise, bool crossDPAI, bool crossOLDD, int windowSize, string windowLabel = "DockCam")
+
+        public DockingCamera(Part thisPart, bool noise, bool crossStock, bool crossDPAI, bool crossOLDD, int windowSize, string windowLabel = "DockCam")
             : base(thisPart, windowSize, windowLabel)
         {
             GameEvents.onGameSceneLoadRequested.Add(LevelWasLoaded);
             Noise = noise;
             TargetCrossDPAI = crossDPAI;
             TargetCrossOLDD = crossOLDD;
+            TargetCrossStock = crossStock;
             _target = new TargetHelper(thisPart);
             _moduleDockingNodeGameObject = PartGameObject.GetChild("dockingNode") ?? PartGameObject;  //GET orientation from dockingnode
 
-            if (_textureWhiteNoise != null || !Noise)
+            if (_textureWhiteNoise != null)
                 return;
 
-            _textureWhiteNoise = new List<Texture2D>[3];
+            _textureWhiteNoise = new List<Texture2D>[4];
             for (int j = 0; j < 3; j++)
             {
                 _textureWhiteNoise[j] = new List<Texture2D>();
@@ -106,7 +111,7 @@ namespace OLDD_camera.Camera
         {
             base.InitTextures();
             _textureVLineOLDD = Util.MonoColorVerticalLineTexture(TargetCrossColorOLDD, (int)WindowSize * WindowSizeCoef);
-            _textureHLineOLDD = Util.MonoColorHorizontalLineTexture(TargetCrossColorOLDD, (int)WindowSize * WindowSizeCoef); 
+            _textureHLineOLDD = Util.MonoColorHorizontalLineTexture(TargetCrossColorOLDD, (int)WindowSize * WindowSizeCoef);
             _textureVLine = Util.MonoColorVerticalLineTexture(TargetCrossColorDPAI, (int)WindowSize * WindowSizeCoef);
             _textureHLine = Util.MonoColorHorizontalLineTexture(TargetCrossColorDPAI, (int)WindowSize * WindowSizeCoef);
             _textureVLineBack = Util.MonoColorVerticalLineTexture(_targetCrossColorBack, (int)WindowSize * WindowSizeCoef);
@@ -116,19 +121,33 @@ namespace OLDD_camera.Camera
         protected override void ExtendedDrawWindowL1()
         {
             var widthOffset = WindowPosition.width - 92;
+            if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().useKSPskin)
+            {
+                widthOffset -= sidebarWidthOffset;
+            }
             if (IsAuxiliaryWindowOpen)
             {
+                TargetCrossStock = GUI.Toggle(new Rect(widthOffset, 124, 88, 20), TargetCrossStock, "Cross: stock");
+                //if (TargetCrossStock)
+                //    TargetCrossDPAI = TargetCrossOLDD = false;
                 if (ThisPart.vessel.Equals(FlightGlobals.ActiveVessel) && TargetHelper.IsTargetSelect)
                 {
-                    _cameraData = GUI.Toggle(new Rect(widthOffset, 34, 88, 20), _cameraData, "Flight data");
-                    _rotatorState = GUI.Toggle(new Rect(widthOffset, 54, 88, 20), _rotatorState, "Rotator");
+
                     if (_target != null && _target.IsDockPort)
                     {
-                        TargetCrossDPAI = GUI.Toggle(new Rect(widthOffset, 74, 88, 20), TargetCrossDPAI, "Cross DPAI");
-                        TargetCrossOLDD = GUI.Toggle(new Rect(widthOffset, 94, 88, 20), TargetCrossOLDD, "Cross KURS");
+                        TargetCrossDPAI = GUI.Toggle(new Rect(widthOffset, 64, 88, 20), TargetCrossDPAI, "Cross: DPAI");
+                        //if (TargetCrossDPAI)
+                        //    TargetCrossStock = TargetCrossOLDD = false;
+
+                        TargetCrossOLDD = GUI.Toggle(new Rect(widthOffset, 84, 88, 20), TargetCrossOLDD, "Cross: KURS");
+                        //if (TargetCrossOLDD)
+                        //    TargetCrossStock = TargetCrossDPAI = false;
+
+                        _cameraData = GUI.Toggle(new Rect(widthOffset, 144, 88, 20), _cameraData, "Flight data");
+                        _rotatorState = GUI.Toggle(new Rect(widthOffset, 164, 88, 20), _rotatorState, "Rotator");
                     }
                     else
-                        GUI.Label(new Rect(widthOffset, 76, 88, 60), " Select\n docking\n port", Styles.RedLabel13B);
+                        GUI.Label(new Rect(widthOffset, 174, 88, 60), " Select\n docking\n port", Styles.RedLabel13B);
                 }
                 Noise = GUI.Toggle(new Rect(widthOffset, 253, 88, 20), Noise, "Noise");
             }
@@ -137,9 +156,13 @@ namespace OLDD_camera.Camera
 
         protected override void ExtendedDrawWindowL2()
         {
-            GUI.DrawTexture(TexturePosition, AssetLoader.texDockingCam);
+            // This draws the standard cross
+            if (TargetCrossStock)
+                GUI.DrawTexture(TexturePosition, AssetLoader.texDockingCam);
             if (Noise)
-                GUI.DrawTexture(TexturePosition, _textureWhiteNoise[WindowSizeCoef-2][_idTextureNoise]);  //add whitenoise
+            {
+                GUI.DrawTexture(TexturePosition, _textureWhiteNoise[WindowSizeCoef - 2][_idTextureNoise]);  //add whitenoise
+            }
             base.ExtendedDrawWindowL2();
         }
 
@@ -170,7 +193,7 @@ namespace OLDD_camera.Camera
                 GUI.matrix = matrixBackup1;
 
                 var size2 = TexturePosition.width / 8;
-                var x2 = TexturePosition.xMin + TexturePosition.width / 2 - size2 / 2 - 34;
+                var x2 = TexturePosition.xMin + TexturePosition.width / 2 - size2 / 2 - size1;
                 var rect2 = new Rect(x2, TexturePosition.yMax - size2, size2, size2);
                 GUI.DrawTexture(rect2, AssetLoader.texTargetRot);
                 Matrix4x4 matrixBackup2 = GUI.matrix;
@@ -179,7 +202,7 @@ namespace OLDD_camera.Camera
                 GUI.matrix = matrixBackup2;
 
                 var size3 = TexturePosition.width / 8;
-                var x3 = TexturePosition.xMin + TexturePosition.width / 2 - size3 / 2 + 34;
+                var x3 = TexturePosition.xMin + TexturePosition.width / 2 - size3 / 2 + size1;
                 var rect3 = new Rect(x3, TexturePosition.yMax - size3, size3, size3);
                 GUI.DrawTexture(rect3, AssetLoader.texTargetRot);
                 Matrix4x4 matrixBackup3 = GUI.matrix;
@@ -203,7 +226,7 @@ namespace OLDD_camera.Camera
                 }
                 else
                 {
-                    if (ThisPart.vessel.Equals(FlightGlobals.ActiveVessel))
+                    //if (ThisPart.vessel.Equals(FlightGlobals.ActiveVessel))
                     {
                         WindowLabel = SubWindowLabel + " " + _id;
                         _lastVesselName = "";
@@ -213,7 +236,7 @@ namespace OLDD_camera.Camera
             }
             else
             {
-                WindowLabel = SubWindowLabel + " " + _id + _windowLabelSuffix;    
+                WindowLabel = SubWindowLabel + " " + _id + _windowLabelSuffix;
             }
         }
 
@@ -230,26 +253,26 @@ namespace OLDD_camera.Camera
                     tx = 1 - tx;
                     ty = 1 - ty;
                 }
-                GUI.DrawTexture(new Rect(TexturePosition.xMin + Math.Abs(tx*TexturePosition.width)%TexturePosition.width,
+                GUI.DrawTexture(new Rect(TexturePosition.xMin + Math.Abs(tx * TexturePosition.width) % TexturePosition.width,
                     TexturePosition.yMin, 1, TexturePosition.height), textV);
                 GUI.DrawTexture(new Rect(TexturePosition.xMin, TexturePosition.yMin
-                    + Math.Abs(ty*TexturePosition.height)%TexturePosition.height, TexturePosition.width, 1), textH);
+                    + Math.Abs(ty * TexturePosition.height) % TexturePosition.height, TexturePosition.width, 1), textH);
             }
 
             if (TargetCrossOLDD && _target.IsDockPort)
             {
-                var tx = TexturePosition.width/2;
-                var ty = TexturePosition.height/2;
+                var tx = TexturePosition.width / 2;
+                var ty = TexturePosition.height / 2;
                 if (Mathf.Abs(_target.AngleX) > 20)
-                    tx += (_target.AngleX > 0 ? -1 : 1) * (TexturePosition.width/2 - 1);
+                    tx += (_target.AngleX > 0 ? -1 : 1) * (TexturePosition.width / 2 - 1);
                 else
-                    tx += TexturePosition.width/40 * -_target.AngleX;
+                    tx += TexturePosition.width / 40 * -_target.AngleX;
                 if (Mathf.Abs(_target.AngleY) > 20)
-                    ty += (_target.AngleY > 0 ? -1 : 1) * (TexturePosition.height/2 - 1);
+                    ty += (_target.AngleY > 0 ? -1 : 1) * (TexturePosition.height / 2 - 1);
                 else
-                    ty += TexturePosition.height/40 * -_target.AngleY;
-                GUI.DrawTexture( new Rect(TexturePosition.xMin + tx, TexturePosition.yMin, 1, TexturePosition.height), _textureVLineOLDD);
-                GUI.DrawTexture( new Rect(TexturePosition.xMin, TexturePosition.yMin + ty, TexturePosition.width, 1), _textureHLineOLDD);
+                    ty += TexturePosition.height / 40 * -_target.AngleY;
+                GUI.DrawTexture(new Rect(TexturePosition.xMin + tx, TexturePosition.yMin, 1, TexturePosition.height), _textureVLineOLDD);
+                GUI.DrawTexture(new Rect(TexturePosition.xMin, TexturePosition.yMin + ty, TexturePosition.width, 1), _textureHLineOLDD);
             }
         }
 
@@ -308,8 +331,10 @@ namespace OLDD_camera.Camera
         {
             if (IsActive) return;
             SetFreeId();
+
             WindowPosition.x = WindowPosition.width * (_id - 1);
             WindowPosition.y = 400;
+            InitWindow();
             base.Activate();
         }
 
@@ -345,10 +370,10 @@ namespace OLDD_camera.Camera
         public override void Update()
         {
             UpdateWhiteNoise();
-            
+
             AllCamerasGameObject.Last().transform.position = _moduleDockingNodeGameObject.transform.position; // near&&far
             AllCamerasGameObject.Last().transform.rotation = _moduleDockingNodeGameObject.transform.rotation;
-            
+
             AllCamerasGameObject[0].transform.rotation = AllCamerasGameObject.Last().transform.rotation; // skybox galaxy
             AllCamerasGameObject[1].transform.rotation = AllCamerasGameObject.Last().transform.rotation; // nature object
             AllCamerasGameObject[2].transform.rotation = AllCamerasGameObject.Last().transform.rotation; // middle 

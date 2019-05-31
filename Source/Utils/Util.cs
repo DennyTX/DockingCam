@@ -4,6 +4,8 @@ using System.Text;
 using OLDD_camera.Camera;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = System.Random;
+
 
 namespace OLDD_camera.Utils
 {
@@ -16,12 +18,22 @@ namespace OLDD_camera.Utils
 
         private void OnGUI()
         {
+
             //UpdateGUIFunction?.Invoke();
             //if (UpdateGUIFunction != null) //ddd
             if (updateGUIFunction != null)
+            {
+                //UpdateGUIFunction(); //ddd
+
+                if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().useKSPskin)
                 {
-                    //UpdateGUIFunction(); //ddd
-                    updateGUIFunction();
+                    GUI.skin = HighLogic.Skin;
+                }
+                if (OLDD_camera.Utils.Styles.KspSkin != HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().useKSPskin)
+                {
+                    OLDD_camera.Utils.Styles.InitStyles();
+                }
+                updateGUIFunction();
             }
         }
     }
@@ -68,10 +80,10 @@ namespace OLDD_camera.Utils
             width *= 2;
             height *= 2;
             var texture2D = new Texture2D(width, height);
-            var colors = new Color[width*height];
+            var colors = new Color[width * height];
             for (int i = 0; i < width * height; i++)
             {
-                colors[i] = UnityEngine.Random.Range(0, 100)%2 == 1 ? black : white;
+                colors[i] = UnityEngine.Random.Range(0, 100) % 2 == 1 ? black : white;
             }
             texture2D.SetPixels(colors);
             texture2D.Apply();
@@ -128,5 +140,15 @@ namespace OLDD_camera.Utils
             r.y = Mathf.Clamp(r.y, limit - r.height, Screen.height - limit);
             return r;
         }
+
+        public static int randomSeed = new Random().Next();
+        private static int nextRandomInt = randomSeed;
+
+        public static int GetRandomInt()
+        {
+            nextRandomInt++;
+            return nextRandomInt;
+        }
+
     }
 }

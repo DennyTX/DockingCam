@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 4057864073
+CRC: 239432236
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 4cc7419671f1e31b0b50b6e8d6303046
+    Hash: 9138d94b8706d7e55a22c9af5377d33b
   TypeTreeHash:
     serializedVersion: 2
     Hash: 34efae5bc6a9371e297c873e037a0df1
@@ -19,9 +19,12 @@ Assets:
 - Assets/dockingcameratextures/lampoff.png
 - Assets/CustomCRT.shader
 - Assets/CustomNightVision.shader
+- Assets/None.shader
 - Assets/HiddenNightvision.shader
+- Assets/Scanlines.shader
 - Assets/dockingcameratextures/lampon.png
 - Assets/dockingcameratextures/targetrot.png
+- Assets/UI-Grayscale.shader
 - Assets/NightvisionClear.shader
 - Assets/CustomMovieTime.shader
 - Assets/dockingcameratextures/dockingcam.png

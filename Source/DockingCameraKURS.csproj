@@ -18,7 +18,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;SHADERTESTOff</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -38,9 +38,12 @@
       <DependentUpon>AssemblyVersion.tt</DependentUpon>
     </Compile>
     <Compile Include="DockCamToolbarButton.cs" />
+    <Compile Include="RegisterToolbar.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Utils\AssetLoader.cs" />
     <Compile Include="Utils\CameraDestroyer.cs" />
     <Compile Include="Utils\CameraGameSettings.cs" />
+    <Compile Include="Utils\Log.cs" />
     <Compile Include="Utils\ModuleSpyExperiment.cs" />
     <Compile Include="Utils\Styles.cs" />
     <Compile Include="Modules\PartCameraModule.cs" />

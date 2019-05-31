@@ -47,11 +47,13 @@ Shader "Custom/CRT"
     {
         Tags
         {
-            "Queue"="Transparent"
-            "IgnoreProjector"="True"
-            "RenderType"="Transparent"
-            "PreviewType"="Plane"
-            "CanUseSpriteAtlas"="True"
+			"RenderType" = "Opaque" 
+			
+            //"Queue"="Transparent"
+            //"IgnoreProjector"="True"
+            //"RenderType"="Transparent"
+            //"PreviewType"="Plane"
+            //"CanUseSpriteAtlas"="True"
         }
  
         Cull Off

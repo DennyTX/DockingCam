@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if false
+using System.Collections;
 using System.Reflection;
 using UnityEngine.UI;
 
@@ -37,3 +38,4 @@ namespace OLDD_camera.Utils
         }
     }
 }
+#endif

@@ -17,9 +17,10 @@ namespace OLDD_camera.Camera
 
         internal Rect WindowPosition;
         internal Rect TexturePosition;
+        internal float sidebarWidthOffset = 0; // used for scaling stock KSP skin
 
         protected string WindowLabel;
-        protected string SubWindowLabel; 
+        protected string SubWindowLabel;
         protected GameObject PartGameObject;
         protected Part ThisPart;
 
@@ -28,45 +29,69 @@ namespace OLDD_camera.Camera
         private Texture _textureTargetMark;
         internal Texture[] TextureNoSignal;
         internal int TextureNoSignalId;
-        protected RenderTexture RenderTexture; 
+        protected RenderTexture RenderTexture;
 
         private ShaderType _shaderType;
+#if false
         private ShaderType1 _shaderType1;
         private ShaderType2 _shaderType2;
+#endif
         private static string _currentShaderName;
-        internal static int ShadersToUse = 0;
-        
+        //internal static int ShadersToUse = 0;
+
         protected float WindowSize;
         private const float WindowAddition = 92f;
         protected float RotateX = 0;
         protected float RotateY = 0;
         protected float RotateZ = 0;
-        
-        protected int MinZoomMultiplier = 4; 
+
+        protected int MinZoomMultiplier = 4;
         internal float MinZoom = 1f;
         internal float MaxZoom = 32f;
         internal float CurrentZoom = 32f;
         internal int CalculatedZoom;
-        internal bool ZoomMultiplier = false; 
-        
+        internal bool ZoomMultiplier = false;
+
         private bool _isTargetPoint;
 
         protected int WindowSizeCoef = 2;
-        protected int WindowId = UnityEngine.Random.Range(1000, 10000);
+        protected int MaxWindowSizeCoef = 5;
+
+        protected int WindowId = Util.GetRandomInt();
+        public static int SettingsWinID = Util.GetRandomInt();
 
         internal bool IsActive;
         internal bool IsButtonOff;
-        internal bool IsOrbital; 
+        internal bool IsOrbital;
         internal bool IsAuxiliaryWindowOpen;
         internal bool IsAuxiliaryWindowButtonPres;
 
         protected List<UnityEngine.Camera> AllCameras = new List<UnityEngine.Camera>();
         protected List<GameObject> AllCamerasGameObject = new List<GameObject>();
-        protected List<string> CameraNames = new List<string>{"GalaxyCamera", "Camera ScaledSpace", "Camera 01", "Camera 00" };
+        protected List<string> CameraNames = new List<string> { "GalaxyCamera", "Camera ScaledSpace", "Camera 01", "Camera 00" };
 
         protected BaseCamera(Part thisPart, float windowSizeInit, string windowLabel = "Camera")
         {
-            WindowSize = windowSizeInit/2;
+            InitBaseCamera(thisPart, windowSizeInit, windowLabel);
+        }
+        float oWindowSizeInit;
+
+        void InitBaseCamera(Part thisPart, float windowSizeInit, string windowLabel = "Camera", bool firstTime = true)
+        {
+            oWindowSizeInit = windowSizeInit;
+            WindowSize = GameSettings.UI_SCALE * windowSizeInit / 2;
+            if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().useKSPskin)
+            {
+                sidebarWidthOffset = 40 * GameSettings.UI_SCALE;
+                WindowSize += sidebarWidthOffset;
+            }
+            else
+                sidebarWidthOffset = 0;
+
+            MaxWindowSizeCoef = 1;
+            while ((MaxWindowSizeCoef + 2) * WindowSize < Screen.height && MaxWindowSizeCoef < 10)
+                MaxWindowSizeCoef++;
+            
             ThisPart = thisPart;
             SubWindowLabel = windowLabel;
             WindowLabel = windowLabel;
@@ -74,19 +99,30 @@ namespace OLDD_camera.Camera
 
             InitWindow();
             InitTextures();
+            if (firstTime)
+            {
+                GameEvents.OnFlightUIModeChanged.Add(FlightUIModeChanged);
+                GameEvents.onUIScaleChange.Add(onUIScaleChange);
 
-            GameEvents.OnFlightUIModeChanged.Add(FlightUIModeChanged);
-
-            GameObject updateGUIHolder = new GameObject();
-            UpdateGUIObject = updateGUIHolder.AddComponent<UpdateGUIObject>();
+                GameObject updateGUIHolder = new GameObject();
+                UpdateGUIObject = updateGUIHolder.AddComponent<UpdateGUIObject>();
+            }
         }
 
         ~BaseCamera()
         {
             GameEvents.OnFlightUIModeChanged.Remove(FlightUIModeChanged);
+            GameEvents.onUIScaleChange.Remove(onUIScaleChange);
         }
+
+        void onUIScaleChange()
+        {
+            InitBaseCamera(ThisPart, oWindowSizeInit, WindowLabel, false);
+        }
+
         private void FlightUIModeChanged(FlightUIMode mode)
         {
+
 #if KSP170
             IsOrbital = ThisPart.vessel.situation == Vessel.Situations.ORBITING;
 #else
@@ -99,11 +135,32 @@ namespace OLDD_camera.Camera
         {
             WindowPosition.width = WindowSize * WindowSizeCoef;
             WindowPosition.height = WindowSize * WindowSizeCoef + 34f;
+            if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().useKSPskin)
+                sidebarWidthOffset = 40 * GameSettings.UI_SCALE;
+            else
+                sidebarWidthOffset = 0;
+
         }
 
         protected virtual void InitTextures()
         {
-            TexturePosition = new Rect(6, 34, WindowPosition.width - 12f, WindowPosition.height - 40f); //42f);
+            float lineHeight;
+            float titleHeight;
+
+            if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().useKSPskin)
+            {
+                lineHeight = 14 * GameSettings.UI_SCALE;
+                titleHeight = 34;
+            }
+            else
+            {
+                lineHeight = 12 * GameSettings.UI_SCALE;
+                titleHeight = 22;
+            }
+
+            // TexturePosition = new Rect(6, 34, WindowPosition.width - 12f, WindowPosition.height - 40f); //42f);
+
+            TexturePosition = new Rect(6, lineHeight + titleHeight, WindowPosition.width - lineHeight, WindowPosition.height - (lineHeight + /*28f +*/ titleHeight + 6f)); //42f);
             RenderTexture = new RenderTexture((int)WindowSize * 4, (int)WindowSize * 4, 24);//, RenderTextureFormat.RGB565);  
             RenderTexture.active = RenderTexture;
             RenderTexture.Create();
@@ -113,7 +170,7 @@ namespace OLDD_camera.Camera
             TextureNoSignal = new Texture[8];
             for (int i = 0; i < TextureNoSignal.Length; i++)
             {
-                TextureNoSignal[i] = Util.WhiteNoiseTexture((int) TexturePosition.width, (int) TexturePosition.height, 1f); 
+                TextureNoSignal[i] = Util.WhiteNoiseTexture((int)TexturePosition.width, (int)TexturePosition.height, 1f);
             }
         }
 
@@ -163,13 +220,16 @@ namespace OLDD_camera.Camera
             DestroyCameras();
             IsActive = false;
             //UpdateGUIObject.UpdateGUIFunction -= Begin; //ddd
-            UpdateGUIObject.updateGUIFunction -= Begin; //lll
+            if (UpdateGUIObject != null)
+                UpdateGUIObject.updateGUIFunction -= Begin; //lll
         }
+
 
         private void Begin() //draw main window
         {
             if (!IsActive) return;
-            WindowPosition = GUI.Window(WindowId, KSPUtil.ClampRectToScreen(WindowPosition), DrawWindow, WindowLabel); 
+            //if (MapView.MapIsEnabled) return;
+            WindowPosition = GUI.Window(WindowId, KSPUtil.ClampRectToScreen(WindowPosition), DrawWindow, WindowLabel);
             int electricityId = PartResourceLibrary.Instance.GetDefinition("ElectricCharge").id;
             double electricChargeAmount;
             double electricChargeMaxAmount;
@@ -178,7 +238,7 @@ namespace OLDD_camera.Camera
                 ThisPart.RequestResource(electricityId, 0.02 * TimeWarp.fixedDeltaTime);
         }
 
-#region DRAW LAYERS 
+        #region DRAW LAYERS 
 
         private void DrawWindow(int id)
         {
@@ -194,31 +254,26 @@ namespace OLDD_camera.Camera
         protected virtual void ExtendedDrawWindowL1()
         {
             var widthOffset = WindowPosition.width - 90;
+            if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().useKSPskin)
+            {
+                widthOffset -= sidebarWidthOffset;
+            }
+
             var calculateZoom = (int)(MaxZoom - CurrentZoom + MinZoom);
-            CalculatedZoom = !ZoomMultiplier ? calculateZoom : calculateZoom * MinZoomMultiplier*6;
+            CalculatedZoom = !ZoomMultiplier ? calculateZoom : calculateZoom * MinZoomMultiplier * 6;
+            if (IsAuxiliaryWindowOpen)
+            {
+                GUI.Label(new Rect(widthOffset + 12, 44, 80, 20), "Zoom: " + CalculatedZoom, Styles.Label13B);
 
-            GUI.Label(new Rect(widthOffset, 128, 80, 20), "zoom: " + CalculatedZoom, Styles.Label13B);
-
-            if (FlightGlobals.ActiveVessel == ThisPart.vessel) 
-                _isTargetPoint = GUI.Toggle(new Rect(widthOffset-2, 233, 88, 20), _isTargetPoint, "Target Mark");
-
+                if (FlightGlobals.ActiveVessel == ThisPart.vessel)
+                    _isTargetPoint = GUI.Toggle(new Rect(widthOffset - 2, 233, 88, 20), _isTargetPoint, "Target Mark");
+            }
             //GUI.DrawTexture(TexturePosition, _textureBackGroundCamera);
 
-            switch (ShadersToUse)
-            {
-                case 0:
-                    CurrentShader = CameraShaders.GetShader(_shaderType);
-                    break;
-                case 1:
-                    CurrentShader = CameraShaders.GetShader1(_shaderType1);
-                    break;
-                case 2:
-                    CurrentShader = CameraShaders.GetShader2(_shaderType2);
-                    break;
-            }
-            
+            CurrentShader = CameraShaders.GetShader(_shaderType);
+
             _currentShaderName = CurrentShader == null ? "none" : CurrentShader.name;
-            Debug.Log("CurrentShader: " + CurrentShader);
+            //Debug.Log("CurrentShader: " + CurrentShader);
             if (Event.current.type.Equals(EventType.Repaint))
                 Graphics.DrawTexture(TexturePosition, Render(), CurrentShader);
         }
@@ -228,6 +283,7 @@ namespace OLDD_camera.Camera
         /// </summary>
         protected virtual void ExtendedDrawWindowL2()
         {
+
             if (TargetHelper.IsTargetSelect)
             {
                 var camera = AllCameras.Last();
@@ -243,52 +299,63 @@ namespace OLDD_camera.Camera
                 var x = point.x; //(0;1)
                 var y = point.y;
                 var z = point.z;
- 
-                x = GetX(x,z);
-                y = GetY(y,z);
+
+                x = GetX(x, z);
+                y = GetY(y, z);
 
                 var offsetX = TexturePosition.width * x;
                 var offsetY = TexturePosition.height * y;
 
                 if (_isTargetPoint)
-                    GUI.DrawTexture(new Rect(TexturePosition.xMin + offsetX-10, TexturePosition.yMax - offsetY-10, 20, 20), _textureTargetMark);
+                    GUI.DrawTexture(new Rect(TexturePosition.xMin + offsetX - 10, TexturePosition.yMax - offsetY - 10, 20, 20), _textureTargetMark);
             }
-
-            if (IsOrbital)
-                GUI.DrawTexture(TexturePosition, TextureNoSignal[TextureNoSignalId]); 
+            else
+            {
+                if (IsOrbital)
+                    GUI.DrawTexture(TexturePosition, TextureNoSignal[TextureNoSignalId]);
+            }
         }
 
         /// <summary>
         /// drawing method, third layer, interface
         /// </summary>
-        protected virtual void ExtendedDrawWindowL3()  
+        protected virtual void ExtendedDrawWindowL3()
         {
+
             if (!ThisPart.vessel.Equals(FlightGlobals.ActiveVessel))
                 GUI.Label(new Rect(8, 34, 222, 20), "Broadcast from: " + ThisPart.vessel.vesselName, Styles.GreenLabel11);
 
             if (IsAuxiliaryWindowOpen)
-                GUI.DrawTexture(new Rect(TexturePosition.width + 8, 34, 1, TexturePosition.height), _textureSeparator); //Separator
+                GUI.DrawTexture(new Rect(TexturePosition.width + 8, 34, GameSettings.UI_SCALE * 1, TexturePosition.height), _textureSeparator); //Separator
+            if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().useKSPskin)
+            {
+                if (GUI.Button(new Rect(WindowPosition.width - 20, 3, GameSettings.UI_SCALE * 15, GameSettings.UI_SCALE * 15), "x"))
+                    IsButtonOff = true;
+            }
+            else
+            {
+                if (GUI.Button(new Rect(WindowPosition.width - 20, 3, GameSettings.UI_SCALE * 15 + 4, GameSettings.UI_SCALE * 15), "x"))
+                    IsButtonOff = true;
+            }
 
-            if (GUI.Button(new Rect(WindowPosition.width - 20, 3, 15, 15), " "))
-                IsButtonOff = true;
-
-            if (GUI.Button(new Rect(WindowPosition.width - 29, 18, 24, 15), IsAuxiliaryWindowOpen ? "◄" : "►")) //extend window
+            if (GUI.Button(new Rect(WindowPosition.width - 29, 20, GameSettings.UI_SCALE * 24, GameSettings.UI_SCALE * 15), IsAuxiliaryWindowOpen ? "◄" : "►")) //extend window
             {
                 IsAuxiliaryWindowOpen = !IsAuxiliaryWindowOpen;
                 IsAuxiliaryWindowButtonPres = true;
             }
 
             var tooltip = new GUIContent("☼", _currentShaderName);
-            GUI.Box(new Rect(8, TexturePosition.yMax - 22, 20, 20), tooltip);
-            GUI.Label(new Rect(64, 128, 200, 40), GUI.tooltip, Styles.GreenLabel15B);
-            if (GUI.Button(new Rect(8, TexturePosition.yMax - 22, 20, 20), "☼")) 
+            GUI.Box(new Rect(8, TexturePosition.yMax - 22, GameSettings.UI_SCALE * 20, GameSettings.UI_SCALE * 20), tooltip);
+            GUI.Label(new Rect(64, 128, GameSettings.UI_SCALE * 200, GameSettings.UI_SCALE * 40), GUI.tooltip, Styles.GreenLabel15B);
+            if (GUI.Button(new Rect(8, TexturePosition.yMax - 22, 20, 20), "☼"))
             {
+#if false
                 switch (ShadersToUse)
                 {
                     case 0:
                         _shaderType++;
                         if (!Enum.IsDefined(typeof (ShaderType), _shaderType))
-                            _shaderType = ShaderType.CRT;
+                            _shaderType = ShaderType.None;
                         break;
                     case 1:
                         _shaderType1++;
@@ -301,39 +368,47 @@ namespace OLDD_camera.Camera
                             _shaderType2 = ShaderType2.None;
                         break;
                 }
+           
+#else
+                _shaderType++;
+                if (!Enum.IsDefined(typeof(ShaderType), _shaderType))
+                    _shaderType = ShaderType.None;
+#endif
             }
-
-            if (GUI.RepeatButton(new Rect(TexturePosition.xMax - 22, TexturePosition.yMax - 22, 20, 20), "±") && 	
+            //if (GUI.RepeatButton(new Rect(TexturePosition.xMax - 22, TexturePosition.yMax - 22, 20, 20), "±") && 	
+            if (GUI.RepeatButton(new Rect(TexturePosition.xMax - 42, TexturePosition.yMax - 22, 20, 20), "-") &&
                 UnityEngine.Camera.allCameras.FirstOrDefault(x => x.name == "Camera 00") != null) //Size of main window
             {
-                WindowSizeCoef = ((WindowSizeCoef - 1)%3)+2;
-#if false
-                switch (WindowSizeCoef)
-                {
-                    case 2:
-                        WindowSizeCoef = 3;
-                        break;
-                    case 3:
-                        WindowSizeCoef = 4;
-                        break;
-                    case 4:
-                        WindowSizeCoef = 2;
-                        break;
-                }
-#endif
+                //WindowSizeCoef = ((WindowSizeCoef - 1)%(MaxWindowSizeCoef-1))+2;
+                WindowSizeCoef--;
+                if (WindowSizeCoef < 2)
+                    WindowSizeCoef = MaxWindowSizeCoef;
+
                 Deactivate();
                 InitWindow();
                 InitTextures();
                 Activate();
                 //IsAuxiliaryWindowOpen = false;
-                
-                    IsAuxiliaryWindowButtonPres = IsAuxiliaryWindowOpen;
-            }
 
-            CurrentZoom = GUI.HorizontalSlider(new Rect(TexturePosition.width / 2 - 80, 20, 160, 10), CurrentZoom, MaxZoom, MinZoom);
+                IsAuxiliaryWindowButtonPres = IsAuxiliaryWindowOpen;
+            }
+            if (GUI.RepeatButton(new Rect(TexturePosition.xMax - 22, TexturePosition.yMax - 22, 20, 20), "+") &&
+                UnityEngine.Camera.allCameras.FirstOrDefault(x => x.name == "Camera 00") != null) //Size of main window
+            {
+                WindowSizeCoef = ((WindowSizeCoef - 1) % (MaxWindowSizeCoef - 1)) + 2;
+
+                Deactivate();
+                InitWindow();
+                InitTextures();
+                Activate();
+                //IsAuxiliaryWindowOpen = false;
+
+                IsAuxiliaryWindowButtonPres = IsAuxiliaryWindowOpen;
+            }
+            CurrentZoom = GUI.HorizontalSlider(new Rect(TexturePosition.width / 2 - 80, GUI.skin.font.lineHeight + 10, 160, 10), CurrentZoom, MaxZoom, MinZoom);
         }
 
-#endregion DRAW LAYERS
+        #endregion DRAW LAYERS
 
         private float GetX(float x, float z)
         {
@@ -369,16 +444,16 @@ namespace OLDD_camera.Camera
             IsAuxiliaryWindowButtonPres = false;
             while (true)
             {
-                if (IsAuxiliaryWindowOpen && WindowPosition.width < WindowSize * WindowSizeCoef + WindowAddition)
+                if (IsAuxiliaryWindowOpen && WindowPosition.width < WindowSize * WindowSizeCoef + WindowAddition + sidebarWidthOffset)
                 {
                     WindowPosition.width += 4;
-                    if (WindowPosition.width >= WindowSize * WindowSizeCoef + WindowAddition)
+                    if (WindowPosition.width >= WindowSize * WindowSizeCoef + WindowAddition + sidebarWidthOffset)
                         break;
                 }
-                else if (WindowPosition.width > WindowSize*WindowSizeCoef)
+                else if (WindowPosition.width > WindowSize * WindowSizeCoef)
                 {
                     WindowPosition.width -= 4;
-                    if (WindowPosition.width <= WindowSize*WindowSizeCoef)
+                    if (WindowPosition.width <= WindowSize * WindowSizeCoef)
                         break;
                 }
                 else
@@ -400,19 +475,22 @@ namespace OLDD_camera.Camera
         /// </summary>
         public virtual void Update()
         {
-            AllCamerasGameObject.Last().transform.position = PartGameObject.transform.position;
-            AllCamerasGameObject.Last().transform.rotation = PartGameObject.transform.rotation;
+            if (IsActive)
+            {
+                AllCamerasGameObject.Last().transform.position = PartGameObject.transform.position;
+                AllCamerasGameObject.Last().transform.rotation = PartGameObject.transform.rotation;
 
-            AllCamerasGameObject.Last().transform.Rotate(new Vector3(-1f, 0, 0), 90);
-            AllCamerasGameObject.Last().transform.Rotate(new Vector3(0, 1f, 0), RotateY);
-            AllCamerasGameObject.Last().transform.Rotate(new Vector3(1f, 0, 0), RotateX);
-            AllCamerasGameObject.Last().transform.Rotate(new Vector3(0, 0, 1f), RotateZ);
+                AllCamerasGameObject.Last().transform.Rotate(new Vector3(-1f, 0, 0), 90);
+                AllCamerasGameObject.Last().transform.Rotate(new Vector3(0, 1f, 0), RotateY);
+                AllCamerasGameObject.Last().transform.Rotate(new Vector3(1f, 0, 0), RotateX);
+                AllCamerasGameObject.Last().transform.Rotate(new Vector3(0, 0, 1f), RotateZ);
 
-            AllCamerasGameObject[0].transform.rotation = AllCamerasGameObject.Last().transform.rotation;
-            AllCamerasGameObject[1].transform.rotation = AllCamerasGameObject.Last().transform.rotation;
-            AllCamerasGameObject[2].transform.rotation = AllCamerasGameObject.Last().transform.rotation;
-            AllCamerasGameObject[2].transform.position = AllCamerasGameObject.Last().transform.position;
-            AllCameras.ForEach(cam => cam.fieldOfView = CurrentZoom);
+                AllCamerasGameObject[0].transform.rotation = AllCamerasGameObject.Last().transform.rotation;
+                AllCamerasGameObject[1].transform.rotation = AllCamerasGameObject.Last().transform.rotation;
+                AllCamerasGameObject[2].transform.rotation = AllCamerasGameObject.Last().transform.rotation;
+                AllCamerasGameObject[2].transform.position = AllCamerasGameObject.Last().transform.position;
+                AllCameras.ForEach(cam => cam.fieldOfView = CurrentZoom);
+            }
         }
     }
 }

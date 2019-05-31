@@ -11,8 +11,8 @@ namespace OLDD_camera.Modules
         /// <summary>
         /// Module adds an external camera and gives control over it
         /// </summary>
-        [KSPField(guiActive = true, guiActiveEditor = false, guiName = "Docking Camera", isPersistant = true)]
-        [UI_Toggle(controlEnabled = true, enabledText = "ON", disabledText = "OFF", scene = UI_Scene.Flight)]
+        [KSPField(guiActive = true, guiActiveEditor = false, guiName = "Docking Camera", isPersistant = true),
+        UI_Toggle(controlEnabled = true, enabledText = "ON", disabledText = "OFF", scene = UI_Scene.Flight)]
         public bool IsEnabled;
 
         [KSPField(isPersistant = true)]
@@ -24,21 +24,25 @@ namespace OLDD_camera.Modules
         [KSPField(isPersistant = true)]
         private bool _crossOLDD;
 
+        [KSPField(isPersistant = true)]
+        private bool _targetCrossStock = true;
+
         private int _windowSize = 256;
         private DockingCamera _camera;
 
         public override void OnStart(StartState state)
         {
             if (state == StartState.Editor || _camera != null) return;
+ 
             if (_camera == null)
-                _camera = new DockingCamera(part, noise, _crossDPAI, _crossOLDD, _windowSize);
+                _camera = new DockingCamera(part, noise, _targetCrossStock, _crossDPAI, _crossOLDD, _windowSize);
         }
 
         public override void OnUpdate()
         {
             if (_camera == null) return;
 
-            if (DockCamToolbarButton.FCS && part.vessel != FlightGlobals.ActiveVessel && IsEnabled)
+            if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().FCS && part.vessel != FlightGlobals.ActiveVessel && IsEnabled)
             {
                 var dist = Vector3.Distance(FlightGlobals.ActiveVessel.transform.position, part.vessel.transform.position);
                 var treshhold = vessel.vesselRanges.orbit.load;
@@ -60,6 +64,7 @@ namespace OLDD_camera.Modules
             noise = _camera.Noise;
             _crossDPAI = _camera.TargetCrossDPAI;
             _crossOLDD = _camera.TargetCrossOLDD;
+            _targetCrossStock = _camera.TargetCrossStock;
 
             if (_camera.IsAuxiliaryWindowButtonPres)
                 StartCoroutine(_camera.ResizeWindow());
@@ -70,6 +75,7 @@ namespace OLDD_camera.Modules
         public void Activate()
         {
             if (_camera.IsActive) return;
+            
             _camera.Activate();
             StartCoroutine("WhiteNoise"); 
         }

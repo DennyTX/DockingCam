@@ -31,7 +31,7 @@ namespace OLDD_camera.Utils
     {
         public static Material GetShader(ShaderType type)
         {
-            Debug.Log("GetShader, type: " + type);
+            //Debug.Log("GetShader, type: " + type);
 #if false
             Material result;
             switch (type)
@@ -68,13 +68,14 @@ namespace OLDD_camera.Utils
                 case ShaderType.NightVision: return NightVision;                    
                 case ShaderType.NightVisionClear: return NightVisionClear;
                 case ShaderType.Grayscale: return Grayscale;
-                case ShaderType.None: return null;
+                case ShaderType.None: return NoneMaterial;
 #if SHADERTEST
                 case ShaderType.Test: return TestMaterial;
 #endif
                 default: return null;
             }
         }
+#if false
         public static Material GetShader1(ShaderType1 type)
         {
 #if false
@@ -123,11 +124,12 @@ namespace OLDD_camera.Utils
                 default: return null;
             }
         }
-
+#endif
         static Material crt = null;
         static Material grayscale = null;
         static Material nightvisionclear = null;
         static Material nightvision = null;
+        static Material noneMaterial = null;
 #if SHADERTEST
         static Material testMaterial = null;
 #endif
@@ -168,6 +170,15 @@ namespace OLDD_camera.Utils
                 if (nightvision == null)
                     nightvision = AssetLoader.matNightVision;
                 return nightvision;
+            }
+        }
+        public static Material NoneMaterial
+        {
+            get
+            {
+                if (noneMaterial == null)
+                    noneMaterial = AssetLoader.matNone;
+                return noneMaterial;
             }
         }
 #if SHADERTEST

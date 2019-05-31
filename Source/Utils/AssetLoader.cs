@@ -12,7 +12,10 @@ namespace OLDD_camera.Utils
         public static Material matNightVisionClear = null;
         public static Material matNightVision = null;
 
+#if SHADERTEST
         public static Material matTest = null;
+#endif
+        public static Material matNone = null;
         public static Material matCRT = null;
         public static Material matGrayscale = null;
 
@@ -59,13 +62,17 @@ namespace OLDD_camera.Utils
                 if (shader.name == "NightVisionClear")
                     matNightVisionClear = new Material(shader);
 
-                if (shader.name == "Custom/MovieTime")
+                if (shader.name == "Custom/UI/Grayscale")
                     matGrayscale = new Material(shader);
 
-#if SHADERTEST
-                if (shader.name == "Custom/NightVision")
+                if (shader.name == "Custom/None")
                 {
-                    matTest = new Material(shader);
+                    matNone = new Material(shader);
+                }
+#if SHADERTEST
+                if (shader.name == "Custom/None")
+                    {
+                        matTest = new Material(shader);
                 }
 #endif
             }

@@ -92,13 +92,14 @@ namespace OLDD_camera.Modules
 
         public void Update()
         {
-            GetElectricState();
+            if (IsEnabled)
+                GetElectricState();
         }
         public override void OnUpdate()
         {
             if (_camera == null) return;
 
-            if (DockCamToolbarButton.FCS && part.vessel != FlightGlobals.ActiveVessel && IsEnabled)
+            if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().FCS && part.vessel != FlightGlobals.ActiveVessel && IsEnabled)
             {
                 var dist = Vector3.Distance(FlightGlobals.ActiveVessel.transform.position, part.vessel.transform.position);
                 var treshhold = vessel.vesselRanges.orbit.load;
