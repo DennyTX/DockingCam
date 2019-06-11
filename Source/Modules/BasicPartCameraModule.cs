@@ -31,7 +31,7 @@ namespace OLDD_camera.Modules
         private DockingCamera _camera;
 
         [KSPField]
-        public string dockingNodeName = "";
+        public string cameraNodeName = "";
 
         [KSPField]
         public string cameraName = "";
@@ -43,7 +43,7 @@ namespace OLDD_camera.Modules
             if (_camera == null)
             {
                
-                _camera = new DockingCamera(part, noise, _targetCrossStock, _crossDPAI, _crossOLDD, _windowSize, cameraName, dockingNodeName);
+                _camera = new DockingCamera(part, noise, _targetCrossStock, _crossDPAI, _crossOLDD, _windowSize, cameraName, cameraNodeName);
             }
         }
 
