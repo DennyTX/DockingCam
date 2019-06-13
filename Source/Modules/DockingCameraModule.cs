@@ -30,12 +30,24 @@ namespace OLDD_camera.Modules
         private int _windowSize = 256;
         private DockingCamera _camera;
 
+        [KSPField]
+        public string cameraName = "";
+
+        [KSPField]
+        public string windowLabel = "";
+
         public override void OnStart(StartState state)
         {
             if (state == StartState.Editor || _camera != null) return;
  
             if (_camera == null)
-                _camera = new DockingCamera(part, noise, _targetCrossStock, _crossDPAI, _crossOLDD, _windowSize);
+            {
+                if(cameraName != "")
+                    _camera = new DockingCamera(part, noise, _targetCrossStock, _crossDPAI, _crossOLDD, _windowSize, windowLabel, cameraName);
+                else
+                    _camera = new DockingCamera(part, noise, _targetCrossStock, _crossDPAI, _crossOLDD, _windowSize);
+            }
+                
         }
 
         public override void OnUpdate()
