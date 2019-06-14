@@ -1,4 +1,4 @@
-#define KSP170
+//#define KSP170  // Better defined in the project file
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -65,7 +65,9 @@ namespace OLDD_camera.Camera
         internal bool IsButtonOff;
         internal bool IsOrbital;
         internal bool IsAuxiliaryWindowOpen;
+        internal bool AuxWindowAllowed = true;
         internal bool IsAuxiliaryWindowButtonPres;
+        internal bool IsZoomAllowed = true;
 
         protected List<UnityEngine.Camera> AllCameras = new List<UnityEngine.Camera>();
         protected List<GameObject> AllCamerasGameObject = new List<GameObject>();
@@ -177,6 +179,9 @@ namespace OLDD_camera.Camera
 
         protected virtual void InitCameras()
         {
+            IsAuxiliaryWindowOpen = false;
+            IsAuxiliaryWindowButtonPres = false;
+
             AllCamerasGameObject = CameraNames.Select(a => new GameObject()).ToList();
             AllCameras = AllCamerasGameObject.Select((go, i) =>
                 {
@@ -338,11 +343,13 @@ namespace OLDD_camera.Camera
                 if (GUI.Button(new Rect(WindowPosition.width - 20, 3, GameSettings.UI_SCALE * 15 + 4, GameSettings.UI_SCALE * 15), "x"))
                     IsButtonOff = true;
             }
-
-            if (GUI.Button(new Rect(WindowPosition.width - 29, 20, GameSettings.UI_SCALE * 24, GameSettings.UI_SCALE * 15), IsAuxiliaryWindowOpen ? "◄" : "►")) //extend window
+            if (AuxWindowAllowed)
             {
-                IsAuxiliaryWindowOpen = !IsAuxiliaryWindowOpen;
-                IsAuxiliaryWindowButtonPres = true;
+                if (GUI.Button(new Rect(WindowPosition.width - 29, 20, GameSettings.UI_SCALE * 24, GameSettings.UI_SCALE * 15), IsAuxiliaryWindowOpen ? "◄" : "►")) //extend window
+                {
+                    IsAuxiliaryWindowOpen = !IsAuxiliaryWindowOpen;
+                    IsAuxiliaryWindowButtonPres = true;
+                }
             }
 
             var tooltip = new GUIContent("☼", _currentShaderName);
@@ -406,7 +413,8 @@ namespace OLDD_camera.Camera
 
                 IsAuxiliaryWindowButtonPres = IsAuxiliaryWindowOpen;
             }
-            CurrentZoom = GUI.HorizontalSlider(new Rect(TexturePosition.width / 2 - 80, GUI.skin.font.lineHeight + 10, 160, 10), CurrentZoom, MaxZoom, MinZoom);
+            if (IsZoomAllowed)
+                CurrentZoom = GUI.HorizontalSlider(new Rect(TexturePosition.width / 2 - 80, GUI.skin.font.lineHeight + 10, 160, 10), CurrentZoom, MaxZoom, MinZoom);
         }
 
         #endregion DRAW LAYERS

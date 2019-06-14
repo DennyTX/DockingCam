@@ -65,3 +65,25 @@
 	Updated the wording in the window to properly reflect 1 or multiple (putting an s after vessel when appropriate)
 	Added InitWindow() to docking camera Activate()
 	
+1.3.6
+	Fixed bug where if the second sliding window was open when the camera was closed, opening the camera again would sometimes (depending on the shader) show shadow buttons
+	Thanks to forum user @sirkut for this:
+		Made the docking camera configurable as a general purpose camera.  Following parameters are used:
+
+				MODULE
+				{
+					name = DockingCameraModule
+
+					cameraName = grappleNode			// name of the transform where the camera is to be located
+					cameraLabel = Grapple Camera		// Name of the camera in the PAW
+					windowLabel = "Grapple View"		// label of the window
+					
+					slidingOptionWindow = false			// If false, sliding window doesn't appear
+					crossDPAIonAtStartup = false		// specifies if the DPAI cross is on 
+					crossOLDDonAtStartup = false		// specifies if the OLDD cross is on
+					targetCrossStockOnAtStartup = false	// specifies if the target cross is on
+
+					noise = false						// specifies if there is noise
+
+				}
+

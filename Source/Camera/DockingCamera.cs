@@ -74,7 +74,8 @@ namespace OLDD_camera.Camera
         }
 
 
-        public DockingCamera(Part thisPart, bool noise, bool crossStock, bool crossDPAI, bool crossOLDD, int windowSize, string windowLabel = "DockCam", string cameraName = "dockingNode")
+        public DockingCamera(Part thisPart, bool noise, bool crossStock, bool crossDPAI, bool crossOLDD, int windowSize, 
+            string windowLabel = "DockCam", string cameraName = "dockingNode", bool slidingOptionWindow = false, bool allowZoom = false)
             : base(thisPart, windowSize, windowLabel)
         {
             GameEvents.onGameSceneLoadRequested.Add(LevelWasLoaded);
@@ -82,6 +83,9 @@ namespace OLDD_camera.Camera
             TargetCrossDPAI = crossDPAI;
             TargetCrossOLDD = crossOLDD;
             TargetCrossStock = crossStock;
+            AuxWindowAllowed = slidingOptionWindow;
+            IsZoomAllowed = allowZoom;
+
             _target = new TargetHelper(thisPart);
             _moduleDockingNodeGameObject = PartGameObject.GetChild(cameraName) ?? PartGameObject;  //GET orientation from dockingnode
 

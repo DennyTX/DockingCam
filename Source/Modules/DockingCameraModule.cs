@@ -30,11 +30,26 @@ namespace OLDD_camera.Modules
         private int _windowSize = 256;
         private DockingCamera _camera;
 
+        // cameraName is a transform where the camera should be.
         [KSPField]
         public string cameraName = "";
 
         [KSPField]
+        public string cameraLabel = "";
+
+        [KSPField]
         public string windowLabel = "";
+
+        [KSPField]
+        public bool crossDPAIonAtStartup = false;
+        [KSPField]
+        public bool crossOLDDonAtStartup = false;
+        [KSPField]
+        public bool targetCrossStockOnAtStartup = false;
+        [KSPField]
+        public bool slidingOptionWindow = false;
+        [KSPField]
+        public bool allowZoom = true;
 
         public override void OnStart(StartState state)
         {
@@ -43,11 +58,17 @@ namespace OLDD_camera.Modules
             if (_camera == null)
             {
                 if(cameraName != "")
-                    _camera = new DockingCamera(part, noise, _targetCrossStock, _crossDPAI, _crossOLDD, _windowSize, windowLabel, cameraName);
+                    _camera = new DockingCamera(part, noise, _targetCrossStock, _crossDPAI, _crossOLDD, _windowSize, windowLabel, cameraName, 
+                        slidingOptionWindow, allowZoom);
                 else
                     _camera = new DockingCamera(part, noise, _targetCrossStock, _crossDPAI, _crossOLDD, _windowSize);
             }
-                
+            if (cameraLabel != "")
+                Fields["IsEnabled"].guiName = cameraLabel;
+            _crossDPAI = crossDPAIonAtStartup;
+            _crossOLDD = crossOLDDonAtStartup;
+            _targetCrossStock = targetCrossStockOnAtStartup;
+
         }
 
         public override void OnUpdate()
@@ -66,6 +87,7 @@ namespace OLDD_camera.Modules
             {
                 IsEnabled = false;
                 _camera.IsButtonOff = false;
+    
             }
 
             if (IsEnabled)
