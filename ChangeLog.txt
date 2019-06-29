@@ -68,22 +68,12 @@
 1.3.6
 	Fixed bug where if the second sliding window was open when the camera was closed, opening the camera again would sometimes (depending on the shader) show shadow buttons
 	Thanks to forum user @sirkut for this:
-		Made the docking camera configurable as a general purpose camera.  Following parameters are used:
+		Made the docking camera configurable as a general purpose camera. 
+	Added a dev mode for modders and players to be able to determine the correct values for the camera position
+		(see the ReadMe for complete instructions)
+	Added two models to choose from for displaying the camera location, a camera and a node.  The model is selected in the stock game settings page, and only takes effect on windows when they are opened.
+	Fixed issue with two or more cameras on the same part
+	Added: transformModification for a special case where the transform for the camera needs to not be changed
 
-				MODULE
-				{
-					name = DockingCameraModule
 
-					cameraName = grappleNode			// name of the transform where the camera is to be located
-					cameraLabel = Grapple Camera		// Name of the camera in the PAW
-					windowLabel = "Grapple View"		// label of the window
-					
-					slidingOptionWindow = false			// If false, sliding window doesn't appear
-					crossDPAIonAtStartup = false		// specifies if the DPAI cross is on 
-					crossOLDDonAtStartup = false		// specifies if the OLDD cross is on
-					targetCrossStockOnAtStartup = false	// specifies if the target cross is on
-
-					noise = false						// specifies if there is noise
-
-				}
-
+	Cross stock in sliding window is overridden by settign???

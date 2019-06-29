@@ -18,6 +18,7 @@ namespace OLDD_camera.Utils
         public static Material matNone = null;
         public static Material matCRT = null;
         public static Material matGrayscale = null;
+        public static Material matThermal = null;
 
         public static Texture2D texSelfRot = null;
         public static Texture2D texTargetRot = null;
@@ -43,7 +44,7 @@ namespace OLDD_camera.Utils
             Debug.Log("OLDD_AssetLoader: finished");
             AssetBundle bundle = www.assetBundle;
             var shaderAssets = bundle.LoadAllAssets<Shader>();
-#if false
+#if DEBUG
             foreach (var i in bundle.GetAllAssetNames())
             {
                 Debug.Log("assetName: " + i);
@@ -51,9 +52,8 @@ namespace OLDD_camera.Utils
 #endif
             foreach (var shader in shaderAssets)
             {
-#if false
-                Debug.Log("b1: " + b1.name);
-#endif
+                Log.Info("shader: " + shader.name);
+
                 if (shader.name == "Custom/CRT")                
                     matCRT = new Material(shader);
 
@@ -65,10 +65,12 @@ namespace OLDD_camera.Utils
                 if (shader.name == "Custom/UI/Grayscale")
                     matGrayscale = new Material(shader);
 
+                if (shader.name == "CameraFilterPack/CameraFilterPack_Classic_ThermalVision")
+                    matThermal = new Material(shader);
+    
                 if (shader.name == "Custom/None")
-                {
                     matNone = new Material(shader);
-                }
+    
 #if SHADERTEST
                 if (shader.name == "Custom/None")
                     {
