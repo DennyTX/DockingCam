@@ -1,4 +1,4 @@
-﻿Shader "Hidden/NightVision" {
+﻿Shader "DockingCamera/NightVision" {
 Properties {
 	_MainTex ("Base (RGB)", 2D) = "white" {}
 	_NoiseTex ("Noise (RGB)", 2D) = "white" {}

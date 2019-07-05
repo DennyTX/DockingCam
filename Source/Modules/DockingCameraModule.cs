@@ -51,6 +51,8 @@ namespace OLDD_camera.Modules
         [KSPField]
         public bool allowZoom = true;
 
+        [KSPField]
+        public string restrictShaderTo = "";     // a comma delimiated list of shader names, the part after the slash
 
         [KSPField( isPersistant = true )]
         public Vector3 cameraPosition = Vector3.zero;
@@ -85,6 +87,7 @@ namespace OLDD_camera.Modules
             }
         }
 
+
         //static int cameraCnt = 0;
         //int thisCamera = -1;
         public override void OnStart(StartState state)
@@ -96,12 +99,12 @@ namespace OLDD_camera.Modules
                 if(cameraName != "")
                     _camera = new DockingCamera(this, part, 
                         noise, targetCrossStockOnAtStartup, crossDPAIonAtStartup, crossOLDDonAtStartup, transformModification,
-                        _windowSize, windowLabel, cameraName, 
-                        slidingOptionWindow, allowZoom);
+                        _windowSize, restrictShaderTo,
+                        windowLabel, cameraName, slidingOptionWindow, allowZoom);
                 else
                     _camera = new DockingCamera(this, part, 
                         noise, targetCrossStockOnAtStartup, crossDPAIonAtStartup, crossOLDDonAtStartup, transformModification,
-                        _windowSize);
+                        _windowSize, restrictShaderTo);
             }
             if (cameraLabel != "")
                 Fields["IsEnabled"].guiName = cameraLabel;
@@ -112,6 +115,8 @@ namespace OLDD_camera.Modules
             {
                 Events["StartCameraAdjuster"].guiActive = false;
             }
+
+         
         }
 
         public override void OnUpdate()

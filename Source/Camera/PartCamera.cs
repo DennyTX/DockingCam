@@ -83,7 +83,7 @@ namespace OLDD_camera.Camera
         public PartCamera(Part thisPart, string resourceScanning, string bulletName, int hits,
                 string rotatorZ, string rotatorY, string zoommer, float stepper, string cameraName, int allowedScanDistance,
                 int windowSize, bool isOnboard, bool isLookAtMe, bool isLookAtMeAutoZoom, bool isFollowMe, bool isTargetCam,
-                float isFollowMeOffsetX, float isFollowMeOffsetY, float isFollowMeOffsetZ, float targetOffset,
+                float isFollowMeOffsetX, float isFollowMeOffsetY, float isFollowMeOffsetZ, float targetOffset, string restrictShaderTo,
                 string windowLabel = "Camera") : base(thisPart, windowSize, windowLabel)
         {
             var splresource = resourceScanning.Split('.').ToList();
@@ -98,6 +98,7 @@ namespace OLDD_camera.Camera
             _allowedScanDistance = allowedScanDistance;
             _lastZoom = CurrentZoom;
 
+            availableShaders = new ShaderInfo(restrictShaderTo);
             IsOnboard = isOnboard;
             IsLookAtMe = isLookAtMe;
             IsFollowMe = isFollowMe;

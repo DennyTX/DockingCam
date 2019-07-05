@@ -91,7 +91,8 @@ namespace OLDD_camera.Camera
 
         public DockingCamera(OLDD_camera.Modules.DockingCameraModule dcm, Part thisPart,
             bool noise, bool crossStock, bool crossDPAI, bool crossOLDD, bool transformModification,
-            int windowSize, string windowLabel = "DockCam", string cameraName = "dockingNode", 
+            int windowSize, string restrictShaderTo,
+            string windowLabel = "DockCam", string cameraName = "dockingNode", 
             bool slidingOptionWindow = false, bool allowZoom = false, bool noTransformMod = false)
             : base(thisPart, windowSize, windowLabel)
         {
@@ -102,7 +103,8 @@ namespace OLDD_camera.Camera
             TargetCrossStock = crossStock;
             AuxWindowAllowed = slidingOptionWindow;
             IsZoomAllowed = allowZoom;
-            
+
+            availableShaders = new ShaderInfo(restrictShaderTo);
             _target = new TargetHelper(thisPart);
             _moduleDockingNodeGameObject = PartGameObject.GetChild(cameraName) ?? PartGameObject;  //GET orientation from dockingnode
 

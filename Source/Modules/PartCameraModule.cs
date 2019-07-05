@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using OLDD_camera.Camera;
 using OLDD_camera.Utils;
 using UnityEngine;
@@ -7,6 +8,7 @@ using UnityEngine.UI;
 
 namespace OLDD_camera.Modules
 {
+  
     /// <summary>
     /// Module adds an external camera and gives control over it
     /// </summary>
@@ -24,7 +26,10 @@ namespace OLDD_camera.Modules
 
         [KSPField(isPersistant = true)]
         private int _currentHits = -1;
-        
+
+        [KSPField]
+        public string restrictShaderTo = "";  // a comma deliminated list of shader names, the part after the slash
+
         [KSPField]
         public int windowSize = 300;
 
@@ -67,13 +72,14 @@ namespace OLDD_camera.Modules
         [KSPField(isPersistant = true)]
         private float _targetOffset = 100;
 
+
         public override void OnStart(StartState state)
         {
             if (_camera != null) return;
 
                 _camera = new PartCamera(part, resourceScanning, _bulletName, _currentHits, _rotatorZ, _rotatorY, _zoommer, 
                     _stepper, _cameraName, allowedScanDistance, windowSize, _isOnboard, _isLookAtMe, _isLookAtMeAutoZoom,
-                    _isFollowMe, _isTargetCam, _isFollowMeOffsetX, _isFollowMeOffsetY, _isFollowMeOffsetZ, _targetOffset);
+                    _isFollowMe, _isTargetCam, _isFollowMeOffsetX, _isFollowMeOffsetY, _isFollowMeOffsetZ, _targetOffset, restrictShaderTo);
 
             _capObject = part.gameObject.GetChild(_cap);
             _camObject = part.gameObject.GetChild(_cameraName);
@@ -82,6 +88,8 @@ namespace OLDD_camera.Modules
             _camera.InitialCamPosition = _camera.CurrentCamPosition = _camObject.transform.position;
             _camera.InitialCamLocalRotation = _camera.CurrentCamLocalRotation = _camObject.transform.localRotation;
             _camera.InitialCamLocalPosition = _camera.CurrentCamLocalPosition = _camObject.transform.localPosition;
+
+            
         }
 
         public override string GetInfo()

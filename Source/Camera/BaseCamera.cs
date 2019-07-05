@@ -70,6 +70,8 @@ namespace OLDD_camera.Camera
         protected List<GameObject> AllCamerasGameObject = new List<GameObject>();
         protected List<string> CameraNames = new List<string> { "GalaxyCamera", "Camera ScaledSpace", "Camera 01", "Camera 00" };
 
+        internal ShaderInfo availableShaders = null;
+
         protected BaseCamera(Part thisPart, float windowSizeInit, string windowLabel = "Camera")
         {
             InitBaseCamera(thisPart, windowSizeInit, windowLabel);
@@ -354,10 +356,14 @@ namespace OLDD_camera.Camera
             GUI.Label(new Rect(64, 128, GameSettings.UI_SCALE * 200, GameSettings.UI_SCALE * 40), GUI.tooltip, Styles.GreenLabel15B);
             if (GUI.Button(new Rect(8, TexturePosition.yMax - 22, 20, 20), "☼"))
             {
-
-                _shaderType++;
-                if (!Enum.IsDefined(typeof(ShaderType), _shaderType))
-                    _shaderType = ShaderType.None;
+                bool b = false;
+                while (!b)
+                {
+                    _shaderType++;
+                    if (!Enum.IsDefined(typeof(ShaderType), _shaderType))
+                        _shaderType = ShaderType.None;
+                    b = availableShaders.IsValid(_shaderType.ToString());
+                }
             }
             
             if (GUI.RepeatButton(new Rect(TexturePosition.xMax - 42, TexturePosition.yMax - 22, 20, 20), "-") &&

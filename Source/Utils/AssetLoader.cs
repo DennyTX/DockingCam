@@ -47,28 +47,29 @@ namespace OLDD_camera.Utils
 #if DEBUG
             foreach (var i in bundle.GetAllAssetNames())
             {
-                Debug.Log("assetName: " + i);
+                Log.Info("assetName: " + i);
             }
 #endif
             foreach (var shader in shaderAssets)
             {
                 Log.Info("shader: " + shader.name);
 
-                if (shader.name == "Custom/CRT")                
+                if (shader.name == "DockingCamera/CRT")                
                     matCRT = new Material(shader);
 
-                if (shader.name == "Hidden/NightVision")
+                if (shader.name == "DockingCamera/NightVision")
                     matNightVision =  new Material(shader);
-                if (shader.name == "NightVisionClear")
+
+                if (shader.name == "DockingCamera/NightVisionClear")
                     matNightVisionClear = new Material(shader);
 
-                if (shader.name == "Custom/UI/Grayscale")
+                if (shader.name == "DockingCamera/Grayscale")
                     matGrayscale = new Material(shader);
 
-                if (shader.name == "CameraFilterPack/CameraFilterPack_Classic_ThermalVision")
+                if (shader.name == "DockingCamera/ThermalVision")
                     matThermal = new Material(shader);
     
-                if (shader.name == "Custom/None")
+                if (shader.name == "DockingCamera/None")
                     matNone = new Material(shader);
     
 #if SHADERTEST

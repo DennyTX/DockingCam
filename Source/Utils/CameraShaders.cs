@@ -10,7 +10,7 @@ namespace OLDD_camera.Utils
         NightVision = 2,  // Hidden/NightVision
         NightVisionClear = 3,   // NightVisionClear
         Grayscale = 4,          // Custom/MovieTime
-        Thermal = 5,            // CameraFilterPack/CameraFilterPack_Classic_ThermalVision
+        ThermalVision = 5,            // CameraFilterPack/CameraFilterPack_Classic_ThermalVision
  #if SHADERTEST
         Test = 5,          // none
 #endif
@@ -29,7 +29,7 @@ namespace OLDD_camera.Utils
                 case ShaderType.NightVision: return NightVision;                    
                 case ShaderType.NightVisionClear: return NightVisionClear;
                 case ShaderType.Grayscale: return Grayscale;
-                case ShaderType.Thermal: return ThermalVision;
+                case ShaderType.ThermalVision: return ThermalVision;
                 case ShaderType.None: return NoneMaterial;
 #if SHADERTEST
                 case ShaderType.Test: return TestMaterial;

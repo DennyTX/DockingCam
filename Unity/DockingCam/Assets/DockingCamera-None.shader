@@ -1,6 +1,6 @@
 // Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
-Shader "Custom/None" { 
+Shader "DockingCamera/None" { 
 Properties { 
 	_MainTex ("Base (RGB)", 2D) = "white" {}
     _Color("Color", Color) = (0,0,0,1) 

@@ -52,15 +52,12 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Editor\build.cs" />
-     <None Include="Assets\CustomCRT.shader" />
-     <None Include="Assets\ThermalVision.shader" />
-     <None Include="Assets\CustomNightVision.shader" />
-     <None Include="Assets\None.shader" />
-     <None Include="Assets\HiddenNightvision.shader" />
-     <None Include="Assets\Scanlines.shader" />
-     <None Include="Assets\UI-Grayscale.shader" />
-     <None Include="Assets\NightvisionClear.shader" />
-     <None Include="Assets\CustomMovieTime.shader" />
+     <None Include="Assets\DockingCamera-None.shader" />
+     <None Include="Assets\DockingCamera-NightvisionClear.shader" />
+     <None Include="Assets\DockingCamera-Nightvision.shader" />
+     <None Include="Assets\DockingCAmera-Grayscale.shader" />
+     <None Include="Assets\DockingCamera-CRT.shader" />
+     <None Include="Assets\DockingCamera-ThermalVision.shader" />
  <Reference Include="UnityEditor.Advertisements">
  <HintPath>E:/Program Files/Unity524f1/Editor/Data/UnityExtensions/Unity/Advertisements/Editor/UnityEditor.Advertisements.dll</HintPath>
  </Reference>

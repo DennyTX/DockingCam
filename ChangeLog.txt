@@ -77,3 +77,5 @@
 
 
 	Cross stock in sliding window is overridden by settign???
+
+	Renamed shaders to consistant naming: DockingCamera/(name)

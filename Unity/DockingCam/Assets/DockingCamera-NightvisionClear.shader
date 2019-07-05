@@ -1,5 +1,5 @@
 
-Shader "Custom/NightVision" {
+Shader "DockingCamera/NightVisionClear" {
     Properties {
         _MainTex ("Base (RGB)", 2D) = "white" {}
         _Brightness ("Brightness Amount", Float ) = 2.0
@@ -40,4 +40,3 @@ Shader "Custom/NightVision" {
     }
 }
  
-
