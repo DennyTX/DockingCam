@@ -68,20 +68,16 @@ namespace OLDD_camera.Utils
             }
         }
 
-        //        [ConditionalAttribute("DEBUG")]
+        [ConditionalAttribute("DEBUG")]
         public static void Info(String msg)
         {
-#if DEBUG
             if (IsLogable(LEVEL.INFO))
-#else
-            if (IsLogable(LEVEL.INFO))
-#endif
             {
                 UnityEngine.Debug.Log(PREFIX + msg);
             }
         }
 
-        //        [ConditionalAttribute("DEBUG")]
+        [ConditionalAttribute("DEBUG")]
         public static void Test(String msg)
         {
             //if (IsLogable(LEVEL.INFO))

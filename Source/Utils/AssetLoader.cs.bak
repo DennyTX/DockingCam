@@ -2,7 +2,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
-using System.Collections.Generic;
 
 namespace OLDD_camera.Utils 
 {
@@ -10,13 +9,23 @@ namespace OLDD_camera.Utils
 
     public class AssetLoader:MonoBehaviour
     {
+        public static Material matNightVisionClear = null;
+        public static Material matNightVision = null;
+
+#if SHADERTEST
+        public static Material matTest = null;
+#endif
+        public static Material matNone = null;
+        public static Material matCRT = null;
+        public static Material matGrayscale = null;
+        public static Material matThermal = null;
+
         public static Texture2D texSelfRot = null;
         public static Texture2D texTargetRot = null;
         public static Texture2D texTargetPoint = null;
         public static Texture2D texLampOn = null;
         public static Texture2D texLampOff = null;
         public static Texture2D texDockingCam = null;
-        public static List<Material> materials;
 
         IEnumerator Start()
         {
@@ -35,10 +44,6 @@ namespace OLDD_camera.Utils
             Debug.Log("OLDD_AssetLoader: finished");
             AssetBundle bundle = www.assetBundle;
             var shaderAssets = bundle.LoadAllAssets<Shader>();
-            if (shaderAssets == null)
-                Log.Info("shaderAssets is null");
-            //var materials = new List<Material>();
-            materials = new List<Material>();
 #if DEBUG
             foreach (var i in bundle.GetAllAssetNames())
             {
@@ -49,15 +54,31 @@ namespace OLDD_camera.Utils
             {
                 Log.Info("shader: " + shader.name);
 
-                materials.Add(new Material(shader));
+                if (shader.name == "DockingCamera/CRT")                
+                    matCRT = new Material(shader);
 
+                if (shader.name == "DockingCamera/NightVision")
+                    matNightVision =  new Material(shader);
+
+                if (shader.name == "DockingCamera/NightVisionClear")
+                    matNightVisionClear = new Material(shader);
+
+                if (shader.name == "DockingCamera/Grayscale")
+                    matGrayscale = new Material(shader);
+
+                if (shader.name == "DockingCamera/ThermalVision")
+                    matThermal = new Material(shader);
+    
+                if (shader.name == "DockingCamera/None")
+                    matNone = new Material(shader);
+    
+#if SHADERTEST
+                if (shader.name == "Custom/None")
+                    {
+                        matTest = new Material(shader);
+                }
+#endif
             }
-
-            Log.Info("materials.Count: " + materials.Count);
-            var index = materials.FindIndex(x => x.name.Contains("None"));
-            var item = materials[index];
-            materials[index] = materials[0];
-            materials[0] = item;
 
 
             texSelfRot = (Texture2D)bundle.LoadAsset("selfrot");

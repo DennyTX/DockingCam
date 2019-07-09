@@ -52,7 +52,6 @@
     <Compile Include="Utils\ShaderInfo.cs" />
     <Compile Include="Utils\Styles.cs" />
     <Compile Include="Modules\PartCameraModule.cs" />
-    <Compile Include="Utils\CameraShaders.cs" />
     <Compile Include="Camera\BaseCamera.cs" />
     <Compile Include="Camera\DockingCamera.cs" />
     <Compile Include="Modules\DockingCameraModule.cs" />
