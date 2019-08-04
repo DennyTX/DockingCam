@@ -94,7 +94,7 @@ namespace OLDD_camera.Camera
             MaxWindowSizeCoef = 1;
             while ((MaxWindowSizeCoef + 2) * WindowSize < Screen.height && MaxWindowSizeCoef < 10)
                 MaxWindowSizeCoef++;
-            
+
             ThisPart = thisPart;
             SubWindowLabel = windowLabel;
             WindowLabel = windowLabel;
@@ -352,9 +352,11 @@ namespace OLDD_camera.Camera
                 }
             }
 
-            var tooltip = new GUIContent("☼", _currentShaderName);
+            // This assumes that the shader name has a slash in it
+            var tooltip = new GUIContent("☼", _currentShaderName.Split('/')[1]);
+
             GUI.Box(new Rect(8, TexturePosition.yMax - 22, GameSettings.UI_SCALE * 20, GameSettings.UI_SCALE * 20), tooltip);
-            GUI.Label(new Rect(64, 128, GameSettings.UI_SCALE * 200, GameSettings.UI_SCALE * 40), GUI.tooltip, Styles.GreenLabel15B);
+            GUI.Label(new Rect(64, 128, GameSettings.UI_SCALE * 200, GameSettings.UI_SCALE * 40), GUI.tooltip, Styles.YellowLabel13);
             if (GUI.Button(new Rect(8, TexturePosition.yMax - 22, 20, 20), "☼"))
             {
                 if (_shaderIndex == AssetLoader.materials.Count - 1)
@@ -362,7 +364,7 @@ namespace OLDD_camera.Camera
                 else
                     _shaderIndex++;
             }
-            
+
             if (GUI.RepeatButton(new Rect(TexturePosition.xMax - 42, TexturePosition.yMax - 22, 20, 20), "-") &&
                 UnityEngine.Camera.allCameras.FirstOrDefault(x => x.name == "Camera 00") != null) //Size of main window
             {
@@ -386,7 +388,7 @@ namespace OLDD_camera.Camera
                 Deactivate();
                 InitWindow();
                 InitTextures();
-                Activate();                
+                Activate();
 
                 IsAuxiliaryWindowButtonPres = IsAuxiliaryWindowOpen;
             }

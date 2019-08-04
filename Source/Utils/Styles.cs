@@ -13,6 +13,7 @@ namespace OLDD_camera.Utils
         public static GUIStyle RedLabel13 { get; set; }
         public static GUIStyle RedLabel13B { get; set; }
         public static GUIStyle RedLabel25B { get; set; }
+        public static GUIStyle YellowLabel13 { get; set; }
 
         const int KSP_SKIN_ADJUST = 4;
 
@@ -33,6 +34,10 @@ namespace OLDD_camera.Utils
             RedLabel13 = new GUIStyle { fontSize = 13, normal = new GUIStyleState { textColor = Color.red } };
             RedLabel13B = new GUIStyle { fontSize = 13, fontStyle = FontStyle.Bold, normal = new GUIStyleState { textColor = Color.red } };
             RedLabel25B = new GUIStyle { fontSize = 25, fontStyle = FontStyle.Bold, normal = new GUIStyleState { textColor = Color.red }, alignment = TextAnchor.MiddleCenter };
+
+            YellowLabel13 = new GUIStyle { fontSize = 15, fontStyle = FontStyle.Bold, normal = new GUIStyleState { textColor = Color.yellow }, alignment = TextAnchor.MiddleLeft };
+
+
             if (HighLogic.CurrentGame != null && HighLogic.CurrentGame.Parameters != null)
             {
                 KspSkin = HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().useKSPskin;
