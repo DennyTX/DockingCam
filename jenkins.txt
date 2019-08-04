@@ -31,14 +31,12 @@
 1:DockingCamKURS, DockingCamera.version, DockingCam
 
 # 2:PROJNAME, PROJFILE, VERSIONFILE, PLUGINSFOLDER
-2:DockingCameraKURS,Source/DockingCameraKURS.csproj,DockingCamera.version,GameData/DockingCamKURS/Plugins
+2:DockingCamera,Source/DockingCamera.csproj,DockingCamera.version,GameData/DockingCamKURS/Plugins
 
 # 3:SOURCEFILE, DESTDIR
 3:DockingCamera.version,GameData/DockingCamKURS
 
-NOT:1.4.5
-#NOT:1.5.1
-#NOT:1.6.1
+
 #
 # End of file
 #
