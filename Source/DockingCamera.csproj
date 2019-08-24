@@ -75,6 +75,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>R:\KSP_1.7.2_dev\KSP_x64_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="ClickThroughBlocker">
+      <HintPath>R:\KSP_1.7.2_dev\GameData\000_ClickThroughBlocker\Plugins\ClickThroughBlocker.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="ToolbarControl">
       <HintPath>R:\KSP_1.7.2_dev\GameData\001_ToolbarControl\Plugins\ToolbarControl.dll</HintPath>

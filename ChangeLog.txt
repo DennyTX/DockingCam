@@ -78,3 +78,6 @@
 	Renamed shaders to consistant naming: DockingCamera/(name)
 	Added InstallChecker
 	Changed display of shader to remove the first part of the name (before the slash)
+
+1.3.6.2
+	Added support for the ClickThroughFix

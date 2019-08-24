@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OLDD_camera.Utils;
 using UnityEngine;
-using UnityEngine.UI;
+using ClickThroughFix;
 
 namespace OLDD_camera.Camera
 {
@@ -235,7 +235,7 @@ namespace OLDD_camera.Camera
         {
             if (!IsActive) return;
             //if (MapView.MapIsEnabled) return;
-            WindowPosition = GUI.Window(WindowId, KSPUtil.ClampRectToScreen(WindowPosition), DrawWindow, WindowLabel);
+            WindowPosition = ClickThruBlocker.GUIWindow(WindowId, KSPUtil.ClampRectToScreen(WindowPosition), DrawWindow, WindowLabel);
             int electricityId = PartResourceLibrary.Instance.GetDefinition("ElectricCharge").id;
             double electricChargeAmount;
             double electricChargeMaxAmount;

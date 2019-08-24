@@ -6,7 +6,7 @@ using OLDD_camera.Modules;
 using OLDD_camera.Utils;
 using ToolbarControl_NS;
 using UnityEngine;
-using UnityEngine.UI;
+using ClickThroughFix;
 
 namespace OLDD_camera
 {
@@ -125,7 +125,7 @@ namespace OLDD_camera
                 _windowPosition.width += 50;
             }
 
-            _windowPosition = Util.ConstrainToScreen(GUI.Window(BaseCamera.SettingsWinID, _windowPosition, DrawOnWindowOLDD, "KURS Camera Info"), 100);
+            _windowPosition = Util.ConstrainToScreen(ClickThruBlocker.GUIWindow(BaseCamera.SettingsWinID, _windowPosition, DrawOnWindowOLDD, "KURS Camera Info"), 100);
         }
         private static string vesselStr(int i)
         {

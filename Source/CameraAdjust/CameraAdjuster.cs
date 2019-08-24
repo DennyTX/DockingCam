@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using UnityEngine;
+using ClickThroughFix;
 
 
 namespace OLDD_camera.CameraAdjust
@@ -111,7 +112,7 @@ namespace OLDD_camera.CameraAdjust
             if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().useKSPskin)
                 GUI.skin = HighLogic.Skin;
 
-            winPos = GUILayout.Window(CamAdjId, winPos, DrawGUI, "Camera Adjuster: " + dcm.windowLabel);
+            winPos =ClickThruBlocker.GUILayoutWindow(CamAdjId, winPos, DrawGUI, "Camera Adjuster: " + dcm.windowLabel);
         }
 
         void UpdateCamera(Vector3 v3, bool doUpdate = false)
