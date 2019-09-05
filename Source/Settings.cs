@@ -24,11 +24,12 @@ namespace OLDD_camera
 
         [GameParameters.CustomParameterUI("2250",
             toolTip = "Range of broadcast signal")]
-        public bool _dist2500 = false;
+        public bool _dist2500 = true;
 
         [GameParameters.CustomParameterUI("9999",
             toolTip = "Range of broadcast signal")]
         public bool _dist9999 = false;
+
 
         [GameParameters.CustomParameterUI("Scale camera capabilites to career mode",
             toolTip = "In career mode, cameras will initially have limited capabilities")]
@@ -57,10 +58,16 @@ namespace OLDD_camera
 
         }
 
+        bool oDist2500;
+        bool oDist9999;
+        bool distInitted = false;
+
+
         bool oldUseCamObj, oldUseNodeObj;
 
         public override bool Enabled(MemberInfo member, GameParameters parameters)
         {
+            
             if (oldUseCamObj == false && oldUseNodeObj == false)
             {
                 oldUseCamObj = useCamObj;
@@ -77,6 +84,22 @@ namespace OLDD_camera
 
             oldUseCamObj = useCamObj;
             oldUseNodeObj = useNodeObj;
+            if (distInitted)
+            {
+
+
+                if (oDist2500 != _dist2500)
+                {
+                    _dist9999 = !_dist2500;
+                }
+                else if (oDist9999 != _dist9999)
+                {
+                    _dist2500 = !_dist9999;
+                }
+            }
+            distInitted = true;
+            oDist2500 = _dist2500;
+            oDist9999 = _dist9999;
 
             return true;
         }

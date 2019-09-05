@@ -81,3 +81,7 @@
 
 1.3.6.2
 	Added support for the ClickThroughFix
+
+1.3.6.3
+	Fixed range settings in settings page, to only show one of the two ranges to be active
+	Fixed long range setting causing vessel coming into range having it's speed matched to that of the active vessel

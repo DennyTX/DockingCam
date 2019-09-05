@@ -6,8 +6,9 @@ using UnityEngine.UI;
 
 namespace OLDD_camera.Modules
 {
-    public  class DockingCameraModule : PartModule, ICamPart
+    public  class DockingCameraModule : PartModule //, ICamPart
     {
+
         /// <summary>
         /// Module adds an external camera and gives control over it
         /// </summary>

@@ -23,7 +23,8 @@ namespace OLDD_camera
         private static Rect _lastWindowPosition;
         private static Rect _windowPosition;
         private static readonly VesselRanges DefaultRanges = PhysicsGlobals.Instance.VesselRangesDefault;
-        private readonly VesselRanges.Situation _myRanges = new VesselRanges.Situation(10000, 10000, 2500, 2500);
+        //private readonly VesselRanges.Situation _myRanges = new VesselRanges.Situation(10000, 10000, 2500, 2500);
+        private readonly VesselRanges.Situation _myRanges = new VesselRanges.Situation(10000, 12000, 3500, 2000);
         private const int WINDOW_WIDTH = 256;
         private static bool _showWindow;
         private static bool _shadersToUse0 = true;
@@ -174,8 +175,10 @@ namespace OLDD_camera
         {
             NewVesselCreated(d1);
         }
+
         private void NewVesselCreated(Vessel data)
         {
+            //return;
             var allVessels = FlightGlobals.Vessels;
             _vesselsWithCamera = GetVesselsWithCamera(allVessels);
             if (!HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>()._dist2500)
@@ -194,6 +197,13 @@ namespace OLDD_camera
             {
                 foreach (var vessel in _vesselsWithCamera)
                 {
+                    LogRanges("DefaultRanges.subOrbital: " , DefaultRanges.subOrbital);
+                    LogRanges("DefaultRanges.landed: " , DefaultRanges.landed);
+                    LogRanges("DefaultRanges.escaping: " , DefaultRanges.escaping);
+                    LogRanges("DefaultRanges.orbit: " , DefaultRanges.orbit);
+                    LogRanges("DefaultRanges.prelaunch: " , DefaultRanges.prelaunch);
+                    LogRanges("DefaultRanges.splashed: " , DefaultRanges.splashed);
+
                     vessel.vesselRanges.subOrbital = DefaultRanges.subOrbital;
                     vessel.vesselRanges.landed = DefaultRanges.landed;
                     vessel.vesselRanges.escaping = DefaultRanges.escaping;
@@ -203,7 +213,10 @@ namespace OLDD_camera
                 }
             }
         }
-
+        void LogRanges(string n, VesselRanges.Situation vr)
+        {
+            Log.Info("LogRanges: " + n + ", load: " + vr.load + ", unload: " + vr.unload + ", pack: " + vr.pack + ", unpack: " + vr.unpack);
+        }
         private List<Vessel> GetVesselsWithCamera(List<Vessel> allVessels)
         {
             List<Vessel> vesselsWithCamera = new List<Vessel>();
