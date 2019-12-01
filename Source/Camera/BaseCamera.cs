@@ -127,7 +127,10 @@ namespace OLDD_camera.Camera
         {
 
 #if KSP170
-            IsOrbital = ThisPart.vessel.situation == Vessel.Situations.ORBITING;
+            if (ThisPart != null && ThisPart.vessel != null)
+                IsOrbital = ThisPart.vessel.situation == Vessel.Situations.ORBITING;
+            else
+                IsOrbital = false;
 #else
 
             IsOrbital = mode == FlightUIMode.ORBITAL;
@@ -269,7 +272,7 @@ namespace OLDD_camera.Camera
             CalculatedZoom = !ZoomMultiplier ? calculateZoom : calculateZoom * MinZoomMultiplier * 6;
             if (IsAuxiliaryWindowOpen)
             {
-                GUI.Label(new Rect(widthOffset + 12, 44, 80, 20), "Zoom: " + CalculatedZoom, Styles.Label13B);
+                GUI.Label(new Rect(widthOffset , 22, 80, 20), "Zoom: " + CalculatedZoom, Styles.Label13B);
 
                 if (FlightGlobals.ActiveVessel == ThisPart.vessel)
                     _isTargetPoint = GUI.Toggle(new Rect(widthOffset - 2, 233, 88, 20), _isTargetPoint, "Target Mark");
