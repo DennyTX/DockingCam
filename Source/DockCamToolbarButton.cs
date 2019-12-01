@@ -197,13 +197,14 @@ namespace OLDD_camera
             {
                 foreach (var vessel in _vesselsWithCamera)
                 {
+#if false
                     LogRanges("DefaultRanges.subOrbital: " , DefaultRanges.subOrbital);
                     LogRanges("DefaultRanges.landed: " , DefaultRanges.landed);
                     LogRanges("DefaultRanges.escaping: " , DefaultRanges.escaping);
                     LogRanges("DefaultRanges.orbit: " , DefaultRanges.orbit);
                     LogRanges("DefaultRanges.prelaunch: " , DefaultRanges.prelaunch);
                     LogRanges("DefaultRanges.splashed: " , DefaultRanges.splashed);
-
+#endif
                     vessel.vesselRanges.subOrbital = DefaultRanges.subOrbital;
                     vessel.vesselRanges.landed = DefaultRanges.landed;
                     vessel.vesselRanges.escaping = DefaultRanges.escaping;
@@ -213,10 +214,12 @@ namespace OLDD_camera
                 }
             }
         }
+#if false
         void LogRanges(string n, VesselRanges.Situation vr)
         {
             Log.Info("LogRanges: " + n + ", load: " + vr.load + ", unload: " + vr.unload + ", pack: " + vr.pack + ", unpack: " + vr.unpack);
         }
+#endif
         private List<Vessel> GetVesselsWithCamera(List<Vessel> allVessels)
         {
             List<Vessel> vesselsWithCamera = new List<Vessel>();
