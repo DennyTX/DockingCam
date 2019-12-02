@@ -92,3 +92,6 @@
 1.3.7.1
 	Fixed nullref when going into flight scene
 	Fixed "Zoom:" position in slideout window
+
+1.3.7.2
+	Converted two textures from DXT3 to DXT5
