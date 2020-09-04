@@ -99,3 +99,6 @@
 1.3.7.3
 	Thanks to form user @dangros for this:
 		Fixed camera by replacing "Camera 01" with "UIMainCamera"
+
+1.3.7.4
+	Deleted unused assets folder
