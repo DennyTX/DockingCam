@@ -107,7 +107,7 @@ namespace OLDD_camera.CameraAdjust
 
         public void OnGUI()
         {
-            if (!active)
+            if (!active || (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().hideOnF2 && DockCamToolbarButton.hideUI))
                 return;
             if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().useKSPskin)
                 GUI.skin = HighLogic.Skin;

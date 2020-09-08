@@ -40,9 +40,32 @@ namespace OLDD_camera
             toolTip = "Range of broadcast signal")]
         public bool FCS = false;
 
+        [GameParameters.CustomParameterUI("Show cross",
+            toolTip = "Cross lines which indicate info related to docking")]
+        public bool showCross = true;
+
+        [GameParameters.CustomParameterUI("Show summary data",
+            toolTip = "Show Distance and closing Vel in upper-right of window")]
+        public bool showSummaryData = true;
+
+        [GameParameters.CustomParameterUI("Show data",
+            toolTip = "Show docking data in upper-right of window")]
+        public bool showData = true;
+
+        [GameParameters.CustomParameterUI("Show rotator dials",
+            toolTip = "Show dials in bottom of window")]
+        public bool showDials = true;
+
+        [GameParameters.CustomIntParameterUI("Default camera window size", minValue = 1, maxValue = 10,
+            toolTip = "Value will be adjusted down at runtime if too large")]
+        public int defaultCamWindowSize = 2;
+
 
         [GameParameters.CustomParameterUI("Use KSP skin")]
         public bool useKSPskin = false;
+
+        [GameParameters.CustomParameterUI("Hide window(s) on F2")]
+        public bool hideOnF2 = true;
 
         [GameParameters.CustomParameterUI("Use camera object for adjustments",
             toolTip = "Only used when using dev mode to adjust a camera's position")]
@@ -67,7 +90,7 @@ namespace OLDD_camera
 
         public override bool Enabled(MemberInfo member, GameParameters parameters)
         {
-            
+
             if (oldUseCamObj == false && oldUseNodeObj == false)
             {
                 oldUseCamObj = useCamObj;

@@ -33,9 +33,11 @@ namespace OLDD_camera
         //private static bool _dist2500 = true;
         //private static bool _dist9999;
         private bool mainWindowVisible;
-       // private readonly string _modulePartCameraId = "PartCameraModule";
+        // private readonly string _modulePartCameraId = "PartCameraModule";
 
         //public static bool FCS;
+        static public bool hideUI = false;
+
 
         public void Awake()
         {
@@ -52,6 +54,9 @@ namespace OLDD_camera
             GameEvents.onVesselLoaded.Add(NewVesselCreated);
             GameEvents.onVesselsUndocking.Add(VesselsUndocked);
             GameEvents.onGUIApplicationLauncherReady.Add(OnAppLauncherReady);
+
+            GameEvents.onHideUI.Add(onHideUI);
+            GameEvents.onShowUI.Add(onShowUI);
         }
 
         private void OnDestroy()
@@ -61,11 +66,21 @@ namespace OLDD_camera
             GameEvents.onVesselLoaded.Remove(NewVesselCreated);
             GameEvents.onVesselsUndocking.Remove(VesselsUndocked);
             GameEvents.onGUIApplicationLauncherReady.Remove(OnAppLauncherReady);
+            GameEvents.onHideUI.Remove(onHideUI);
+            GameEvents.onShowUI.Remove(onShowUI);
+
             toolbarControl.OnDestroy();
             Destroy(toolbarControl);
             toolbarControl = null;
         }
-
+        void onHideUI()
+        {
+            hideUI = true;
+        }
+        void onShowUI()
+        {
+            hideUI = false;
+        }
         public void Update()
         {
             _showWindow = mainWindowVisible && HighLogic.LoadedSceneIsFlight && !FlightGlobals.ActiveVessel.isEVA; // && !MapView.MapIsEnabled;
@@ -73,7 +88,7 @@ namespace OLDD_camera
 
         private void OnGUI()
         {
-            if (mainWindowVisible && HighLogic.LoadedSceneIsFlight) // && !MapView.MapIsEnabled)
+            if (! hideUI && mainWindowVisible && HighLogic.LoadedSceneIsFlight) // && !MapView.MapIsEnabled)
             {
                 if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().useKSPskin)
                 {
@@ -139,14 +154,14 @@ namespace OLDD_camera
         {
             var checkDist = FlightGlobals.ActiveVessel.vesselRanges.landed.load;
             var unloadDistance = "Unload at: " + FlightGlobals.ActiveVessel.vesselRanges.landed.load;
-            GUI.Label(new Rect(22, 48, 100, 20), unloadDistance, Styles.Label13B);
+            GUILayout.Label(unloadDistance, Styles.Label13B);
 
             var vessels = _vesselsWithCamera;
             vessels.Remove(FlightGlobals.ActiveVessel);
             //DockCamToolbarButton.instance.NewVesselCreated(FlightGlobals.ActiveVessel);
 
-            GUI.Label(new Rect(22, 78, WINDOW_WIDTH, 24), " " + _vesselsWithAttachedCamera.Count + " " + vesselStr(_vesselsWithAttachedCamera.Count) + " w/camera in range ", Styles.GreenLabel15B);
-            GUI.Label(new Rect(22, 100, WINDOW_WIDTH, 24), " " + _vesselsWithDockingCamera.Count + " " + vesselStr(_vesselsWithDockingCamera.Count) + " w/docking cam in range ", Styles.GreenLabel15B);
+            GUILayout.Label( " " + _vesselsWithAttachedCamera.Count + " " + vesselStr(_vesselsWithAttachedCamera.Count) + " w/camera in range ", Styles.GreenLabel15B);
+            GUILayout.Label( " " + _vesselsWithDockingCamera.Count + " " + vesselStr(_vesselsWithDockingCamera.Count) + " w/docking cam in range ", Styles.GreenLabel15B);
 
             if (vessels.Count > 1)
             {
@@ -157,12 +172,19 @@ namespace OLDD_camera
                     var situation = vessel.RevealSituationString();
                     var str = $"{i}. {vessel.vesselName} ({range:N} m) - {situation} ";
                     if (range <= checkDist)
-                        GUI.Label(new Rect(20, 144 + 20 * i, 222, 20), str, Styles.GreenLabel13);
+                        GUILayout.Label(str, Styles.GreenLabel13);
                     else
-                        GUI.Label(new Rect(20, 144 + 20 * i, 222, 20), str);
+                        GUILayout.Label(str);
                 }
             }
-
+            HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().showCross =
+                GUILayout.Toggle(HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().showCross, "Show crosses");
+            HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().showSummaryData =
+                GUILayout.Toggle(HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().showSummaryData, "Show summary data");
+            HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().showData =
+                GUILayout.Toggle(HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().showData, "Show detailed data");
+            HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().showDials =
+                GUILayout.Toggle(HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().showDials, "Show rotator dials");
             GUI.DragWindow();
 
             if (_windowPosition.x == _lastWindowPosition.x &&_windowPosition.y == _lastWindowPosition.y) return;

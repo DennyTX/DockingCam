@@ -210,39 +210,43 @@ namespace OLDD_camera.Camera
                 GUI.DrawTexture(new Rect(TexturePosition.xMin + 20, TexturePosition.yMax - 20, 20, 20), AssetLoader.texLampOff);
 
             GetWindowLabel();
-            GetFlightData();
-            GetCross();
-
-            if (_rotatorState && ThisPart.vessel.Equals(FlightGlobals.ActiveVessel) && TargetHelper.IsTargetSelect)
+            if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().showData ||
+                HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().showSummaryData)
+                GetFlightData();
+            if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().showCross)
+                GetCross();
+            if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().showDials)
             {
-                var size1 = TexturePosition.width / 7;
-                var x1 = TexturePosition.xMin + TexturePosition.width / 2 - size1 / 2;
-                var rect1 = new Rect(x1, TexturePosition.yMax - size1, size1, size1);
-                GUI.DrawTexture(rect1, AssetLoader.texTargetRot);
-                Matrix4x4 matrixBackup1 = GUI.matrix;
-                GUIUtility.RotateAroundPivot(_target.AngleZ, rect1.center);
-                GUI.DrawTexture(new Rect(x1, TexturePosition.yMax - size1, size1, size1), AssetLoader.texSelfRot);
-                GUI.matrix = matrixBackup1;
+                if (_rotatorState && ThisPart.vessel.Equals(FlightGlobals.ActiveVessel) && TargetHelper.IsTargetSelect)
+                {
+                    var size1 = TexturePosition.width / 7;
+                    var x1 = TexturePosition.xMin + TexturePosition.width / 2 - size1 / 2;
+                    var rect1 = new Rect(x1, TexturePosition.yMax - size1, size1, size1);
+                    GUI.DrawTexture(rect1, AssetLoader.texTargetRot);
+                    Matrix4x4 matrixBackup1 = GUI.matrix;
+                    GUIUtility.RotateAroundPivot(_target.AngleZ, rect1.center);
+                    GUI.DrawTexture(new Rect(x1, TexturePosition.yMax - size1, size1, size1), AssetLoader.texSelfRot);
+                    GUI.matrix = matrixBackup1;
 
-                var size2 = TexturePosition.width / 8;
-                var x2 = TexturePosition.xMin + TexturePosition.width / 2 - size2 / 2 - size1;
-                var rect2 = new Rect(x2, TexturePosition.yMax - size2, size2, size2);
-                GUI.DrawTexture(rect2, AssetLoader.texTargetRot);
-                Matrix4x4 matrixBackup2 = GUI.matrix;
-                GUIUtility.RotateAroundPivot(_target.AngleX, rect2.center);
-                GUI.DrawTexture(new Rect(x2, TexturePosition.yMax - size2, size2, size2), AssetLoader.texSelfRot);
-                GUI.matrix = matrixBackup2;
+                    var size2 = TexturePosition.width / 8;
+                    var x2 = TexturePosition.xMin + TexturePosition.width / 2 - size2 / 2 - size1;
+                    var rect2 = new Rect(x2, TexturePosition.yMax - size2, size2, size2);
+                    GUI.DrawTexture(rect2, AssetLoader.texTargetRot);
+                    Matrix4x4 matrixBackup2 = GUI.matrix;
+                    GUIUtility.RotateAroundPivot(_target.AngleX, rect2.center);
+                    GUI.DrawTexture(new Rect(x2, TexturePosition.yMax - size2, size2, size2), AssetLoader.texSelfRot);
+                    GUI.matrix = matrixBackup2;
 
-                var size3 = TexturePosition.width / 8;
-                var x3 = TexturePosition.xMin + TexturePosition.width / 2 - size3 / 2 + size1;
-                var rect3 = new Rect(x3, TexturePosition.yMax - size3, size3, size3);
-                GUI.DrawTexture(rect3, AssetLoader.texTargetRot);
-                Matrix4x4 matrixBackup3 = GUI.matrix;
-                GUIUtility.RotateAroundPivot(_target.AngleY, rect3.center);
-                GUI.DrawTexture(new Rect(x3, TexturePosition.yMax - size3, size3, size3), AssetLoader.texSelfRot);
-                GUI.matrix = matrixBackup3;
+                    var size3 = TexturePosition.width / 8;
+                    var x3 = TexturePosition.xMin + TexturePosition.width / 2 - size3 / 2 + size1;
+                    var rect3 = new Rect(x3, TexturePosition.yMax - size3, size3, size3);
+                    GUI.DrawTexture(rect3, AssetLoader.texTargetRot);
+                    Matrix4x4 matrixBackup3 = GUI.matrix;
+                    GUIUtility.RotateAroundPivot(_target.AngleY, rect3.center);
+                    GUI.DrawTexture(new Rect(x3, TexturePosition.yMax - size3, size3, size3), AssetLoader.texSelfRot);
+                    GUI.matrix = matrixBackup3;
+                }
             }
-
             base.ExtendedDrawWindowL3();
         }
 
@@ -329,33 +333,43 @@ namespace OLDD_camera.Camera
                 // Flight DATA
                 var dataFormat = Math.Abs(_target.Destination) < 1000 ? "{0:f2}" : "{0:f0}";
                 var stringOffset = 16;
-                GUI.Label(new Rect(TexturePosition.xMax - 70, 34 + i++ * stringOffset, 70, 20), string.Format("Dist:" + dataFormat, _target.Destination), Styles.Label13B);
-                i += .2f;
 
-                GUI.Label(new Rect(TexturePosition.xMax - 70, 34 + i++ * stringOffset, 70, 20), string.Format("dX:" + dataFormat, _target.DX));
-                GUI.Label(new Rect(TexturePosition.xMax - 70, 34 + i++ * stringOffset, 70, 20), string.Format("dY:" + dataFormat, _target.DY));
-                GUI.Label(new Rect(TexturePosition.xMax - 70, 34 + i++ * stringOffset, 70, 20), string.Format("dZ:" + dataFormat, _target.DZ));
-                i += .2f;
+                if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().showSummaryData)
+                {
+                    GUI.Label(new Rect(TexturePosition.xMax - 70, 34 + i++ * stringOffset, 70, 20), string.Format("Dist:" + dataFormat, _target.Destination), Styles.Label13B);
 
-                if (Math.Abs(_target.SpeedX) > _maxSpeed && Math.Abs(_target.Destination) < 200)
-                    GUI.Label(new Rect(TexturePosition.xMax - 70, 38 + i++ * stringOffset, 70, 20), $"vX:{_target.SpeedX:f2}", Styles.RedLabel13);
-                else
-                    GUI.Label(new Rect(TexturePosition.xMax - 70, 38 + i++ * stringOffset, 70, 20), $"vX:{_target.SpeedX:f2}", Styles.Label13);
+                    GUI.Label(new Rect(TexturePosition.xMax - 70, 34 + i++ * stringOffset, 70, 20),
+                        string.Format("Vel:" + dataFormat, _target.closureRate), Styles.Label13B);
 
-                if (Math.Abs(_target.SpeedY) > _maxSpeed && Math.Abs(_target.Destination) < 200)
-                    GUI.Label(new Rect(TexturePosition.xMax - 70, 38 + i++ * stringOffset, 70, 20), $"vY:{_target.SpeedY:f2}", Styles.RedLabel13);
-                else
-                    GUI.Label(new Rect(TexturePosition.xMax - 70, 38 + i++ * stringOffset, 70, 20), $"vY:{_target.SpeedY:f2}", Styles.Label13);
+                    i += .2f;
+                }
+                if (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().showData)
+                {
+                    GUI.Label(new Rect(TexturePosition.xMax - 70, 34 + i++ * stringOffset, 70, 20), string.Format("dX:" + dataFormat, _target.DX));
+                    GUI.Label(new Rect(TexturePosition.xMax - 70, 34 + i++ * stringOffset, 70, 20), string.Format("dY:" + dataFormat, _target.DY));
+                    GUI.Label(new Rect(TexturePosition.xMax - 70, 34 + i++ * stringOffset, 70, 20), string.Format("dZ:" + dataFormat, _target.DZ));
+                    i += .2f;
 
-                if (Math.Abs(_target.SpeedZ) > _maxSpeed && Math.Abs(_target.Destination) < 200)
-                    GUI.Label(new Rect(TexturePosition.xMax - 70, 38 + i++ * stringOffset, 70, 20), $"vZ:{_target.SpeedZ:f2}", Styles.RedLabel13);
-                else
-                    GUI.Label(new Rect(TexturePosition.xMax - 70, 38 + i++ * stringOffset, 70, 20), $"vZ:{_target.SpeedZ:f2}", Styles.Label13);
-                i += .2f;
+                    if (Math.Abs(_target.SpeedX) > _maxSpeed && Math.Abs(_target.Destination) < 200)
+                        GUI.Label(new Rect(TexturePosition.xMax - 70, 38 + i++ * stringOffset, 70, 20), $"vX:{_target.SpeedX:f2}", Styles.RedLabel13);
+                    else
+                        GUI.Label(new Rect(TexturePosition.xMax - 70, 38 + i++ * stringOffset, 70, 20), $"vX:{_target.SpeedX:f2}", Styles.Label13);
 
-                GUI.Label(new Rect(TexturePosition.xMax - 70, 40 + i++ * stringOffset, 70, 20), $"Yaw:{_target.AngleX:f0}°");
-                GUI.Label(new Rect(TexturePosition.xMax - 70, 40 + i++ * stringOffset, 70, 20), $"Pitch:{_target.AngleY:f0}°");
-                GUI.Label(new Rect(TexturePosition.xMax - 70, 40 + i * stringOffset, 70, 20), $"Roll:{_target.AngleZ:f0}°");
+                    if (Math.Abs(_target.SpeedY) > _maxSpeed && Math.Abs(_target.Destination) < 200)
+                        GUI.Label(new Rect(TexturePosition.xMax - 70, 38 + i++ * stringOffset, 70, 20), $"vY:{_target.SpeedY:f2}", Styles.RedLabel13);
+                    else
+                        GUI.Label(new Rect(TexturePosition.xMax - 70, 38 + i++ * stringOffset, 70, 20), $"vY:{_target.SpeedY:f2}", Styles.Label13);
+
+                    if (Math.Abs(_target.SpeedZ) > _maxSpeed && Math.Abs(_target.Destination) < 200)
+                        GUI.Label(new Rect(TexturePosition.xMax - 70, 38 + i++ * stringOffset, 70, 20), $"vZ:{_target.SpeedZ:f2}", Styles.RedLabel13);
+                    else
+                        GUI.Label(new Rect(TexturePosition.xMax - 70, 38 + i++ * stringOffset, 70, 20), $"vZ:{_target.SpeedZ:f2}", Styles.Label13);
+                    i += .2f;
+
+                    GUI.Label(new Rect(TexturePosition.xMax - 70, 40 + i++ * stringOffset, 70, 20), $"Yaw:{_target.AngleX:f0}°");
+                    GUI.Label(new Rect(TexturePosition.xMax - 70, 40 + i++ * stringOffset, 70, 20), $"Pitch:{_target.AngleY:f0}°");
+                    GUI.Label(new Rect(TexturePosition.xMax - 70, 40 + i++ * stringOffset, 70, 20), $"Roll:{_target.AngleZ:f0}°");
+                }
             }
         }
 

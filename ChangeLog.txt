@@ -102,3 +102,12 @@
 
 1.3.7.4
 	Deleted unused assets folder
+
+1.3.7.5
+	Added settings to enable/disable the cross, summary data, detail text data and rotators
+	Added setting for default window size 
+	Thanks to Twitch user @HansAcker for some Vector3D code to help show the proper distances from the x,y,z
+	Removed static from camera without a target.
+	Added toggles to window for the main options listed above
+	Added velocity indicator
+

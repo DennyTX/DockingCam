@@ -21,6 +21,8 @@ namespace OLDD_camera.Utils
         public float AngleY;
         public float AngleZ;
         public float Destination;
+        public float lastDestination;
+        public float closureRate;
         public bool IsMoveToTarget;
         public float SecondsToDock;
         public bool LookForward;
@@ -41,11 +43,16 @@ namespace OLDD_camera.Utils
 
         public bool IsDockPort => Target is ModuleDockingNode;
 
+
         public void Update()
         {
             UpdatePosition();
             var velocity = UpdateSpeed();
+            lastDestination = Destination;
             Destination = (float)Math.Sqrt(Math.Pow(DX, 2) + Math.Pow(DY, 2) + Math.Pow(DZ, 2));
+            closureRate = velocity.magnitude;
+            if (lastDestination < Destination)
+                closureRate *= -1;
             UpdateAngles();
             UpdateIsMoveToTarget(velocity);
             UpdateTargetMoveHelp();
@@ -53,9 +60,15 @@ namespace OLDD_camera.Utils
 
         private void UpdatePosition()
         {
+#if false
             DX = targetTransform.position.x - _self.transform.position.x;
             DY = targetTransform.position.y - _self.transform.position.y;
             DZ = targetTransform.position.z - _self.transform.position.z;
+#endif
+            Vector3 targetVector = targetTransform.position - _self.transform.position;
+            DX = Vector3.Dot(targetVector, _self.transform.right);
+            DZ = Vector3.Dot(targetVector, _self.transform.up);
+            DY = Vector3.Dot(targetVector, _self.transform.forward);
         }
 
         private void UpdateIsMoveToTarget(Vector3 velocity)             // dockingLamp- 
@@ -104,6 +117,7 @@ namespace OLDD_camera.Utils
             SpeedX = velocity.x;
             SpeedY = velocity.y;
             SpeedZ = velocity.z;
+
             return velocity;
         }
 

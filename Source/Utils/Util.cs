@@ -18,7 +18,8 @@ namespace OLDD_camera.Utils
 
         private void OnGUI()
         {
-
+            if  (HighLogic.CurrentGame.Parameters.CustomParams<KURSSettings>().hideOnF2 && DockCamToolbarButton.hideUI)
+                return;
             //UpdateGUIFunction?.Invoke();
             //if (UpdateGUIFunction != null) //ddd
             if (updateGUIFunction != null)
