@@ -1,0 +1,9 @@
+LOG : Opening file : D:\Users\jbb\github\DockingCam\GameData\DockingCamKURS\Parts\ColorYellow.mbm
+LOG : Converting D:\Users\jbb\github\DockingCam\GameData\DockingCamKURS\Parts\ColorYellow.mbm to D:\Users\jbb\github\DockingCam\GameData\DockingCamKURS\Parts\ColorYellow.dds
+    Format : Dxt1, normalmap : False, res: 32x32
+LOG : Opening file : D:\Users\jbb\github\DockingCam\GameData\DockingCamKURS\Parts\Decor.mbm
+LOG : Converting D:\Users\jbb\github\DockingCam\GameData\DockingCamKURS\Parts\Decor.mbm to D:\Users\jbb\github\DockingCam\GameData\DockingCamKURS\Parts\Decor.dds
+    Format : Dxt1, normalmap : False, res: 512x512
+LOG : Opening file : D:\Users\jbb\github\DockingCam\GameData\DockingCamKURS\Parts\Decor_NRM.mbm
+LOG : Converting D:\Users\jbb\github\DockingCam\GameData\DockingCamKURS\Parts\Decor_NRM.mbm to D:\Users\jbb\github\DockingCam\GameData\DockingCamKURS\Parts\Decor_NRM.dds
+    Format : Dxt5, normalmap : True, res: 512x512
