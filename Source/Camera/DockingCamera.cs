@@ -90,7 +90,7 @@ namespace OLDD_camera.Camera
         }
 
         public DockingCamera(OLDD_camera.Modules.DockingCameraModule dcm, Part thisPart,
-            bool noise, bool crossStock, bool crossDPAI, bool crossOLDD, bool transformModification,
+            bool noise, double electricchargeCost, bool crossStock, bool crossDPAI, bool crossOLDD, bool transformModification,
             int windowSize, string restrictShaderTo,
             string windowLabel = "DockCam", string cameraName = "dockingNode", 
             bool slidingOptionWindow = false, bool allowZoom = false, bool noTransformMod = false)
