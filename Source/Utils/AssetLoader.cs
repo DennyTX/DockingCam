@@ -62,7 +62,7 @@ namespace OLDD_camera.Utils
 
             texSelfRot = (Texture2D)bundle.LoadAsset("selfrot");
             texTargetRot = (Texture2D)bundle.LoadAsset("targetrot");
-            texTargetPoint = (Texture2D)bundle.LoadAsset("targetPoint");     
+            texTargetPoint = (Texture2D)bundle.LoadAsset("targetpoint");     
             texLampOn = (Texture2D)bundle.LoadAsset("lampon");
             texLampOff = (Texture2D)bundle.LoadAsset("lampoff"); 
             texDockingCam = (Texture2D)bundle.LoadAsset("dockingcam");

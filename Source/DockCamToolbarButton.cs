@@ -48,12 +48,12 @@ namespace OLDD_camera
         public void Start()
         {
             LoadWindowData();
+            OnAppLauncherReady();
             if (!HighLogic.LoadedSceneIsFlight) return;
             GameEvents.onVesselCreate.Add(NewVesselCreated);
             GameEvents.onVesselChange.Add(NewVesselCreated);
             GameEvents.onVesselLoaded.Add(NewVesselCreated);
             GameEvents.onVesselsUndocking.Add(VesselsUndocked);
-            GameEvents.onGUIApplicationLauncherReady.Add(OnAppLauncherReady);
 
             GameEvents.onHideUI.Add(onHideUI);
             GameEvents.onShowUI.Add(onShowUI);
@@ -65,7 +65,6 @@ namespace OLDD_camera
             GameEvents.onVesselChange.Remove(NewVesselCreated);
             GameEvents.onVesselLoaded.Remove(NewVesselCreated);
             GameEvents.onVesselsUndocking.Remove(VesselsUndocked);
-            GameEvents.onGUIApplicationLauncherReady.Remove(OnAppLauncherReady);
             GameEvents.onHideUI.Remove(onHideUI);
             GameEvents.onShowUI.Remove(onShowUI);
 
