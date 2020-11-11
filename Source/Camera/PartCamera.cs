@@ -80,7 +80,7 @@ namespace OLDD_camera.Camera
             set { CurrentZoom = value; }
         }
 
-        public PartCamera(Part thisPart, string resourceScanning, string bulletName, int hits,
+        public PartCamera(Part thisPart, string resourceScanning, double electricchargeCost, string bulletName, int hits,
                 string rotatorZ, string rotatorY, string zoommer, float stepper, string cameraName, int allowedScanDistance,
                 int windowSize, bool isOnboard, bool isLookAtMe, bool isLookAtMeAutoZoom, bool isFollowMe, bool isTargetCam,
                 float isFollowMeOffsetX, float isFollowMeOffsetY, float isFollowMeOffsetZ, float targetOffset, string restrictShaderTo,
