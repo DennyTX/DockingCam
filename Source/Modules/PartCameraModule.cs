@@ -72,6 +72,14 @@ namespace OLDD_camera.Modules
         [KSPField(isPersistant = true)]
         private float _targetOffset = 100;
 
+        [KSPAction("Toggle Camera")]
+        public void ToggleCameraAction(KSPActionParam param)
+        {
+            if (IsEnabled)
+                IsEnabled = false;
+            else
+                IsEnabled = true;
+        }
 
         public override void OnStart(StartState state)
         {
