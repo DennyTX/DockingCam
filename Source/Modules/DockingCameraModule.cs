@@ -70,6 +70,15 @@ namespace OLDD_camera.Modules
         [KSPField]
         public bool devMode = false;
 
+        [KSPAction("Toggle Docking Camera")]
+        public void EnableAction(KSPActionParam param)
+        {
+            if (IsEnabled)
+                IsEnabled = false;
+            else
+                IsEnabled = true;
+        }
+
         CameraAdjust.CameraAdjuster ca = null;
         [KSPEvent(guiActive = true, guiName = "Camera Adjuster")]
         public void StartCameraAdjuster()
