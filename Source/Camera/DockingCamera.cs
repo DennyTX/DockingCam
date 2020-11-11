@@ -430,8 +430,6 @@ namespace OLDD_camera.Camera
 
             AllCamerasGameObject[0].transform.rotation = AllCamerasGameObject.Last().transform.rotation; // skybox galaxy
             AllCamerasGameObject[1].transform.rotation = AllCamerasGameObject.Last().transform.rotation; // nature object
-            AllCamerasGameObject[2].transform.rotation = AllCamerasGameObject.Last().transform.rotation; // middle 
-            AllCamerasGameObject[2].transform.position = AllCamerasGameObject.Last().transform.position;
             AllCameras.ForEach(cam => cam.fieldOfView = CurrentZoom);
         }
     }
