@@ -81,7 +81,10 @@ namespace OLDD_camera.Modules
             if (IsEnabled)
                 IsEnabled = false;
             else
+            {
+                GetElectricState();
                 IsEnabled = true;
+            }
         }
 
         public override void OnStart(StartState state)
@@ -133,8 +136,6 @@ namespace OLDD_camera.Modules
             {
                 if (IsEnabled)
                     ScreenMessages.PostScreenMessage("ELECTRICITY HAS BEEN DEPLETED", 3f, ScreenMessageStyle.UPPER_CENTER);
-                else
-                    GetElectricState();
                 _camera.IsButtonOff = true;
             }
 
