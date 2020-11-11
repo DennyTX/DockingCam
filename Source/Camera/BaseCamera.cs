@@ -13,6 +13,7 @@ namespace OLDD_camera.Camera
     {
         protected static int WindowCount;
         protected static double ElectricChargeAmount;
+        internal double electricchargeCost = 0.02d;
         public static Material CurrentShader;
         protected UpdateGUIObject UpdateGUIObject;
 
@@ -233,6 +234,10 @@ namespace OLDD_camera.Camera
                 UpdateGUIObject.updateGUIFunction -= Begin; //lll
         }
 
+        public void setECusageCost(double ECAmount) 
+        {
+            electricchargeCost = ECAmount;
+        }
 
         private void Begin() //draw main window
         {
@@ -244,7 +249,7 @@ namespace OLDD_camera.Camera
             double electricChargeMaxAmount;
             ThisPart.GetConnectedResourceTotals(electricityId, out electricChargeAmount, out electricChargeMaxAmount);
             if (HighLogic.LoadedSceneIsFlight && !FlightDriver.Pause)
-                ThisPart.RequestResource(electricityId, 0.02 * TimeWarp.fixedDeltaTime);
+                ThisPart.RequestResource(electricityId, electricchargeCost * TimeWarp.fixedDeltaTime);
         }
 
         #region DRAW LAYERS 
