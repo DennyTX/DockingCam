@@ -133,6 +133,8 @@ namespace OLDD_camera.Modules
             {
                 if (IsEnabled)
                     ScreenMessages.PostScreenMessage("ELECTRICITY HAS BEEN DEPLETED", 3f, ScreenMessageStyle.UPPER_CENTER);
+                else
+                    GetElectricState();
                 _camera.IsButtonOff = true;
             }
 
