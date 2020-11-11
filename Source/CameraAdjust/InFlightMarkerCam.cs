@@ -19,6 +19,9 @@ namespace OLDD_camera.CameraAdjust
     [KSPAddon(KSPAddon.Startup.Flight, false)]
     public class InFlightMarkerCam : MonoBehaviour
     {
+#if false
+        internal static UnityEngine.Camera GetMarkerCam() { return null; }
+#else
         private GameObject _markerCamObject;
         internal static UnityEngine.Camera MarkerCam;
 
@@ -110,6 +113,7 @@ namespace OLDD_camera.CameraAdjust
             DestroyMarkerCam();
             GameEvents.onVesselChange.Remove(OnVesselChange);
         }
+#endif
     }
 
 }

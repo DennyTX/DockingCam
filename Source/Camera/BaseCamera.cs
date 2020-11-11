@@ -69,7 +69,7 @@ namespace OLDD_camera.Camera
 
         protected List<UnityEngine.Camera> AllCameras = new List<UnityEngine.Camera>();
         protected List<GameObject> AllCamerasGameObject = new List<GameObject>();
-        protected List<string> CameraNames = new List<string> { "GalaxyCamera", "Camera ScaledSpace", "UIMainCamera", "Camera 00" };
+        protected List<string> CameraNames = new List<string> { "GalaxyCamera", "Camera ScaledSpace", "Camera 00" };
 
         internal ShaderInfo availableShaders = null;
 
