@@ -90,7 +90,7 @@ namespace OLDD_camera.Camera
         }
 
         public DockingCamera(OLDD_camera.Modules.DockingCameraModule dcm, Part thisPart,
-            bool noise, bool crossStock, bool crossDPAI, bool crossOLDD, bool transformModification,
+            bool noise, double electricchargeCost, bool crossStock, bool crossDPAI, bool crossOLDD, bool transformModification,
             int windowSize, string restrictShaderTo,
             string windowLabel = "DockCam", string cameraName = "dockingNode", 
             bool slidingOptionWindow = false, bool allowZoom = false, bool noTransformMod = false)
@@ -430,8 +430,6 @@ namespace OLDD_camera.Camera
 
             AllCamerasGameObject[0].transform.rotation = AllCamerasGameObject.Last().transform.rotation; // skybox galaxy
             AllCamerasGameObject[1].transform.rotation = AllCamerasGameObject.Last().transform.rotation; // nature object
-            AllCamerasGameObject[2].transform.rotation = AllCamerasGameObject.Last().transform.rotation; // middle 
-            AllCamerasGameObject[2].transform.position = AllCamerasGameObject.Last().transform.position;
             AllCameras.ForEach(cam => cam.fieldOfView = CurrentZoom);
         }
     }

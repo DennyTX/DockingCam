@@ -38,6 +38,9 @@ namespace OLDD_camera.Modules
 
         [KSPField]
         public string resourceScanning = "ElectricCharge.50";
+        
+        [KSPField(isPersistant = true)]
+        public double electricchargeCost = 0.02d;
 
         private readonly string _cameraName = "CamExt";
         private readonly string _rotatorZ = "Case";
@@ -72,12 +75,23 @@ namespace OLDD_camera.Modules
         [KSPField(isPersistant = true)]
         private float _targetOffset = 100;
 
+        [KSPAction("Toggle Camera")]
+        public void ToggleCameraAction(KSPActionParam param)
+        {
+            if (IsEnabled)
+                IsEnabled = false;
+            else
+            {
+                GetElectricState();
+                IsEnabled = true;
+            }
+        }
 
         public override void OnStart(StartState state)
         {
             if (_camera != null) return;
 
-                _camera = new PartCamera(part, resourceScanning, _bulletName, _currentHits, _rotatorZ, _rotatorY, _zoommer, 
+                _camera = new PartCamera(part, resourceScanning, electricchargeCost, _bulletName, _currentHits, _rotatorZ, _rotatorY, _zoommer, 
                     _stepper, _cameraName, allowedScanDistance, windowSize, _isOnboard, _isLookAtMe, _isLookAtMeAutoZoom,
                     _isFollowMe, _isTargetCam, _isFollowMeOffsetX, _isFollowMeOffsetY, _isFollowMeOffsetZ, _targetOffset, restrictShaderTo);
 
@@ -88,7 +102,7 @@ namespace OLDD_camera.Modules
             _camera.InitialCamPosition = _camera.CurrentCamPosition = _camObject.transform.position;
             _camera.InitialCamLocalRotation = _camera.CurrentCamLocalRotation = _camObject.transform.localRotation;
             _camera.InitialCamLocalPosition = _camera.CurrentCamLocalPosition = _camObject.transform.localPosition;
-
+            _camera.setECusageCost(electricchargeCost);
             
         }
 

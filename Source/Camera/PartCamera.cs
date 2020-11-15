@@ -80,7 +80,7 @@ namespace OLDD_camera.Camera
             set { CurrentZoom = value; }
         }
 
-        public PartCamera(Part thisPart, string resourceScanning, string bulletName, int hits,
+        public PartCamera(Part thisPart, string resourceScanning, double electricchargeCost, string bulletName, int hits,
                 string rotatorZ, string rotatorY, string zoommer, float stepper, string cameraName, int allowedScanDistance,
                 int windowSize, bool isOnboard, bool isLookAtMe, bool isLookAtMeAutoZoom, bool isFollowMe, bool isTargetCam,
                 float isFollowMeOffsetX, float isFollowMeOffsetY, float isFollowMeOffsetZ, float targetOffset, string restrictShaderTo,
@@ -154,10 +154,11 @@ namespace OLDD_camera.Camera
 
         public override void Activate()
         {
-            base.Activate();
+            InitTextures();
             SetFreeId();
             WindowPosition.x = WindowPosition.width * (_id - 1);
             WindowPosition.y = 64;
+            base.Activate();
         }
 
         public override void Deactivate()
@@ -520,8 +521,6 @@ namespace OLDD_camera.Camera
 
             AllCamerasGameObject[0].transform.rotation = AllCamerasGameObject.Last().transform.rotation;
             AllCamerasGameObject[1].transform.rotation = AllCamerasGameObject.Last().transform.rotation;
-            AllCamerasGameObject[2].transform.rotation = AllCamerasGameObject.Last().transform.rotation;
-            AllCamerasGameObject[2].transform.position = AllCamerasGameObject.Last().transform.position;
             AllCameras.ForEach(cam => cam.fieldOfView = RealZoom); //currentZoom); 
             //AllCameras.ForEach(delegate (UnityEngine.Camera cam) //lll
             //{
@@ -538,7 +537,7 @@ namespace OLDD_camera.Camera
             Vector3 endPoint;
             if (!IsInsight(out endPoint)) return;
             _scanningRay = new GameObject("scanningRay").AddComponent<LineRenderer>();
-            _scanningRay.material = new Material(Shader.Find("Particles/Additive"));
+            _scanningRay.material = new Material(Shader.Find("Legacy Shaders/Particles/Additive"));
             // The following commented lines were obsolete, replaced with the methods immediately following.
             // The old lines were left as historical documentation
 
@@ -566,7 +565,7 @@ namespace OLDD_camera.Camera
             if (!TargetHelper.IsTargetSelect || !IsTargetVisiable()) return;
             _visibilityRay = new GameObject("visibilityRay").AddComponent<LineRenderer>();
             var color = Color.white;
-            _visibilityRay.material = new Material(Shader.Find("Particles/Additive"));
+            _visibilityRay.material = new Material(Shader.Find("Legacy Shaders/Particles/Additive"));
 
             // The following commented lines were obsolete, replaced with the methods immediately following.
             // The old lines were left as historical documentation

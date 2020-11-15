@@ -20,6 +20,9 @@ namespace OLDD_camera.Modules
         public bool noise;
 
         [KSPField(isPersistant = true)]
+        public double electricchargeCost = 0.02d;
+        
+        [KSPField(isPersistant = true)]
         private bool _crossDPAI;
 
         [KSPField(isPersistant = true)]
@@ -70,6 +73,15 @@ namespace OLDD_camera.Modules
         [KSPField]
         public bool devMode = false;
 
+        [KSPAction("Toggle Docking Camera")]
+        public void EnableAction(KSPActionParam param)
+        {
+            if (IsEnabled)
+                IsEnabled = false;
+            else
+                IsEnabled = true;
+        }
+
         CameraAdjust.CameraAdjuster ca = null;
         [KSPEvent(guiActive = true, guiName = "Camera Adjuster")]
         public void StartCameraAdjuster()
@@ -99,12 +111,12 @@ namespace OLDD_camera.Modules
             {
                 if(cameraName != "")
                     _camera = new DockingCamera(this, part, 
-                        noise, targetCrossStockOnAtStartup, crossDPAIonAtStartup, crossOLDDonAtStartup, transformModification,
+                        noise, electricchargeCost, targetCrossStockOnAtStartup, crossDPAIonAtStartup, crossOLDDonAtStartup, transformModification,
                         _windowSize, restrictShaderTo,
                         windowLabel, cameraName, slidingOptionWindow, allowZoom);
                 else
                     _camera = new DockingCamera(this, part, 
-                        noise, targetCrossStockOnAtStartup, crossDPAIonAtStartup, crossOLDDonAtStartup, transformModification,
+                        noise, electricchargeCost, targetCrossStockOnAtStartup, crossDPAIonAtStartup, crossOLDDonAtStartup, transformModification,
                         _windowSize, restrictShaderTo);
             }
             if (cameraLabel != "")
@@ -116,6 +128,7 @@ namespace OLDD_camera.Modules
             {
                 Events["StartCameraAdjuster"].guiActive = false;
             }
+            _camera.setECusageCost(electricchargeCost);
         }
 
         public override void OnUpdate()
