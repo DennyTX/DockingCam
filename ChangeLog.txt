@@ -125,3 +125,6 @@
 		In this state, there is no way to get back to IsEnabled = true due to there being a power state check before allowing a user to enable a camera. No EC checks are ever run again and the camera cannot be used.
 		Added code to do an ECcheck before trying to enable the camera to avoid this issue.
 		Fixed the kerbals being seen through parts by fixing the cullingMaskLayer
+
+1.3.7.8
+	Adjusted the cullingmask for the markercam
