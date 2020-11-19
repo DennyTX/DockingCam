@@ -71,7 +71,7 @@ namespace OLDD_camera.CameraAdjust
 
             // print("Setting up the inflight MarkerCamObject");
             _markerCamObject = new GameObject("MarkerCamObject");
-            _markerCamObject.transform.parent = FlightCamera.fetch.cameras[0].gameObject.transform;//UnityEngine.Camera.mainCamera.gameObject.transform; // Set the new camera to be a child of the main camera  
+            _markerCamObject.transform.parent = FlightCamera.fetch.cameras[1].gameObject.transform;//UnityEngine.Camera.mainCamera.gameObject.transform; // Set the new camera to be a child of the main camera  
             MarkerCam = _markerCamObject.AddComponent<UnityEngine.Camera>();
 
             // Change a few things - the depth needs to be higher so it renders over the top
@@ -84,7 +84,7 @@ namespace OLDD_camera.CameraAdjust
             _markerCamObject.AddComponent<MarkerCamBehaviour>(); // TODO can this be removed?
 
             // Set the culling mask. 
-            MarkerCam.cullingMask = UnityEngine.Camera.main.cullingMask; // 1 << 17;
+            MarkerCam.cullingMask = 1 << 17;
         }
 
         internal static UnityEngine.Camera GetMarkerCam()
