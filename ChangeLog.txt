@@ -128,3 +128,6 @@
 
 1.3.7.8
 	Adjusted the cullingmask for the markercam
+
+1.3.7.9
+	Reverted cullingmask change
